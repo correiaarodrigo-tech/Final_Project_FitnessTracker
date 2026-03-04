@@ -5,7 +5,7 @@ Projeto de final de curso - Aplicação para monitorização de exercícios em t
 ## 👥 Autores
 
 - [45155 - Rodrigo Correia]
-- [xxxxx - David Delgado]
+- [51598 - David Delgado]
 
 ## 📋 Pré-requisitos iniciais
 
