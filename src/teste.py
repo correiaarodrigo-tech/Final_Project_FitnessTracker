@@ -25,11 +25,13 @@ right_arm_down = False
 left_arm_down = False
 ANGLE_THRESHOLD = 90  # Ângulo considerado como "dobrado" (menor que este valor)
 
-# Capturar vídeo da webcam com resolução maior
+# Capturar vídeo da webcam 
 cap = cv2.VideoCapture(0)
 # Aumentar a resolução da captura
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)   # Largura maior (anterior era 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)    # Altura maior (anterior era 480)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)   # Largura 
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)    # Altura
+# Largura (versao para portatil -> 640 // versao para monitor -> 1280)
+# Altura (versao para portatil -> 480 // versao para monitor -> 720)
 
 while cap.isOpened():
     ret, frame = cap.read()
