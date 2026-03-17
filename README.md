@@ -9,10 +9,15 @@ Projeto de final de curso - Aplicação para monitorização de exercícios em t
 
 ## 📋 Pré-requisitos iniciais
 
+Estes requisitos dizem respeito ao código desenvolvido até ao momento para um ambiente de testes inicial.
+
 - Python 3.10
 - Pip installer
 - Bibliotecas referenciadas no ficheiro 'requirements.txt'
 
-## 🚀 Próximos Passos
+## 🚀 Próximos Passos (TODO NOW)
 
-TO DO
+Processamento Imagem
+
+- Criar esqueleto de diretorios a modelar face o objetivo do trabalho
+- Desenvolver alguns casos simples para testagem de conceitos
