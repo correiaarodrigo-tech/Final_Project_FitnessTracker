@@ -15,7 +15,11 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - Pip installer
 - Bibliotecas referenciadas no ficheiro 'requirements.txt'
 
-## 🚀 Próximos Passos (TODO NOW)
+## ✍️ Diário de Bordo
+
+- 17/03/2026 ...
+
+## 🚀 TODO
 
 Processamento Imagem
 
