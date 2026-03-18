@@ -77,7 +77,7 @@ class Serie:
         ex2 = MockExercicio("Prancha")
         ex3 = MockExercicio("Lunges")
         
-        serie = Serie([ex1, ex2, ex3], pausa=2)
+        serie = Serie([ex1, ex2, ex3])
         
         print(f"Série com {len(serie.exercicios)} exercícios")
         print(f"Pausa de {serie.pausa}s entre exercícios")
@@ -95,8 +95,10 @@ class Serie:
                     print(f"   Tempo restante: {serie.tempo_restante_pausa:.1f}s")
                     time.sleep(0.5)
                 print("▶️ Próximo exercício!")
-        
-        print("\n✅ Série concluída!")
+            else:
+                print("🏁 Série concluída!")
+                break
+        print("\n✅ Fechando classe de teste!")
 
 if __name__ == "__main__":
     Serie.testar()
