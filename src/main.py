@@ -1,5 +1,5 @@
 """
-Ponto de entrada principal - Versao completa com janela extra e lunges.
+Ponto de entrada  Main Version
 Resolucao: 1280x720
 """
 
@@ -14,8 +14,8 @@ from utils.visualizacao import desenhar_metricas, criar_janela_info
 def configurar_camera():
     """Configura camera para 1280x720."""
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280) #1280 ou 640
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) #720 ou 480
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640) #1280 ou 640
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) #720 ou 480
     
     # Verificar se conseguiu
     largura = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
