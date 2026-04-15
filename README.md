@@ -18,7 +18,8 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 ## ✍️ Diário de Bordo
 
 - 17/03/2026
-  Criadas pastas e classes para iniciar o desenvolvimento do motor da aplicação em python. Com a estrutura montada é permitido definir exercicios, series de exercicios e ainda visualizar alguns resultados. De realçar que os exercicios implementados (e os seus parametros) estao muito simplificados nesta fase inicial. Os próximos passos a serem desenvolvidos passarão pelo aperfeicoamento da deteção do utilizador e precisao na avaliacao de exercicios / series.
+
+Criadas pastas e classes para iniciar o desenvolvimento do motor da aplicação em python. Com a estrutura montada é permitido definir exercicios, series de exercicios e ainda visualizar alguns resultados. De realçar que os exercicios implementados (e os seus parametros) estao muito simplificados nesta fase inicial. Os próximos passos a serem desenvolvidos passarão pelo aperfeicoamento da deteção do utilizador e precisao na avaliacao de exercicios / series.
 
 ## 🚀 TODO's
 
