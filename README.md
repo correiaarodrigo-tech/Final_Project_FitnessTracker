@@ -30,10 +30,10 @@ Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor
 
 ##  Objetivos Semanais  (19-25 Abril)
 
-- Construir Projeto  Android
-- Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios
+- [ ] Construir Projeto  Android
+- [ ] Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios
 
-> [!NOTEfzxcz] zxfdzfdfd
+
 ## Para pensar...
 
 - modelar classificadores e avalidores mais precisos / eficazes?
