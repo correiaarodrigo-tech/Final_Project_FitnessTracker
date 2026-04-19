@@ -38,4 +38,3 @@ Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor
 - modelar classificadores e avalidores mais precisos / eficazes?
 - estatisticas e feedback melhorado -> timers,contagens, representacao visual do utilizador?
 - aprimorar mais exercicios e series? Parametros? Eficácia??
-- Camera fixa externa vs projetor vs camera telemovel?
