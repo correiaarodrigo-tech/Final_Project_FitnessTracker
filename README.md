@@ -21,6 +21,10 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 Criadas pastas e classes para iniciar o desenvolvimento do motor da aplicação em python. Com a estrutura montada é permitido definir exercicios, series de exercicios e ainda visualizar alguns resultados. De realçar que os exercicios implementados (e os seus parametros) estao muito simplificados nesta fase inicial. Os próximos passos a serem desenvolvidos passarão pelo aperfeicoamento da deteção do utilizador e precisao na avaliacao de exercicios / series.
 
+- 19/04/2026
+
+Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end do aplicativo final.
+
 ## 🚀 TODO's
 
 - modelar classificadores e avalidores mais precisos / eficazes?
