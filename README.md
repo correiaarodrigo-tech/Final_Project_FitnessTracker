@@ -28,10 +28,14 @@ Criadas pastas e classes para iniciar o desenvolvimento do motor da aplicação 
 
 Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end do aplicativo final.
 
-## 🚀 TODO's
+## 🚀 Objetivos Semanais  (19-25 Abril)
+
+- Construir Projeto  Android
+- Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios
+
+## Para pensar...
 
 - modelar classificadores e avalidores mais precisos / eficazes?
 - estatisticas e feedback melhorado -> timers,contagens, representacao visual do utilizador?
-- aprimorar mais exercicios e series?
-- estrutura de dados para exercicios e dados de utilizador?
+- aprimorar mais exercicios e series? Parametros? Eficácia??
 - Camera fixa externa vs projetor vs camera telemovel?
