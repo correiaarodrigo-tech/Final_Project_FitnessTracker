@@ -33,7 +33,7 @@ Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor
 - Construir Projeto  Android
 - Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios
 
-> [!NOTE]
+> [!NOTEfzxcz] zxfdzfdfd
 ## Para pensar...
 
 - modelar classificadores e avalidores mais precisos / eficazes?
