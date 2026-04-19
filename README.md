@@ -29,6 +29,7 @@ Criadas pastas e classes para iniciar o desenvolvimento do motor da aplicação 
 <Detalhes>
 Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end do aplicativo final.
 </Detalhes>
+
 ##  Objetivos Semanais  (19-25 Abril)
 
 - [ ] Construir Projeto  Android
