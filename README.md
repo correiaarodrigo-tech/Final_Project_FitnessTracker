@@ -7,6 +7,9 @@ Projeto de final de curso - Aplicação para monitorização de exercícios em t
 - [45155 - Rodrigo Correia]
 - [51598 - David Delgado]
 
+## Links Úteis
+- Drive de recursos -> https://iselpt-my.sharepoint.com/:f:/g/personal/a51598_alunos_isel_pt/IgDmtY9-GcMRT6fJk1uhffsZAcqzwMO2dog03hfgFe_jKHI?e=OK5wBT
+
 ## 📋 Pré-requisitos iniciais
 
 Estes requisitos dizem respeito ao código desenvolvido até ao momento para um ambiente de testes inicial.
