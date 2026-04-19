@@ -21,14 +21,14 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 ##  Diário de Bordo
 
 - 17/03/2026
-<details>
+<Detalhes>
 Criadas pastas e classes para iniciar o desenvolvimento do motor da aplicação em python. Com a estrutura montada é permitido definir exercicios, series de exercicios e ainda visualizar alguns resultados. De realçar que os exercicios implementados (e os seus parametros) estao muito simplificados nesta fase inicial. Os próximos passos a serem desenvolvidos passarão pelo aperfeicoamento da deteção do utilizador e precisao na avaliacao de exercicios / series.
-</details>
+</Detalhes>
 
 - 19/04/2026
-<details>
+<Detalhes>
 Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end do aplicativo final.
-</details>
+</Detalhes>
 ##  Objetivos Semanais  (19-25 Abril)
 
 - [ ] Construir Projeto  Android
