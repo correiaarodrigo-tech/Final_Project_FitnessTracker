@@ -28,6 +28,13 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 </details>
 
 <details>
+  <summary><b>24/03/2026</b></summary>
+  
+- Realização dos casos de utilização e requisitos funcionais e atributos do sistema. Documentos disponíveis na drive.
+
+</details>
+
+<details>
   <summary><b>19/04/2026</b></summary>
   
 - Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end do aplicativo final.
