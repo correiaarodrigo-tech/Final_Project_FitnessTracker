@@ -29,6 +29,10 @@ import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import com.example.fitnesstrackerapp.logic.Exercise
+import com.example.fitnesstrackerapp.logic.WorkoutManager
+import com.example.fitnesstrackerapp.logic.TrainingStep
+import com.example.fitnesstrackerapp.logic.impl.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,12 +42,14 @@ class MainActivity : AppCompatActivity() {
     private var poseLandmarker: PoseLandmarker? = null
     private lateinit var cameraExecutor: ExecutorService
 
-    // Contadores e estados dos braços
-    private var rightArmCount = 0
-    private var leftArmCount = 0
-    private var isRightArmDown = false
-    private var isLeftArmDown = false
-    private val ANGLE_THRESHOLD = 90f
+    // Scalable Workout Manager
+    private val workoutManager = WorkoutManager(listOf(
+        TrainingStep(PushUpExercise(), targetReps = 15),
+        TrainingStep(RestExercise(60), isRest = true),
+        TrainingStep(LungeExercise(), targetReps = 20), // 10 each leg (alternated)
+        TrainingStep(RestExercise(60), isRest = true),
+        TrainingStep(SquatExercise(), targetReps = 15)
+    ))
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -165,59 +171,29 @@ class MainActivity : AppCompatActivity() {
         // Assumindo a primeira pessoa encontrada
         val poseLandmarks = landmarks[0]
 
-        // Índices do MediaPipe para ombro, cotovelo, pulso
-        // Direito: 12, 14, 16
-        // Esquerdo: 11, 13, 15
-        if (poseLandmarks.size > 16) {
-            val rightShoulder = poseLandmarks[12]
-            val rightElbow = poseLandmarks[14]
-            val rightWrist = poseLandmarks[16]
+        // Process logic with current workout step
+        val (reps, state, feedback) = workoutManager.processLandmarks(poseLandmarks)
+        val currentStep = workoutManager.currentStep
 
-            val leftShoulder = poseLandmarks[11]
-            val leftElbow = poseLandmarks[13]
-            val leftWrist = poseLandmarks[15]
+        // Convert to draw on screen
+        val points = poseLandmarks.map { Pair(it.x(), it.y()) }
 
-            val rightAngle = calculateAngle(rightShoulder, rightElbow, rightWrist)
-            val leftAngle = calculateAngle(leftShoulder, leftElbow, leftWrist)
-
-            // Lógica do braço direito
-            if (rightAngle < ANGLE_THRESHOLD && !isRightArmDown) {
-                isRightArmDown = true
-            } else if (rightAngle >= ANGLE_THRESHOLD && isRightArmDown) {
-                isRightArmDown = false
-                rightArmCount++
-            }
-
-            // Lógica do braço esquerdo
-            if (leftAngle < ANGLE_THRESHOLD && !isLeftArmDown) {
-                isLeftArmDown = true
-            } else if (leftAngle >= ANGLE_THRESHOLD && isLeftArmDown) {
-                isLeftArmDown = false
-                leftArmCount++
-            }
-
-            // Converter para draw on screen
-            val points = poseLandmarks.map { Pair(it.x(), it.y()) }
-
-            runOnUiThread {
-                overlayView.updateResults(points, rightAngle, leftAngle, rightArmCount, leftArmCount)
-            }
+        runOnUiThread {
+            overlayView.updateResults(
+                points,
+                currentStep?.exercise?.name ?: "Finished",
+                reps,
+                feedback,
+                currentStep?.exercise?.color ?: android.graphics.Color.GREEN
+            )
         }
     }
+
 
     private fun returnLivestreamError(error: RuntimeException) {
         Log.e(TAG, "PoseLandmarker Error: ${error.message}", error)
     }
 
-    private fun calculateAngle(a: NormalizedLandmark, b: NormalizedLandmark, c: NormalizedLandmark): Float {
-        val radians = Math.atan2((c.y() - b.y()).toDouble(), (c.x() - b.x()).toDouble()) -
-                Math.atan2((a.y() - b.y()).toDouble(), (a.x() - b.x()).toDouble())
-        var angle = Math.abs(Math.toDegrees(radians)).toFloat()
-        if (angle > 180.0f) {
-            angle = 360.0f - angle
-        }
-        return angle
-    }
 
     private fun allPermissionsGranted() = ContextCompat.checkSelfPermission(
         this, Manifest.permission.CAMERA

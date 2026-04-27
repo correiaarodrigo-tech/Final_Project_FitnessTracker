@@ -9,11 +9,11 @@ import android.view.View
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
-    private var rightArmCount = 0
-    private var leftArmCount = 0
-    private var rightAngle = 0f
-    private var leftAngle = 0f
-    
+    private var exerciseName = ""
+    private var repetitions = 0
+    private var feedback = ""
+    private var exerciseColor = Color.GREEN
+
     // Normalized landmarks (x, y between 0.0 and 1.0)
     private var landmarks: List<Pair<Float, Float>> = emptyList()
 
@@ -31,7 +31,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private val linePaint = Paint().apply {
         color = Color.parseColor("#00FF00") // Verde claro
-        strokeWidth = 6f
+        strokeWidth = 8f
         style = Paint.Style.STROKE
         isAntiAlias = true
     }
@@ -50,23 +50,33 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private val countPaint = Paint().apply {
         color = Color.GREEN
+        textSize = 70f
+        isAntiAlias = true
+        setShadowLayer(5f, 0f, 0f, Color.BLACK)
+        textAlign = Paint.Align.CENTER
+    }
+
+    private val feedbackPaint = Paint().apply {
+        color = Color.YELLOW
         textSize = 55f
         isAntiAlias = true
         setShadowLayer(5f, 0f, 0f, Color.BLACK)
+        textAlign = Paint.Align.CENTER
     }
 
     fun updateResults(
         landmarks: List<Pair<Float, Float>>,
-        rightAngle: Float,
-        leftAngle: Float,
-        rightCount: Int,
-        leftCount: Int
+        exerciseName: String,
+        repetitions: Int,
+        feedback: String,
+        color: Int
     ) {
         this.landmarks = landmarks
-        this.rightAngle = rightAngle
-        this.leftAngle = leftAngle
-        this.rightArmCount = rightCount
-        this.leftArmCount = leftCount
+        this.exerciseName = exerciseName
+        this.repetitions = repetitions
+        this.feedback = feedback
+        this.exerciseColor = color
+        linePaint.color = color
         invalidate()
     }
 
@@ -96,22 +106,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             canvas.drawCircle(cx, cy, 8f, pointPaint)
         }
         
-        // Draw counts top-left (stacked to avoid center overlap on smaller screens)
-        canvas.drawText("Braco Direito: $rightArmCount", 50f, 120f, countPaint)
-        canvas.drawText("Braco Esquerdo: $leftArmCount", 50f, 190f, countPaint)
-        
-        // Draw angles near elbows (indices 13 = left elbow, 14 = right elbow in mediapipe)
-        if (landmarks.size > 14) {
-            val rightElbow = landmarks[14]
-            val leftElbow = landmarks[13]
-            
-            val rx = rightElbow.first * w
-            val ry = rightElbow.second * h
-            canvas.drawText("R:${rightAngle.toInt()}", rx, ry, textPaint)
-            
-            val lx = leftElbow.first * w
-            val ly = leftElbow.second * h
-            canvas.drawText("L:${leftAngle.toInt()}", lx, ly, textPaint)
-        }
+        // Draw Exercise Info
+        canvas.drawText("$exerciseName: $repetitions", w / 2, 120f, countPaint)
+        canvas.drawText(feedback, w / 2, 200f, feedbackPaint)
     }
 }
