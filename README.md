@@ -41,11 +41,22 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
+<details>
+  <summary><b>25/04/2026</b></summary>
+  
+- Adaptação do código python para um projeto Android, dando origem ao esqueleto de desenvolvimento do produto final.
+- Testes realizados e avaliação do estado atual de desenvolvimento. Planeamento em conjunto com o orientador.
 
-##  Objetivos Semanais  (19-25 Abril)
+</details>
 
-- [ ] Construir Projeto  Android
-- [ ] Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios
+
+##  Objetivos Semanais  (26-02 Maio)
+
+- [ ] Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios.
+- [ ] Desenho de ecrãs / layout da app via Figma.
+- [ ] Pesquisa de documentos / estudos para fundamentar, guiar e criação métricas / modelos de negócio da aplicação.
+- [ ] Pesquisa sobre implementação de modelos Ollama' localmente na máquina.
+- [ ] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
 
 
 ## Para pensar...
@@ -53,3 +64,4 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - modelar classificadores e avalidores mais precisos / eficazes?
 - estatisticas e feedback melhorado -> timers,contagens, representacao visual do utilizador?
 - aprimorar mais exercicios e series? Parametros? Eficácia??
+
