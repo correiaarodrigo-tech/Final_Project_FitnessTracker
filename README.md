@@ -66,3 +66,6 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - estatisticas e feedback melhorado -> timers,contagens, representacao visual do utilizador?
 - aprimorar mais exercicios e series? Parametros? Eficácia??
 
+## Figma
+Link - https://www.figma.com/design/wSXHzneXyKGZCTNtxxvbXm/Projeto-Final---FitnessTracking?node-id=0-1&t=3xgmSqZSZ6habhqy-1
+
