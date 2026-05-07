@@ -11,6 +11,8 @@
 - [Google IDX Free Tier](https://idx.dev/docs)
 - [LAMI Client - Exemplo Android](https://github.com/sonusid1325/ollama-android)
 
+- [Google 'Académico'] (https://scholar.google.com/scholar?scilib=1&scioq=Mediapipe+android+lunges&hl=pt-PT&as_sdt=0,5)
+
 ---
 
 
