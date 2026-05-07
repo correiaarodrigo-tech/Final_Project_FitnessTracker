@@ -50,15 +50,26 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
+<details>
+  <summary><b>07/05/2026</b></summary>
+  
+- Desenho dos layouts da aplicação no figma.
+- Coletânea de documentos (Google Schoolar) para criação de métricas / estudo do problema / lógica dp negócio.
+- Identificação de use case para Ollama: Criação de VM na cloud para integração via API sobre as features construídas no projeto. Ex: Feedback via ollama do regime de treinos e resultados...
+- Enquadramento com Orientador Projeto sobre casos críticos a resolver até ao FEIM.
 
-##  Objetivos Semanais  (26-02 Maio)
+</details>
 
+
+##  Objetivos Semanais  (03-09 Maio)
+
+- [ ] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
+- [ ] Desenhar plano de implementação Ollama no projeto.
+- [ ] Construir slides apresentação FEIM (ou estruturar segmentos).
 - [ ] Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios.
-- [ ] Desenho de ecrãs / layout da app via Figma.
-- [ ] Pesquisa de documentos / estudos para fundamentar, guiar e criação métricas / modelos de negócio da aplicação.
-- [ ] Pesquisa sobre implementação de modelos Ollama' localmente na máquina.
 - [ ] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
-
+- Dica ao construir os slides: 1 min por folha, fazer video da demo em vez de live.
+- Outra dica: perguntar a Joana / Jaison problemas identificados com processamento imagem, desafios, soluções... (Projetos idênticos)
 
 ## Para pensar...
 
