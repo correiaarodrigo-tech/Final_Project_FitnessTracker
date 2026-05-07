@@ -23,6 +23,7 @@
 4. Análise de dados de treino, planeamento regime treino
 
 5. Mas principalmente, é uma ferramenta boa para montar encima das features desenvolvidas 'core' do projeto. NÃO as substitui.
+Ou seja, a app com recurso a internet tem funcionalidades extra, mas funcional sem a Mesma!??
 
 ** NÃO é possivel:**
 - Feedback em tempo real via Ollama (MediaPipe no momento, Ollama por API calls)
