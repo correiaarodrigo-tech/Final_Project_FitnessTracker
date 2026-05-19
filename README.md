@@ -60,12 +60,19 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
+<details>
+  <summary><b>18/05/2026</b></summary>
+  
+- Preparação da apresentação para o FEIM 2026.
+- Avaliação do Ponto de Situação do projeto. Redefinição Prioridades.
+
+</details>
+
 
 ##  Objetivos Semanais  (03-09 Maio)
 
 - [ ] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
 - [ ] Desenhar plano de implementação Ollama no projeto.
-- [ ] Construir slides apresentação FEIM (ou estruturar segmentos).
 - [ ] Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios.
 - [ ] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
 - Dica ao construir os slides: 1 min por folha, fazer video da demo em vez de live.
