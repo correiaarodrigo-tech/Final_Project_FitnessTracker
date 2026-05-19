@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.example.fitnesstrackerapp.logic.AngleCalculator
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -64,6 +65,14 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         textAlign = Paint.Align.CENTER
     }
 
+    private val instructionPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 40f
+        isAntiAlias = true
+        setShadowLayer(5f, 0f, 0f, Color.BLACK)
+        textAlign = Paint.Align.CENTER
+    }
+
     fun updateResults(
         landmarks: List<Pair<Float, Float>>,
         exerciseName: String,
@@ -109,5 +118,64 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         // Draw Exercise Info
         canvas.drawText("$exerciseName: $repetitions", w / 2, 120f, countPaint)
         canvas.drawText(feedback, w / 2, 200f, feedbackPaint)
+
+        // Draw Demo Push-Up Additions
+        if (exerciseName == "Push-Up") {
+            // Warning message to stay in frame
+            canvas.drawText("Pls stay in frame facing the best position for the exercise", w / 2, h - 100f, instructionPaint)
+            
+            // Highlight arms and draw angle
+            if (landmarks.size > 16) {
+                // Shoulders: 11, 12, Elbows: 13, 14, Wrists: 15, 16
+                val highlightPaint = Paint().apply {
+                    color = Color.CYAN
+                    strokeWidth = 12f
+                    style = Paint.Style.STROKE
+                    isAntiAlias = true
+                }
+                val highlightPointPaint = Paint().apply {
+                    color = Color.YELLOW
+                    style = Paint.Style.FILL
+                }
+
+                // Draw lines for right arm (12 -> 14 -> 16)
+                val p12 = landmarks[12]
+                val p14 = landmarks[14]
+                val p16 = landmarks[16]
+                
+                canvas.drawLine(p12.first * w, p12.second * h, p14.first * w, p14.second * h, highlightPaint)
+                canvas.drawLine(p14.first * w, p14.second * h, p16.first * w, p16.second * h, highlightPaint)
+
+                // Draw lines for left arm (11 -> 13 -> 15)
+                val p11 = landmarks[11]
+                val p13 = landmarks[13]
+                val p15 = landmarks[15]
+                
+                canvas.drawLine(p11.first * w, p11.second * h, p13.first * w, p13.second * h, highlightPaint)
+                canvas.drawLine(p13.first * w, p13.second * h, p15.first * w, p15.second * h, highlightPaint)
+
+                // Draw highlighted points (arms only)
+                val armsPoints = listOf(11, 12, 13, 14, 15, 16)
+                armsPoints.forEach { idx ->
+                    val point = landmarks[idx]
+                    canvas.drawCircle(point.first * w, point.second * h, 12f, highlightPointPaint)
+                }
+
+                // Calculate and draw angle for right elbow
+                val angle = AngleCalculator.calculateAngle(
+                    p12.first, p12.second,
+                    p14.first, p14.second,
+                    p16.first, p16.second
+                )
+                
+                val anglePaint = Paint().apply {
+                    color = Color.WHITE
+                    textSize = 45f
+                    isAntiAlias = true
+                    setShadowLayer(5f, 0f, 0f, Color.BLACK)
+                }
+                canvas.drawText("${angle.toInt()}°", p14.first * w + 30f, p14.second * h, anglePaint)
+            }
+        }
     }
 }
