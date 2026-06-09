@@ -16,7 +16,7 @@
         android:theme="@style/Theme.FitnessTrackerApp"
         tools:targetApi="31">
         <activity
-            android:name=".DemoPushUpActivity"
+            android:name=".LandingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,31 @@
         </activity>
 
         <activity
+            android:name=".DashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CreatePlanActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StartPlanActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ViewStatisticsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DemoPushUpActivity"
             android:exported="false" />
     </application>
 
