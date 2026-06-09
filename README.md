@@ -2,15 +2,16 @@
 
 Projeto de final de curso - Aplicação para monitorização de exercícios em tempo real.
 
-##  Autores
+## Autores
 
 - [45155 - Rodrigo Correia]
 - [51598 - David Delgado]
 
 ## Links Úteis
+
 - Drive de recursos -> https://iselpt-my.sharepoint.com/:f:/g/personal/a51598_alunos_isel_pt/IgDmtY9-GcMRT6fJk1uhffsZAcqzwMO2dog03hfgFe_jKHI?e=OK5wBT
 
-##  Pré-requisitos iniciais
+## Pré-requisitos iniciais
 
 Estes requisitos dizem respeito ao código desenvolvido até ao momento para um ambiente de testes inicial.
 
@@ -18,7 +19,7 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - Pip installer
 - Bibliotecas referenciadas no ficheiro 'requirements.txt'
 
-##  Diário de Bordo
+## Diário de Bordo
 
 <details>
   <summary><b>17/03/2026</b></summary>
@@ -65,15 +66,27 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
   
 - Preparação da apresentação para o FEIM 2026.
 - Avaliação do Ponto de Situação do projeto. Redefinição Prioridades.
+- Pausa curta no Projeto para fechar outras unidades curriculares.
 
 </details>
 
+</details>
 
-##  Objetivos Semanais  (03-09 Maio)
+<details>
+  <summary><b>09/06/2026</b></summary>
+  
+- Planeamento da estrutura de navegação.
+- Implementação Navegação entre as Activities da aplicação (exploração do fluxo de ecrãs)
+- Definição e configuração de temas visuais para a interface
+- Planeamento de métodos autenticação de utilizadores. Planeamento Integração na App.
+
+</details>
+
+## Objetivos Semanais (03-09 Maio)
 
 - [ ] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
 - [ ] Desenhar plano de implementação Ollama no projeto.
-- [ ] Pensar / Desenhar  Estrutura de Dados para Utilizadores / Exercícios.
+- [ ] Pensar / Desenhar Estrutura de Dados para Utilizadores / Exercícios.
 - [ ] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
 - Dica ao construir os slides: 1 min por folha, fazer video da demo em vez de live.
 - Outra dica: perguntar a Joana / Jaison problemas identificados com processamento imagem, desafios, soluções... (Projetos idênticos)
@@ -85,5 +98,5 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - aprimorar mais exercicios e series? Parametros? Eficácia??
 
 ## Figma
-Link - https://www.figma.com/design/wSXHzneXyKGZCTNtxxvbXm/Projeto-Final---FitnessTracking?node-id=0-1&t=3xgmSqZSZ6habhqy-1
 
+Link - https://www.figma.com/design/wSXHzneXyKGZCTNtxxvbXm/Projeto-Final---FitnessTracking?node-id=0-1&t=3xgmSqZSZ6habhqy-1
