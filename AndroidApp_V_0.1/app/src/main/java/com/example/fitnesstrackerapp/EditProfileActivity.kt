@@ -79,6 +79,7 @@ fun EditProfileScreen(
     var heightStr by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf("OTHER") }
     var friendsList by remember { mutableStateOf<List<String>>(emptyList()) }
+    var friendsNamesMap by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var xpPoints by remember { mutableStateOf(0) }
     var level by remember { mutableStateOf(1) }
     var createdAt by remember { mutableStateOf(0L) }
@@ -120,6 +121,21 @@ fun EditProfileScreen(
             .addOnFailureListener { e ->
                 isFetching = false
                 errorMessage = "Failed to load profile: ${e.localizedMessage}"
+            }
+    }
+
+    LaunchedEffect(friendsList) {
+        if (friendsList.isEmpty()) {
+            friendsNamesMap = emptyMap()
+            return@LaunchedEffect
+        }
+        db.collection("users").whereIn("numericId", friendsList).get()
+            .addOnSuccessListener { querySnapshot ->
+                val newMap = querySnapshot.documents.mapNotNull { 
+                    val p = it.toObject(UserProfile::class.java)
+                    if (p != null) p.numericId to p.name else null
+                }.toMap()
+                friendsNamesMap = newMap
             }
     }
 
@@ -397,12 +413,68 @@ fun EditProfileScreen(
                                             isSaving = true
                                             db.collection("users").whereEqualTo("numericId", targetCode).get()
                                                 .addOnSuccessListener { querySnapshot ->
-                                                    isSaving = false
                                                     if (!querySnapshot.isEmpty) {
-                                                        friendsList = friendsList + targetCode
-                                                        friendUidInput = ""
-                                                        Toast.makeText(context, "Friend added!", Toast.LENGTH_SHORT).show()
+                                                        val friendDoc = querySnapshot.documents.first()
+                                                        val friendUid = friendDoc.id
+                                                        val friendName = friendDoc.getString("name") ?: "Unknown"
+                                                        
+                                                        // Check pending requests from current user to target
+                                                        db.collection("friend_requests")
+                                                            .whereEqualTo("senderUid", uid)
+                                                            .whereEqualTo("receiverCode", targetCode)
+                                                            .whereEqualTo("status", "PENDING")
+                                                            .get()
+                                                            .addOnSuccessListener { reqSnapshot1 ->
+                                                                if (!reqSnapshot1.isEmpty) {
+                                                                    isSaving = false
+                                                                    Toast.makeText(context, "Friend request already pending!", Toast.LENGTH_SHORT).show()
+                                                                } else {
+                                                                    // Check pending requests from target to current user
+                                                                    db.collection("friend_requests")
+                                                                        .whereEqualTo("senderCode", targetCode)
+                                                                        .whereEqualTo("receiverUid", uid)
+                                                                        .whereEqualTo("status", "PENDING")
+                                                                        .get()
+                                                                        .addOnSuccessListener { reqSnapshot2 ->
+                                                                            if (!reqSnapshot2.isEmpty) {
+                                                                                isSaving = false
+                                                                                Toast.makeText(context, "This user already sent you a request! Accept it on your dashboard.", Toast.LENGTH_LONG).show()
+                                                                            } else {
+                                                                                // Create friend request
+                                                                                val newRequest = hashMapOf(
+                                                                                    "senderUid" to uid,
+                                                                                    "senderCode" to numericId,
+                                                                                    "senderName" to name,
+                                                                                    "receiverUid" to friendUid,
+                                                                                    "receiverCode" to targetCode,
+                                                                                    "receiverName" to friendName,
+                                                                                    "status" to "PENDING",
+                                                                                    "timestamp" to com.google.firebase.Timestamp(java.util.Date())
+                                                                                )
+                                                                                db.collection("friend_requests").add(newRequest)
+                                                                                    .addOnSuccessListener {
+                                                                                        isSaving = false
+                                                                                        friendUidInput = ""
+                                                                                        Toast.makeText(context, "Friend request sent!", Toast.LENGTH_SHORT).show()
+                                                                                    }
+                                                                                    .addOnFailureListener { e ->
+                                                                                        isSaving = false
+                                                                                        Toast.makeText(context, "Failed to send request: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                                                    }
+                                                                            }
+                                                                        }
+                                                                        .addOnFailureListener { e ->
+                                                                            isSaving = false
+                                                                            Toast.makeText(context, "Error checking inbound requests: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                                        }
+                                                                }
+                                                            }
+                                                            .addOnFailureListener { e ->
+                                                                isSaving = false
+                                                                Toast.makeText(context, "Error checking outbound requests: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                            }
                                                     } else {
+                                                        isSaving = false
                                                         Toast.makeText(context, "User with code $targetCode not found!", Toast.LENGTH_SHORT).show()
                                                     }
                                                 }
@@ -423,14 +495,15 @@ fun EditProfileScreen(
                             if (friendsList.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "Current Friends (Codes):",
+                                    text = "Current Friends:",
                                     fontSize = 13.sp,
                                     color = TextSecondary,
                                     modifier = Modifier.padding(bottom = 6.dp)
                                 )
-                                // List Codes
+                                // List Codes & Names
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     friendsList.forEach { fCode ->
+                                        val displayName = friendsNamesMap[fCode] ?: "Loading athlete name..."
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -444,7 +517,7 @@ fun EditProfileScreen(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Text(
-                                                text = fCode,
+                                                text = "$displayName ($fCode)",
                                                 color = Color.White,
                                                 fontSize = 12.sp,
                                                 maxLines = 1,
@@ -457,7 +530,55 @@ fun EditProfileScreen(
                                                 fontWeight = FontWeight.Bold,
                                                 modifier = Modifier
                                                     .clickable {
-                                                        friendsList = friendsList.filter { it != fCode }
+                                                        isSaving = true
+                                                        db.collection("users").whereEqualTo("numericId", fCode).get()
+                                                            .addOnSuccessListener { querySnapshot ->
+                                                                if (!querySnapshot.isEmpty) {
+                                                                    val friendDoc = querySnapshot.documents.first()
+                                                                    val friendUid = friendDoc.id
+                                                                    
+                                                                    val myRef = db.collection("users").document(uid)
+                                                                    val friendRef = db.collection("users").document(friendUid)
+                                                                    
+                                                                    db.runTransaction { transaction ->
+                                                                        val myDoc = transaction.get(myRef)
+                                                                        val fDoc = transaction.get(friendRef)
+                                                                        
+                                                                        val myFriends = (myDoc.get("friendsList") as? List<*>)?.mapNotNull { it as? String }?.toMutableList() ?: mutableListOf()
+                                                                        val friendFriends = (fDoc.get("friendsList") as? List<*>)?.mapNotNull { it as? String }?.toMutableList() ?: mutableListOf()
+                                                                        
+                                                                        myFriends.remove(fCode)
+                                                                        friendFriends.remove(numericId)
+                                                                        
+                                                                        transaction.update(myRef, "friendsList", myFriends)
+                                                                        transaction.update(friendRef, "friendsList", friendFriends)
+                                                                    }.addOnSuccessListener {
+                                                                        isSaving = false
+                                                                        friendsList = friendsList.filter { it != fCode }
+                                                                        Toast.makeText(context, "Friend removed!", Toast.LENGTH_SHORT).show()
+                                                                    }.addOnFailureListener { e ->
+                                                                        isSaving = false
+                                                                        Toast.makeText(context, "Failed to remove friend: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                                    }
+                                                                } else {
+                                                                    val updatedList = friendsList.filter { it != fCode }
+                                                                    db.collection("users").document(uid)
+                                                                        .update("friendsList", updatedList)
+                                                                        .addOnSuccessListener {
+                                                                            isSaving = false
+                                                                            friendsList = updatedList
+                                                                            Toast.makeText(context, "Friend removed from list.", Toast.LENGTH_SHORT).show()
+                                                                        }
+                                                                        .addOnFailureListener { e ->
+                                                                            isSaving = false
+                                                                            Toast.makeText(context, "Failed to remove: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                                        }
+                                                                }
+                                                            }
+                                                            .addOnFailureListener { e ->
+                                                                isSaving = false
+                                                                Toast.makeText(context, "Error locating friend: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                            }
                                                     }
                                                     .padding(4.dp)
                                             )

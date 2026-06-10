@@ -86,45 +86,98 @@ fun DashboardScreen(
     var friendsCodes by remember { mutableStateOf<List<String>>(emptyList()) }
     var friendsProfiles by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
     var isFetchingFriends by remember { mutableStateOf(false) }
+    var pendingRequests by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     
-    LaunchedEffect(currentUser) {
+    DisposableEffect(currentUser) {
+        var profileListener: com.google.firebase.firestore.ListenerRegistration? = null
         currentUser?.uid?.let { uid ->
-            // Update lastActive timestamp in Firestore
             db.collection("users").document(uid)
                 .update("lastActive", com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis())))
-                .addOnFailureListener {
-                    // Fallback if update fails
+                .addOnFailureListener { e ->
+                    android.util.Log.w("DashboardActivity", "Failed to update lastActive", e)
                 }
             
-            db.collection("users").document(uid).get()
-                .addOnSuccessListener { doc ->
-                    if (doc.exists()) {
-                        val profile = doc.toObject(UserProfile::class.java)
-                        if (profile != null) {
-                            userName = profile.name
-                            userCode = profile.numericId
-                            friendsCodes = profile.friendsList
+            profileListener = db.collection("users").document(uid)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        android.util.Log.e("DashboardActivity", "Error listening to user profile", error)
+                        Toast.makeText(context, "Error loading profile: ${error.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null && snapshot.exists()) {
+                        try {
+                            val profile = snapshot.toObject(UserProfile::class.java)
+                            if (profile != null) {
+                                userName = profile.name
+                                userCode = profile.numericId
+                                friendsCodes = profile.friendsList
+                                android.util.Log.d("DashboardActivity", "User profile loaded: name=${profile.name}, code=${profile.numericId}, friends=${profile.friendsList}")
+                            }
+                        } catch (e: Exception) {
+                            android.util.Log.e("DashboardActivity", "Error parsing UserProfile", e)
                         }
                     }
                 }
         }
+        onDispose {
+            profileListener?.remove()
+        }
     }
 
-    LaunchedEffect(friendsCodes) {
+    DisposableEffect(friendsCodes) {
+        var friendsListener: com.google.firebase.firestore.ListenerRegistration? = null
         if (friendsCodes.isEmpty()) {
             friendsProfiles = emptyList()
-            return@LaunchedEffect
+        } else {
+            isFetchingFriends = true
+            friendsListener = db.collection("users").whereIn("numericId", friendsCodes)
+                .addSnapshotListener { querySnapshot, error ->
+                    isFetchingFriends = false
+                    if (error != null) {
+                        android.util.Log.e("DashboardActivity", "Error listening to friends profiles", error)
+                        Toast.makeText(context, "Error loading friends status: ${error.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        return@addSnapshotListener
+                    }
+                    if (querySnapshot != null) {
+                        try {
+                            val profiles = querySnapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
+                            android.util.Log.d("DashboardActivity", "Loaded ${profiles.size} friend profiles: ${profiles.map { it.name }}")
+                            friendsProfiles = profiles
+                        } catch (e: Exception) {
+                            android.util.Log.e("DashboardActivity", "Error parsing friends profiles", e)
+                        }
+                    }
+                }
         }
-        isFetchingFriends = true
-        db.collection("users").whereIn("numericId", friendsCodes).get()
-            .addOnSuccessListener { querySnapshot ->
-                isFetchingFriends = false
-                val list = querySnapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
-                friendsProfiles = list
-            }
-            .addOnFailureListener {
-                isFetchingFriends = false
-            }
+        onDispose {
+            friendsListener?.remove()
+        }
+    }
+
+    DisposableEffect(currentUser) {
+        var requestsListener: com.google.firebase.firestore.ListenerRegistration? = null
+        currentUser?.uid?.let { uid ->
+            requestsListener = db.collection("friend_requests")
+                .whereEqualTo("receiverUid", uid)
+                .whereEqualTo("status", "PENDING")
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        android.util.Log.e("DashboardActivity", "Error listening to friend requests", error)
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null) {
+                        pendingRequests = snapshot.documents.mapNotNull { doc ->
+                            doc.data?.toMutableMap()?.apply {
+                                this["requestId"] = doc.id
+                            }
+                        }
+                        android.util.Log.d("DashboardActivity", "Loaded ${pendingRequests.size} pending friend requests")
+                    }
+                }
+        }
+        onDispose {
+            requestsListener?.remove()
+        }
     }
 
     val firstName = userName.trim().split("\\s+".toRegex()).firstOrNull() ?: userName
@@ -267,6 +320,110 @@ fun DashboardScreen(
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             
+            // 1. Pending Requests Sub-Section
+            if (pendingRequests.isNotEmpty()) {
+                Text(
+                    text = "Pending Requests (${pendingRequests.size})",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = SecondaryPurple,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    pendingRequests.forEach { request ->
+                        val senderName = request["senderName"] as? String ?: "Unknown Athlete"
+                        val senderCode = request["senderCode"] as? String ?: ""
+                        val requestId = request["requestId"] as? String ?: ""
+                        
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                            border = BorderStroke(1.dp, BorderMuted)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = senderName,
+                                        color = Color.White,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "Code: $senderCode",
+                                        color = TextSecondary,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Button(
+                                        onClick = {
+                                            val senderUid = request["senderUid"] as? String ?: ""
+                                            val receiverUid = currentUser?.uid ?: ""
+                                            val receiverCode = userCode
+                                            
+                                            if (senderUid.isNotEmpty() && senderCode.isNotEmpty() && receiverUid.isNotEmpty() && receiverCode.isNotEmpty()) {
+                                                val receiverRef = db.collection("users").document(receiverUid)
+                                                db.runTransaction { transaction ->
+                                                    val receiverDoc = transaction.get(receiverRef)
+                                                    val senderRef = db.collection("users").document(senderUid)
+                                                    val senderDoc = transaction.get(senderRef)
+                                                    
+                                                    val receiverFriends = (receiverDoc.get("friendsList") as? List<*>)?.mapNotNull { it as? String }?.toMutableList() ?: mutableListOf()
+                                                    val senderFriends = (senderDoc.get("friendsList") as? List<*>)?.mapNotNull { it as? String }?.toMutableList() ?: mutableListOf()
+                                                    
+                                                    if (!receiverFriends.contains(senderCode)) receiverFriends.add(senderCode)
+                                                    if (!senderFriends.contains(receiverCode)) senderFriends.add(receiverCode)
+                                                    
+                                                    transaction.update(receiverRef, "friendsList", receiverFriends)
+                                                    transaction.update(senderRef, "friendsList", senderFriends)
+                                                    transaction.delete(db.collection("friend_requests").document(requestId))
+                                                }.addOnSuccessListener {
+                                                    Toast.makeText(context, "Friend request accepted!", Toast.LENGTH_SHORT).show()
+                                                }.addOnFailureListener { e ->
+                                                    Toast.makeText(context, "Failed to accept: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = AccentGreen),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Accept", color = Color(0xFF0C0F14), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                    
+                                    Button(
+                                        onClick = {
+                                            if (requestId.isNotEmpty()) {
+                                                db.collection("friend_requests").document(requestId).delete()
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(context, "Friend request declined.", Toast.LENGTH_SHORT).show()
+                                                    }
+                                            }
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Decline", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            
+            // 2. Friends Online/Offline status section
             if (isFetchingFriends) {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),

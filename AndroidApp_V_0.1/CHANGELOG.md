@@ -5,9 +5,17 @@ This log tracks the modifications, enhancements, and feature implementations of 
 ## [2026-06-10] Milestone 1 Layout Fixes: Tablet Centering & Title Re-alignment
 
 ### Added
-*   **Friends Online/Offline Status Tracking**:
+*   **Friends Online/Offline Status & Two-way Confirmation Requests**:
     *   Added `lastActive` timestamp tracking to the user profile model [UserProfile.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/logic/UserProfile.kt) with safe millisecond translation and fallback to `modifiedAt` if the field is missing.
     *   Configured [RegisterActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/RegisterActivity.kt) and [EditProfileActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/EditProfileActivity.kt) to initialize/update `lastActive` upon creation or saving.
+    *   **Two-Way Friend Request Confirmation Flow**: Implemented a friend request collection `friend_requests` in Firestore. Adding a friend in `EditProfileActivity.kt` now writes a pending friend request document rather than instantly adding them.
+    *   **Pending Requests UI Section**: Added a real-time pending friend requests sub-section in [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt). Users see incoming requests with "Accept" and "Decline" actions.
+    *   **Transactional Accept Flow**: Clicking "Accept" triggers a safe Firestore Transaction that atomically:
+        1. Appends the sender's code to the receiver's `friendsList`.
+        2. Appends the receiver's code to the sender's `friendsList`.
+        3. Deletes the pending request document.
+    *   **Real-time Snapshot Syncing**: Refactored `DashboardActivity.kt` and `EditProfileActivity.kt` to use reactive Firestore snapshot listeners (`addSnapshotListener` inside Compose `DisposableEffect`). This ensures that changes to the user's profile, friends lists, online statuses, and pending requests are pushed instantly to the user interface in real-time.
+    *   **Friend Name Mapping in Editor**: Implemented a side-effect query inside `EditProfileActivity.kt` to resolve and cache names corresponding to the 5-digit codes in the user's friends list, displaying them as `Name (Code)` (e.g. `Tomás Correia (#15439)`) in the active list.
     *   Configured [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt) to automatically update the current user's `lastActive` timestamp in Firestore when the dashboard opens.
     *   Implemented a query in `DashboardActivity.kt` that fetches the profile and active status of all added friends, displaying them dynamically at the bottom of the main hub under a new "Friends Status" section.
     *   Friends are listed with their name, code, a green online dot if active within 5 minutes, or a relative offline timestamp (e.g. "Active 2h ago", "Active >72h ago") if not. Added interactive placeholder text buttons for "Challenge" and "Stats" actions.
