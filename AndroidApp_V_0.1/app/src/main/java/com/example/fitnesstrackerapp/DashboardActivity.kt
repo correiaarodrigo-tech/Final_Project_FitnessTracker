@@ -2,21 +2,23 @@ package com.example.fitnesstrackerapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,12 +79,23 @@ fun DashboardScreen(
     val auth = remember { FirebaseAuth.getInstance() }
     val db = remember { FirebaseFirestore.getInstance() }
     val currentUser = auth.currentUser
+    val context = LocalContext.current
     
     var userName by remember { mutableStateOf("Athlete") }
     var userCode by remember { mutableStateOf("") }
+    var friendsCodes by remember { mutableStateOf<List<String>>(emptyList()) }
+    var friendsProfiles by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
+    var isFetchingFriends by remember { mutableStateOf(false) }
     
     LaunchedEffect(currentUser) {
         currentUser?.uid?.let { uid ->
+            // Update lastActive timestamp in Firestore
+            db.collection("users").document(uid)
+                .update("lastActive", com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis())))
+                .addOnFailureListener {
+                    // Fallback if update fails
+                }
+            
             db.collection("users").document(uid).get()
                 .addOnSuccessListener { doc ->
                     if (doc.exists()) {
@@ -90,10 +103,28 @@ fun DashboardScreen(
                         if (profile != null) {
                             userName = profile.name
                             userCode = profile.numericId
+                            friendsCodes = profile.friendsList
                         }
                     }
                 }
         }
+    }
+
+    LaunchedEffect(friendsCodes) {
+        if (friendsCodes.isEmpty()) {
+            friendsProfiles = emptyList()
+            return@LaunchedEffect
+        }
+        isFetchingFriends = true
+        db.collection("users").whereIn("numericId", friendsCodes).get()
+            .addOnSuccessListener { querySnapshot ->
+                isFetchingFriends = false
+                val list = querySnapshot.documents.mapNotNull { it.toObject(UserProfile::class.java) }
+                friendsProfiles = list
+            }
+            .addOnFailureListener {
+                isFetchingFriends = false
+            }
     }
 
     val firstName = userName.trim().split("\\s+".toRegex()).firstOrNull() ?: userName
@@ -156,64 +187,122 @@ fun DashboardScreen(
                 .padding(horizontal = 24.dp)
                 .statusBarsPadding()
                 .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
         ) {
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // Welcome Header
-        Text(
-            text = if (userCode.isNotEmpty()) "Welcome Back, $firstName" else "Welcome Back",
-            fontSize = 16.sp,
-            color = TextSecondary,
-            fontWeight = FontWeight.Medium
-        )
-        
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, bottom = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Welcome Header
             Text(
-                text = if (userCode.isNotEmpty()) "Athlete $userCode" else "Athlete Dashboard",
-                fontSize = 28.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
+                text = if (userCode.isNotEmpty()) "Welcome Back, $firstName" else "Welcome Back",
+                fontSize = 16.sp,
+                color = TextSecondary,
+                fontWeight = FontWeight.Medium
             )
-            Text(
-                text = "Sign Out",
-                color = Color.Red,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
+            
+            Row(
                 modifier = Modifier
-                    .clickable {
-                        FirebaseAuth.getInstance().signOut()
-                        onLogout()
-                    }
-                    .padding(8.dp)
-            )
-        }
-
-        // Navigation Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(items) { item ->
-                DashboardCard(
-                    title = item.title,
-                    subtitle = item.subtitle,
-                    badgeText = item.badge,
-                    accentColor = item.accentColor,
-                    onClick = { onNavigate(item.targetActivity) }
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, bottom = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (userCode.isNotEmpty()) "Athlete $userCode" else "Athlete Dashboard",
+                    fontSize = 28.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "Sign Out",
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clickable {
+                            FirebaseAuth.getInstance().signOut()
+                            onLogout()
+                        }
+                        .padding(8.dp)
                 )
             }
+
+            // Navigation Grid (replaced LazyVerticalGrid with Row chunk columns for scrollable parent compatibility)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val chunkedItems = items.chunked(2)
+                chunkedItems.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        rowItems.forEach { item ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                DashboardCard(
+                                    title = item.title,
+                                    subtitle = item.subtitle,
+                                    badgeText = item.badge,
+                                    accentColor = item.accentColor,
+                                    onClick = { onNavigate(item.targetActivity) }
+                                )
+                            }
+                        }
+                        if (rowItems.size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            // Friends List Header
+            Text(
+                text = "Friends Status",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            
+            if (isFetchingFriends) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = PrimaryCyan)
+                }
+            } else if (friendsCodes.isEmpty()) {
+                Text(
+                    text = "No friends added yet. Go to Edit Profile to add friends by their code!",
+                    color = TextSecondary,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    friendsProfiles.forEach { friend ->
+                        FriendListItem(
+                            friend = friend,
+                            onChallenge = {
+                                Toast.makeText(context, "Challenge issued to ${friend.name}!", Toast.LENGTH_SHORT).show()
+                            },
+                            onViewStats = {
+                                Toast.makeText(context, "Viewing stats for ${friend.name}...", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
-}
 }
 
 @Composable
@@ -280,6 +369,101 @@ fun DashboardCard(
                     lineHeight = 14.sp,
                     maxLines = 2
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun FriendListItem(
+    friend: UserProfile,
+    onChallenge: () -> Unit,
+    onViewStats: () -> Unit
+) {
+    val statusText = remember(friend) {
+        val lastActiveMs = friend.getLastActiveLong()
+        val now = System.currentTimeMillis()
+        val diff = now - lastActiveMs
+        when {
+            diff < 5 * 60 * 1000 -> "Online"
+            diff < 60 * 60 * 1000 -> {
+                val mins = diff / (60 * 1000)
+                "Active ${mins}m ago"
+            }
+            diff < 24 * 60 * 60 * 1000 -> {
+                val hours = diff / (60 * 60 * 1000)
+                "Active ${hours}h ago"
+            }
+            diff < 72 * 60 * 60 * 1000 -> {
+                val days = diff / (24 * 60 * 60 * 1000)
+                "Active ${days}d ago"
+            }
+            else -> "Active >72h ago"
+        }
+    }
+    
+    val isOnline = statusText == "Online"
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        border = BorderStroke(1.dp, BorderMuted)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = friend.name,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Status dot
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = if (isOnline) AccentGreen else BorderMuted,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "${friend.numericId} • $statusText",
+                        color = if (isOnline) AccentGreen else TextSecondary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+            
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Challenge Button
+                TextButton(
+                    onClick = onChallenge,
+                    colors = ButtonDefaults.textButtonColors(contentColor = PrimaryCyan),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text("Challenge", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+                
+                // Stats Button
+                TextButton(
+                    onClick = onViewStats,
+                    colors = ButtonDefaults.textButtonColors(contentColor = SecondaryPurple),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text("Stats", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

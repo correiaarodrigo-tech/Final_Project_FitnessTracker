@@ -387,7 +387,8 @@ fun RegisterScreen(
                                 level = 1,
                                 friendsList = emptyList(),
                                 createdAt = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis())),
-                                modifiedAt = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis()))
+                                modifiedAt = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis())),
+                                lastActive = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis()))
                             )
 
                             // Save to Firestore

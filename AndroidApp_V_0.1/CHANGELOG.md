@@ -5,6 +5,13 @@ This log tracks the modifications, enhancements, and feature implementations of 
 ## [2026-06-10] Milestone 1 Layout Fixes: Tablet Centering & Title Re-alignment
 
 ### Added
+*   **Friends Online/Offline Status Tracking**:
+    *   Added `lastActive` timestamp tracking to the user profile model [UserProfile.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/logic/UserProfile.kt) with safe millisecond translation and fallback to `modifiedAt` if the field is missing.
+    *   Configured [RegisterActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/RegisterActivity.kt) and [EditProfileActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/EditProfileActivity.kt) to initialize/update `lastActive` upon creation or saving.
+    *   Configured [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt) to automatically update the current user's `lastActive` timestamp in Firestore when the dashboard opens.
+    *   Implemented a query in `DashboardActivity.kt` that fetches the profile and active status of all added friends, displaying them dynamically at the bottom of the main hub under a new "Friends Status" section.
+    *   Friends are listed with their name, code, a green online dot if active within 5 minutes, or a relative offline timestamp (e.g. "Active 2h ago", "Active >72h ago") if not. Added interactive placeholder text buttons for "Challenge" and "Stats" actions.
+    *   Realigned the dashboard layout to a scrollable `Column` container, replacing the previous full-screen `LazyVerticalGrid` with a 3x2 chunked `Row` structure to enable scrolling down to check the friends status.
 *   **Tablet Layout & Centering Constraints**: Wrapped all Compose activity screens (`LandingScreen`, `RegisterScreen`, `DashboardScreen`, `EditProfileScreen`, `PlaceholderScreen`, `LoaderScreen`) in parent `Box` containers with `Modifier.widthIn(max = 480.dp)` or `540.dp` to prevent horizontal stretching on wider screens (tablets) and keep elements elegantly centered.
 *   **Locked Portrait Mode**: Updated [AndroidManifest.xml](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/AndroidManifest.xml) to explicitly add `android:screenOrientation="portrait"` to all 10 activities, preventing accidental landscape rotation that conflicts with camera-based body pose tracking.
 

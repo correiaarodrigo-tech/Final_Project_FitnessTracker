@@ -518,7 +518,8 @@ fun EditProfileScreen(
                                 level = level,
                                 friendsList = friendsList,
                                 createdAt = com.google.firebase.Timestamp(java.util.Date(if (createdAt == 0L) System.currentTimeMillis() else createdAt)),
-                                modifiedAt = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis()))
+                                modifiedAt = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis())),
+                                lastActive = com.google.firebase.Timestamp(java.util.Date(System.currentTimeMillis()))
                             )
 
                             // Update in Firestore (sets or updates)

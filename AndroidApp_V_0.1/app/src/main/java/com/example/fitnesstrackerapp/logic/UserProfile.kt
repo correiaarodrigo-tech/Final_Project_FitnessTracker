@@ -15,12 +15,14 @@ data class UserProfile(
     val level: Int = 1,
     val friendsList: List<String> = emptyList(), // Store friend numericIds (e.g. "#12345")
     val createdAt: Any? = null,       // Can be Long (legacy) or Timestamp (new)
-    val modifiedAt: Any? = null       // Can be Long (legacy) or Timestamp (new)
+    val modifiedAt: Any? = null,      // Can be Long (legacy) or Timestamp (new)
+    val lastActive: Any? = null       // Can be Long (legacy) or Timestamp (new)
 ) {
     // Safely resolve fields to Long milliseconds
     fun getDobLong(): Long = toMillis(dob)
     fun getCreatedAtLong(): Long = toMillis(createdAt)
     fun getModifiedAtLong(): Long = toMillis(modifiedAt)
+    fun getLastActiveLong(): Long = toMillis(lastActive).takeIf { it > 0L } ?: getModifiedAtLong()
 
     private fun toMillis(value: Any?): Long {
         return when (value) {
