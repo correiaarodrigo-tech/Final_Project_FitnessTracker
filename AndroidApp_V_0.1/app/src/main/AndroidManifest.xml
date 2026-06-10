@@ -17,6 +17,7 @@
         tools:targetApi="31">
         <activity
             android:name=".LandingActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,30 +27,47 @@
 
         <activity
             android:name=".DashboardActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <activity
+            android:name=".LoaderActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".EditProfileActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".CreatePlanActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".StartPlanActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".ViewStatisticsActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".DemoPushUpActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
     </application>
 

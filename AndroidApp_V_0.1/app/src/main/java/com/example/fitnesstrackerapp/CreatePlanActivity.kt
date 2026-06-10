@@ -13,6 +13,7 @@ import com.example.fitnesstrackerapp.ui.theme.FitnessTheme
 class CreatePlanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
         setContent {
             FitnessTheme {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "382250211071",
+    "project_id": "fitnesstrackerapp-c80f1",
+    "storage_bucket": "fitnesstrackerapp-c80f1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:382250211071:android:868e494ec883574b81deca",
+        "android_client_info": {
+          "package_name": "com.example.fitnesstrackerapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADdxwbrm3QjBQhPHLpIK_drkxO6hdErYo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

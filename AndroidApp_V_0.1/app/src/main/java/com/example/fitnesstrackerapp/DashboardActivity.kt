@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,10 +21,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnesstrackerapp.ui.theme.*
+import androidx.compose.runtime.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.fitnesstrackerapp.logic.UserProfile
 
 class DashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
         setContent {
             FitnessTheme {
@@ -33,8 +39,20 @@ class DashboardActivity : ComponentActivity() {
                 ) {
                     DashboardScreen(
                         onNavigate = { activityClass ->
-                            val intent = Intent(this@DashboardActivity, activityClass)
+                            val intent = if (activityClass == MainActivity::class.java || activityClass == DemoPushUpActivity::class.java) {
+                                Intent(this@DashboardActivity, LoaderActivity::class.java).apply {
+                                    putExtra("TARGET_ACTIVITY", activityClass.name)
+                                }
+                            } else {
+                                Intent(this@DashboardActivity, activityClass)
+                            }
                             startActivity(intent)
+                        },
+                        onLogout = {
+                            val intent = Intent(this@DashboardActivity, LandingActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
                         }
                     )
                 }
@@ -52,7 +70,34 @@ data class DashboardItem(
 )
 
 @Composable
-fun DashboardScreen(onNavigate: (Class<*>) -> Unit) {
+fun DashboardScreen(
+    onNavigate: (Class<*>) -> Unit,
+    onLogout: () -> Unit
+) {
+    val auth = remember { FirebaseAuth.getInstance() }
+    val db = remember { FirebaseFirestore.getInstance() }
+    val currentUser = auth.currentUser
+    
+    var userName by remember { mutableStateOf("Athlete") }
+    var userCode by remember { mutableStateOf("") }
+    
+    LaunchedEffect(currentUser) {
+        currentUser?.uid?.let { uid ->
+            db.collection("users").document(uid).get()
+                .addOnSuccessListener { doc ->
+                    if (doc.exists()) {
+                        val profile = doc.toObject(UserProfile::class.java)
+                        if (profile != null) {
+                            userName = profile.name
+                            userCode = profile.numericId
+                        }
+                    }
+                }
+        }
+    }
+
+    val firstName = userName.trim().split("\\s+".toRegex()).firstOrNull() ?: userName
+
     val items = listOf(
         DashboardItem(
             title = "Edit Profile",
@@ -98,30 +143,57 @@ fun DashboardScreen(onNavigate: (Class<*>) -> Unit) {
         )
     )
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
-            .statusBarsPadding()
-            .navigationBarsPadding()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.TopCenter
     ) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = 540.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
         Spacer(modifier = Modifier.height(24.dp))
         
         // Welcome Header
         Text(
-            text = "Welcome Back",
+            text = if (userCode.isNotEmpty()) "Welcome Back, $firstName" else "Welcome Back",
             fontSize = 16.sp,
             color = TextSecondary,
             fontWeight = FontWeight.Medium
         )
         
-        Text(
-            text = "Athlete Dashboard",
-            fontSize = 28.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, bottom = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (userCode.isNotEmpty()) "Athlete $userCode" else "Athlete Dashboard",
+                fontSize = 28.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "Sign Out",
+                color = Color.Red,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .clickable {
+                        FirebaseAuth.getInstance().signOut()
+                        onLogout()
+                    }
+                    .padding(8.dp)
+            )
+        }
 
         // Navigation Grid
         LazyVerticalGrid(
@@ -141,6 +213,7 @@ fun DashboardScreen(onNavigate: (Class<*>) -> Unit) {
             }
         }
     }
+}
 }
 
 @Composable
