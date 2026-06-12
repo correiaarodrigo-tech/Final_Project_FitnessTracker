@@ -3,6 +3,10 @@ package com.example.fitnesstrackerapp.logic.impl
 import android.graphics.Color
 import com.example.fitnesstrackerapp.logic.AngleCalculator
 import com.example.fitnesstrackerapp.logic.Exercise
+import com.example.fitnesstrackerapp.logic.ExerciseConfig
+import com.example.fitnesstrackerapp.logic.FormEvaluator
+import com.example.fitnesstrackerapp.logic.RepMetrics
+import com.example.fitnesstrackerapp.logic.RepPhaseTracker
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 
 class SquatExercise : Exercise {
@@ -12,9 +16,21 @@ class SquatExercise : Exercise {
     override var state: String = "UP"
     override var feedback: String = "Start Squat"
 
-    private var isDown: Boolean = false
-    
-    // MediaPipe Pose Landmarks
+    override val repHistory = mutableListOf<RepMetrics>()
+
+    private val config = ExerciseConfig(
+        name = "Squat",
+        idealMinAngleDeg = 70.0,   // knee bent at the bottom
+        idealMaxAngleDeg = 160.0,  // legs extended standing
+        idealEccentricMs = 2000L..4000L,
+        idealConcentricMs = 500L..2000L,
+        eccentricLabel = "descent",
+        concentricLabel = "stand"
+    )
+    private val tracker = RepPhaseTracker(config)
+    private val evaluator = FormEvaluator(config)
+
+    // MediaPipe Pose Landmarks (right leg)
     private val HIP = 24
     private val KNEE = 26
     private val ANKLE = 28
@@ -32,17 +48,30 @@ class SquatExercise : Exercise {
             ankle.x(), ankle.y()
         )
 
-        if (angle < 70 && !isDown) {
-            isDown = true
-            state = "DOWN"
-            feedback = "Good, now go UP!"
-        } else if (angle > 160 && isDown) {
-            isDown = false
+        val cycle = tracker.update(angle)
+        state = if (tracker.phase == RepPhaseTracker.Phase.DESCENDING) "DOWN" else "UP"
+
+        if (cycle != null) {
             repetitions++
-            state = "UP"
-            feedback = "Repetition complete!"
-        } else if (angle > 160 && !isDown) {
-            feedback = "Go down to squat"
+            val (score, notes) = evaluator.evaluate(cycle)
+            repHistory.add(
+                RepMetrics(
+                    repNumber = repetitions,
+                    eccentricDurationMs = cycle.eccentricDurationMs,
+                    concentricDurationMs = cycle.concentricDurationMs,
+                    minAngleDeg = cycle.minAngleDeg,
+                    maxAngleDeg = cycle.maxAngleDeg,
+                    formScore = score,
+                    feedback = notes
+                )
+            )
+            feedback = "Rep $repetitions • $score/100 — ${notes.first()}"
+        } else {
+            feedback = when (tracker.phase) {
+                RepPhaseTracker.Phase.DESCENDING -> "Sit back, go deeper..."
+                RepPhaseTracker.Phase.ASCENDING -> "Drive up!"
+                RepPhaseTracker.Phase.AT_TOP -> if (repetitions == 0) "Start Squat" else "Ready for next rep"
+            }
         }
 
         return Triple(repetitions, state, feedback)
@@ -52,6 +81,7 @@ class SquatExercise : Exercise {
         repetitions = 0
         state = "UP"
         feedback = "Reset"
-        isDown = false
+        repHistory.clear()
+        tracker.reset()
     }
 }

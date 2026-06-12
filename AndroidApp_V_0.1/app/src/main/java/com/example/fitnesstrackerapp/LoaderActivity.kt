@@ -57,6 +57,10 @@ class LoaderActivity : ComponentActivity() {
                 try {
                     val targetClass = Class.forName(targetClassName)
                     val targetIntent = Intent(this@LoaderActivity, targetClass)
+                    // Forward the exercise type to single-exercise test screens.
+                    intent.getStringExtra("EXERCISE_TYPE")?.let {
+                        targetIntent.putExtra("EXERCISE_TYPE", it)
+                    }
                     startActivity(targetIntent)
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 } catch (e: Exception) {

@@ -3,6 +3,10 @@ package com.example.fitnesstrackerapp.logic.impl
 import android.graphics.Color
 import com.example.fitnesstrackerapp.logic.AngleCalculator
 import com.example.fitnesstrackerapp.logic.Exercise
+import com.example.fitnesstrackerapp.logic.ExerciseConfig
+import com.example.fitnesstrackerapp.logic.FormEvaluator
+import com.example.fitnesstrackerapp.logic.RepMetrics
+import com.example.fitnesstrackerapp.logic.RepPhaseTracker
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 
 class LungeExercise : Exercise {
@@ -12,17 +16,30 @@ class LungeExercise : Exercise {
     override var state: String = "UP"
     override var feedback: String = "Start Lunge (Alternate Legs)"
 
-    private var isDown: Boolean = false
+    override val repHistory = mutableListOf<RepMetrics>()
+
     private var lastForwardLeg: String = "" // "LEFT" or "RIGHT"
+
+    private val config = ExerciseConfig(
+        name = "Lunge",
+        idealMinAngleDeg = 80.0,   // back knee bent at the bottom
+        idealMaxAngleDeg = 160.0,  // back leg extended standing
+        idealEccentricMs = 1500L..3000L,
+        idealConcentricMs = 500L..2000L,
+        eccentricLabel = "descent",
+        concentricLabel = "stand"
+    )
+    private val tracker = RepPhaseTracker(config)
+    private val evaluator = FormEvaluator(config)
 
     private val RIGHT_FOOT = 32
     private val LEFT_FOOT = 31
-    
+
     // Knee indices for monitoring the BACK leg
     private val LEFT_HIP = 23
     private val LEFT_KNEE = 25
     private val LEFT_ANKLE = 27
-    
+
     private val RIGHT_HIP = 24
     private val RIGHT_KNEE = 26
     private val RIGHT_ANKLE = 28
@@ -32,17 +49,15 @@ class LungeExercise : Exercise {
 
         // 1. Detect Forward Leg (Mirrored assumption: smaller X is forward)
         val currentForwardLeg = if (landmarks[RIGHT_FOOT].x() < landmarks[LEFT_FOOT].x()) "RIGHT" else "LEFT"
-        
+
         // 2. Monitor BACK knee angle
         val backKneeAngle = if (currentForwardLeg == "RIGHT") {
-            // Monitor LEFT knee (back leg)
             AngleCalculator.calculateAngle(
                 landmarks[LEFT_HIP].x(), landmarks[LEFT_HIP].y(),
                 landmarks[LEFT_KNEE].x(), landmarks[LEFT_KNEE].y(),
                 landmarks[LEFT_ANKLE].x(), landmarks[LEFT_ANKLE].y()
             )
         } else {
-            // Monitor RIGHT knee (back leg)
             AngleCalculator.calculateAngle(
                 landmarks[RIGHT_HIP].x(), landmarks[RIGHT_HIP].y(),
                 landmarks[RIGHT_KNEE].x(), landmarks[RIGHT_KNEE].y(),
@@ -50,19 +65,38 @@ class LungeExercise : Exercise {
             )
         }
 
-        // 3. State Machine
-        if (backKneeAngle < 80 && !isDown) {
-            isDown = true
-            state = "DOWN"
-            feedback = "Great! Now switch legs"
-        } else if (backKneeAngle > 160 && isDown) {
+        // 3. Phase + timing tracking on the back-knee angle.
+        val cycle = tracker.update(backKneeAngle)
+        state = if (tracker.phase == RepPhaseTracker.Phase.DESCENDING) "DOWN" else "UP"
+
+        if (cycle != null) {
+            // Only count the rep when the user has switched the leading leg.
             if (currentForwardLeg != lastForwardLeg) {
                 repetitions++
                 lastForwardLeg = currentForwardLeg
+                val (score, notes) = evaluator.evaluate(cycle)
+                repHistory.add(
+                    RepMetrics(
+                        repNumber = repetitions,
+                        eccentricDurationMs = cycle.eccentricDurationMs,
+                        concentricDurationMs = cycle.concentricDurationMs,
+                        minAngleDeg = cycle.minAngleDeg,
+                        maxAngleDeg = cycle.maxAngleDeg,
+                        formScore = score,
+                        feedback = notes
+                    )
+                )
+                feedback = "Rep $repetitions • $score/100 — ${notes.first()}"
+            } else {
+                feedback = "Switch legs to count the rep"
             }
-            isDown = false
-            state = "UP"
-            feedback = "Switch and repeat!"
+        } else {
+            feedback = when (tracker.phase) {
+                RepPhaseTracker.Phase.DESCENDING -> "Lower the back knee..."
+                RepPhaseTracker.Phase.ASCENDING -> "Stand up!"
+                RepPhaseTracker.Phase.AT_TOP ->
+                    if (repetitions == 0) "Start Lunge (Alternate Legs)" else "Switch and repeat!"
+            }
         }
 
         return Triple(repetitions, state, feedback)
@@ -72,7 +106,8 @@ class LungeExercise : Exercise {
         repetitions = 0
         state = "UP"
         feedback = "Reset"
-        isDown = false
+        repHistory.clear()
+        tracker.reset()
         lastForwardLeg = ""
     }
 }

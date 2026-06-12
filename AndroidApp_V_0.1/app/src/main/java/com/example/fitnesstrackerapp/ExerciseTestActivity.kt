@@ -22,7 +22,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
-import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
@@ -34,18 +33,23 @@ import com.example.fitnesstrackerapp.logic.WorkoutManager
 import com.example.fitnesstrackerapp.logic.TrainingStep
 import com.example.fitnesstrackerapp.logic.impl.*
 
-class DemoPushUpActivity : AppCompatActivity() {
+/**
+ * Single-exercise free practice / test screen.
+ *
+ * Launched with an [EXTRA_EXERCISE_TYPE] extra (see [ExerciseType]) to choose
+ * which exercise to track. The workout has a single step with no rep target, so
+ * it never auto-completes — ideal for testing a movement and watching the live
+ * form evaluation panel.
+ */
+class ExerciseTestActivity : AppCompatActivity() {
 
     private lateinit var viewFinder: PreviewView
     private lateinit var overlayView: OverlayView
-    
+
     private var poseLandmarker: PoseLandmarker? = null
     private lateinit var cameraExecutor: ExecutorService
 
-    // Scalable Workout Manager
-    private val workoutManager = WorkoutManager(listOf(
-        TrainingStep(PushUpExercise(), targetReps = 100)
-    ))
+    private lateinit var workoutManager: WorkoutManager
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -61,6 +65,10 @@ class DemoPushUpActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        // Build a single-step workout (targetReps = 0 -> runs indefinitely).
+        val type = intent.getStringExtra(EXTRA_EXERCISE_TYPE) ?: ExerciseType.PUSHUP
+        workoutManager = WorkoutManager(listOf(TrainingStep(exerciseFor(type), targetReps = 0)))
 
         viewFinder = findViewById(R.id.viewFinder)
         overlayView = findViewById(R.id.overlayView)
@@ -80,6 +88,13 @@ class DemoPushUpActivity : AppCompatActivity() {
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
+    }
+
+    private fun exerciseFor(type: String): Exercise = when (type) {
+        ExerciseType.SQUAT -> SquatExercise()
+        ExerciseType.LUNGE -> LungeExercise()
+        ExerciseType.PLANK -> PlankExercise()
+        else -> PushUpExercise()
     }
 
     private fun setupPoseLandmarker() {
@@ -131,7 +146,6 @@ class DemoPushUpActivity : AppCompatActivity() {
                     })
                 }
 
-            // Usar a cÃ¢mara frontal por norma em apps de fitness tracker
             val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
             try {
@@ -147,16 +161,10 @@ class DemoPushUpActivity : AppCompatActivity() {
     }
 
     private fun processImage(imageProxy: ImageProxy) {
-        val bitmapBuffer = Bitmap.createBitmap(
-            imageProxy.width,
-            imageProxy.height,
-            Bitmap.Config.ARGB_8888
-        )
-        // O CameraX ImageProxy.toBitmap() simplifica isto
         imageProxy.use { proxy ->
             val bitmap = proxy.toBitmap()
-            
-            // Rodar bitmap em imagens de cÃ¢mara frontal (fazer mirror)
+
+            // Rotate + mirror for the front camera.
             val matrix = Matrix().apply {
                 postRotate(proxy.imageInfo.rotationDegrees.toFloat())
                 postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
@@ -164,10 +172,10 @@ class DemoPushUpActivity : AppCompatActivity() {
             val rotatedBitmap = Bitmap.createBitmap(
                 bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true
             )
-            
+
             val mpImage = BitmapImageBuilder(rotatedBitmap).build()
-            val timestampMs = System.currentTimeMillis() // ou proxy.imageInfo.timestamp / 1_000_000
-            
+            val timestampMs = System.currentTimeMillis()
+
             poseLandmarker?.detectAsync(mpImage, timestampMs)
         }
     }
@@ -176,17 +184,13 @@ class DemoPushUpActivity : AppCompatActivity() {
         val landmarks = result.landmarks()
         if (landmarks.isEmpty()) return
 
-        // Assumindo a primeira pessoa encontrada
         val poseLandmarks = landmarks[0]
 
-        // Process logic with current workout step
-        val (reps, state, feedback) = workoutManager.processLandmarks(poseLandmarks)
-        val currentStep = workoutManager.currentStep
+        val (reps, _, feedback) = workoutManager.processLandmarks(poseLandmarks)
+        val exercise = workoutManager.currentStep?.exercise
 
-        // Convert to draw on screen
         val points = poseLandmarks.map { Pair(it.x(), it.y()) }
 
-        val exercise = currentStep?.exercise
         runOnUiThread {
             overlayView.updateResults(
                 points,
@@ -200,11 +204,9 @@ class DemoPushUpActivity : AppCompatActivity() {
         }
     }
 
-
     private fun returnLivestreamError(error: RuntimeException) {
         Log.e(TAG, "PoseLandmarker Error: ${error.message}", error)
     }
-
 
     private fun allPermissionsGranted() = ContextCompat.checkSelfPermission(
         this, Manifest.permission.CAMERA
@@ -218,5 +220,14 @@ class DemoPushUpActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "FitnessTracker"
+        const val EXTRA_EXERCISE_TYPE = "EXERCISE_TYPE"
     }
+}
+
+/** Exercise type keys passed to [ExerciseTestActivity]. */
+object ExerciseType {
+    const val PUSHUP = "PUSHUP"
+    const val SQUAT = "SQUAT"
+    const val LUNGE = "LUNGE"
+    const val PLANK = "PLANK"
 }

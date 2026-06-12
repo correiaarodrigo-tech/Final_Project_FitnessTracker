@@ -87,18 +87,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPoseLandmarker() {
-        val baseOptions = BaseOptions.builder()
-            .setModelAssetPath("pose_landmarker_lite.task")
-            .build()
+        try {
+            val baseOptions = BaseOptions.builder()
+                .setModelAssetPath("pose_landmarker_lite.task")
+                .build()
 
-        val options = PoseLandmarker.PoseLandmarkerOptions.builder()
-            .setBaseOptions(baseOptions)
-            .setRunningMode(RunningMode.LIVE_STREAM)
-            .setResultListener(this::returnLivestreamResult)
-            .setErrorListener(this::returnLivestreamError)
-            .build()
+            val options = PoseLandmarker.PoseLandmarkerOptions.builder()
+                .setBaseOptions(baseOptions)
+                .setRunningMode(RunningMode.LIVE_STREAM)
+                .setResultListener(this::returnLivestreamResult)
+                .setErrorListener(this::returnLivestreamError)
+                .build()
 
-        poseLandmarker = PoseLandmarker.createFromOptions(this, options)
+            poseLandmarker = PoseLandmarker.createFromOptions(this, options)
+        } catch (t: Throwable) {
+            // MediaPipe ships native libs for ARM only. On an x86_64 emulator the
+            // .so is missing and class init throws UnsatisfiedLinkError (an Error).
+            Log.e(TAG, "Failed to init PoseLandmarker (unsupported ABI?)", t)
+            Toast.makeText(
+                this,
+                "Pose tracking is not available on this device/emulator (ARM required). Run on a physical phone.",
+                Toast.LENGTH_LONG
+            ).show()
+            finish()
+        }
     }
 
     private fun startCamera() {
@@ -178,13 +190,16 @@ class MainActivity : AppCompatActivity() {
         // Convert to draw on screen
         val points = poseLandmarks.map { Pair(it.x(), it.y()) }
 
+        val exercise = currentStep?.exercise
         runOnUiThread {
             overlayView.updateResults(
                 points,
-                currentStep?.exercise?.name ?: "Finished",
+                exercise?.name ?: "Finished",
                 reps,
                 feedback,
-                currentStep?.exercise?.color ?: android.graphics.Color.GREEN
+                exercise?.color ?: android.graphics.Color.GREEN,
+                exercise?.lastRepScore ?: -1,
+                exercise?.lastRepMetrics
             )
         }
     }

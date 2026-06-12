@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.example.fitnesstrackerapp.logic.AngleCalculator
+import com.example.fitnesstrackerapp.logic.RepMetrics
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -14,6 +15,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var repetitions = 0
     private var feedback = ""
     private var exerciseColor = Color.GREEN
+    private var lastRepScore = -1
+    private var lastRepMetrics: RepMetrics? = null
 
     // Normalized landmarks (x, y between 0.0 and 1.0)
     private var landmarks: List<Pair<Float, Float>> = emptyList()
@@ -73,20 +76,52 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         textAlign = Paint.Align.CENTER
     }
 
+    // ---- Form evaluation panel paints (top-left, left aligned) ----
+    private val scorePaint = Paint().apply {
+        color = Color.GREEN
+        textSize = 55f
+        isAntiAlias = true
+        setShadowLayer(5f, 0f, 0f, Color.BLACK)
+    }
+
+    private val metricPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 38f
+        isAntiAlias = true
+        setShadowLayer(5f, 0f, 0f, Color.BLACK)
+    }
+
+    private val cuePaint = Paint().apply {
+        color = Color.YELLOW
+        textSize = 34f
+        isAntiAlias = true
+        setShadowLayer(5f, 0f, 0f, Color.BLACK)
+    }
+
     fun updateResults(
         landmarks: List<Pair<Float, Float>>,
         exerciseName: String,
         repetitions: Int,
         feedback: String,
-        color: Int
+        color: Int,
+        lastRepScore: Int = -1,
+        lastRepMetrics: RepMetrics? = null
     ) {
         this.landmarks = landmarks
         this.exerciseName = exerciseName
         this.repetitions = repetitions
         this.feedback = feedback
         this.exerciseColor = color
+        this.lastRepScore = lastRepScore
+        this.lastRepMetrics = lastRepMetrics
         linePaint.color = color
         invalidate()
+    }
+
+    private fun scoreColor(score: Int): Int = when {
+        score >= 80 -> Color.GREEN
+        score >= 60 -> Color.YELLOW
+        else -> Color.RED
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -118,6 +153,28 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         // Draw Exercise Info
         canvas.drawText("$exerciseName: $repetitions", w / 2, 120f, countPaint)
         canvas.drawText(feedback, w / 2, 200f, feedbackPaint)
+
+        // Draw Form Evaluation panel (top-left) once at least one rep is scored
+        if (lastRepScore >= 0) {
+            val panelX = 40f
+            var panelY = 300f
+            scorePaint.color = scoreColor(lastRepScore)
+            canvas.drawText("Form: $lastRepScore/100", panelX, panelY, scorePaint)
+
+            lastRepMetrics?.let { m ->
+                panelY += 55f
+                canvas.drawText("Eccentric: ${m.eccentricDurationMs} ms", panelX, panelY, metricPaint)
+                panelY += 45f
+                canvas.drawText("Concentric: ${m.concentricDurationMs} ms", panelX, panelY, metricPaint)
+                panelY += 45f
+                canvas.drawText("Depth: ${m.minAngleDeg.toInt()}°", panelX, panelY, metricPaint)
+
+                m.feedback.take(2).forEach { line ->
+                    panelY += 42f
+                    canvas.drawText("• $line", panelX, panelY, cuePaint)
+                }
+            }
+        }
 
         // Draw Demo Push-Up Additions
         if (exerciseName == "Push-Up") {

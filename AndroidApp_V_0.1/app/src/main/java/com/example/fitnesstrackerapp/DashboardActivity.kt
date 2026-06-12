@@ -40,10 +40,14 @@ class DashboardActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     DashboardScreen(
-                        onNavigate = { activityClass ->
-                            val intent = if (activityClass == MainActivity::class.java || activityClass == DemoPushUpActivity::class.java) {
+                        onNavigate = { activityClass, exerciseType ->
+                            val isCameraActivity = activityClass == MainActivity::class.java ||
+                                activityClass == DemoPushUpActivity::class.java ||
+                                activityClass == ExerciseTestActivity::class.java
+                            val intent = if (isCameraActivity) {
                                 Intent(this@DashboardActivity, LoaderActivity::class.java).apply {
                                     putExtra("TARGET_ACTIVITY", activityClass.name)
+                                    if (exerciseType != null) putExtra("EXERCISE_TYPE", exerciseType)
                                 }
                             } else {
                                 Intent(this@DashboardActivity, activityClass)
@@ -68,12 +72,13 @@ data class DashboardItem(
     val subtitle: String,
     val badge: String?,
     val accentColor: Color,
-    val targetActivity: Class<*>
+    val targetActivity: Class<*>,
+    val exerciseType: String? = null
 )
 
 @Composable
 fun DashboardScreen(
-    onNavigate: (Class<*>) -> Unit,
+    onNavigate: (Class<*>, String?) -> Unit,
     onLogout: () -> Unit
 ) {
     val auth = remember { FirebaseAuth.getInstance() }
@@ -227,6 +232,42 @@ fun DashboardScreen(
         )
     )
 
+    // Single-exercise free practice screens (live form evaluation).
+    val exerciseItems = listOf(
+        DashboardItem(
+            title = "Push-Up",
+            subtitle = "Track reps, tempo & elbow depth",
+            badge = "Test",
+            accentColor = PrimaryCyan,
+            targetActivity = ExerciseTestActivity::class.java,
+            exerciseType = ExerciseType.PUSHUP
+        ),
+        DashboardItem(
+            title = "Squat",
+            subtitle = "Track reps, tempo & knee depth",
+            badge = "Test",
+            accentColor = AccentGreen,
+            targetActivity = ExerciseTestActivity::class.java,
+            exerciseType = ExerciseType.SQUAT
+        ),
+        DashboardItem(
+            title = "Lunge",
+            subtitle = "Alternating legs, back-knee depth",
+            badge = "Test",
+            accentColor = SecondaryPurple,
+            targetActivity = ExerciseTestActivity::class.java,
+            exerciseType = ExerciseType.LUNGE
+        ),
+        DashboardItem(
+            title = "Plank",
+            subtitle = "Hold timing & back alignment",
+            badge = "Test",
+            accentColor = PrimaryCyan,
+            targetActivity = ExerciseTestActivity::class.java,
+            exerciseType = ExerciseType.PLANK
+        )
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -298,7 +339,7 @@ fun DashboardScreen(
                                     subtitle = item.subtitle,
                                     badgeText = item.badge,
                                     accentColor = item.accentColor,
-                                    onClick = { onNavigate(item.targetActivity) }
+                                    onClick = { onNavigate(item.targetActivity, item.exerciseType) }
                                 )
                             }
                         }
@@ -308,7 +349,51 @@ fun DashboardScreen(
                     }
                 }
             }
-            
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Test Exercises Section
+            Text(
+                text = "Test Exercises",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = "Practice a single exercise with live form evaluation",
+                fontSize = 13.sp,
+                color = TextSecondary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                exerciseItems.chunked(2).forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        rowItems.forEach { item ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                DashboardCard(
+                                    title = item.title,
+                                    subtitle = item.subtitle,
+                                    badgeText = item.badge,
+                                    accentColor = item.accentColor,
+                                    onClick = { onNavigate(item.targetActivity, item.exerciseType) }
+                                )
+                            }
+                        }
+                        if (rowItems.size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(32.dp))
             
             // Friends List Header
