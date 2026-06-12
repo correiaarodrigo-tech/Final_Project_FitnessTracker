@@ -15,6 +15,8 @@ class SquatExercise : Exercise {
     override var repetitions: Int = 0
     override var state: String = "UP"
     override var feedback: String = "Start Squat"
+    override val setupInstruction: String = "Turn SIDE-ON to the camera"
+    override val startPositionHint: String = "Stand tall, legs straight"
 
     override val repHistory = mutableListOf<RepMetrics>()
 
@@ -30,10 +32,28 @@ class SquatExercise : Exercise {
     private val tracker = RepPhaseTracker(config)
     private val evaluator = FormEvaluator(config)
 
-    // MediaPipe Pose Landmarks (right leg)
+    // MediaPipe Pose Landmarks (right leg + shoulder for body orientation)
+    private val SHOULDER = 12
     private val HIP = 24
     private val KNEE = 26
     private val ANKLE = 28
+
+    override fun isInStartPosition(landmarks: List<NormalizedLandmark>): Boolean {
+        if (landmarks.size <= ANKLE) return false
+        val shoulder = landmarks[SHOULDER]
+        val hip = landmarks[HIP]
+
+        // Standing upright: torso closer to vertical than horizontal.
+        val vertical = kotlin.math.abs(shoulder.y() - hip.y()) >
+            kotlin.math.abs(shoulder.x() - hip.x())
+
+        val kneeAngle = AngleCalculator.calculateAngle(
+            hip.x(), hip.y(),
+            landmarks[KNEE].x(), landmarks[KNEE].y(),
+            landmarks[ANKLE].x(), landmarks[ANKLE].y()
+        )
+        return vertical && kneeAngle > 150.0
+    }
 
     override fun processLandmarks(landmarks: List<NormalizedLandmark>): Triple<Int, String, String> {
         if (landmarks.size <= ANKLE) return Triple(repetitions, state, feedback)

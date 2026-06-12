@@ -1,6 +1,7 @@
 package com.example.fitnesstrackerapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -20,6 +21,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
@@ -28,20 +30,24 @@ import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import com.example.fitnesstrackerapp.logic.Exercise
-import com.example.fitnesstrackerapp.logic.WorkoutManager
-import com.example.fitnesstrackerapp.logic.TrainingStep
+import com.example.fitnesstrackerapp.logic.StartPositionDetector
 import com.example.fitnesstrackerapp.logic.impl.*
 
 /**
- * Single-exercise free practice / test screen.
+ * Single-exercise runner with a guided session flow:
  *
- * Launched with an [EXTRA_EXERCISE_TYPE] extra (see [ExerciseType]) to choose
- * which exercise to track. The workout has a single step with no rep target, so
- * it never auto-completes — ideal for testing a movement and watching the live
- * form evaluation panel.
+ *   WAITING  -> user gets into the start position and holds still ~1.5s
+ *   COUNTDOWN -> 5..1 / GO!
+ *   EXERCISING -> count [TARGET] reps (or hold [TARGET] seconds for the plank)
+ *   FINISHED -> hand off to [ResultActivity] with the session summary
  */
 class ExerciseTestActivity : AppCompatActivity() {
+
+    private enum class SessionState { WAITING, COUNTDOWN, EXERCISING, FINISHED }
 
     private lateinit var viewFinder: PreviewView
     private lateinit var overlayView: OverlayView
@@ -49,15 +55,18 @@ class ExerciseTestActivity : AppCompatActivity() {
     private var poseLandmarker: PoseLandmarker? = null
     private lateinit var cameraExecutor: ExecutorService
 
-    private lateinit var workoutManager: WorkoutManager
+    private lateinit var exercise: Exercise
+    private val target = 20
+
+    @Volatile private var sessionState = SessionState.WAITING
+    private val startDetector = StartPositionDetector()
+    private var countdownJob: Job? = null
+    private var lastPoints: List<Pair<Float, Float>> = emptyList()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                startCamera()
-            } else {
-                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
-            }
+            if (isGranted) startCamera()
+            else Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,9 +75,8 @@ class ExerciseTestActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // Build a single-step workout (targetReps = 0 -> runs indefinitely).
         val type = intent.getStringExtra(EXTRA_EXERCISE_TYPE) ?: ExerciseType.PUSHUP
-        workoutManager = WorkoutManager(listOf(TrainingStep(exerciseFor(type), targetReps = 0)))
+        exercise = exerciseFor(type)
 
         viewFinder = findViewById(R.id.viewFinder)
         overlayView = findViewById(R.id.overlayView)
@@ -79,15 +87,17 @@ class ExerciseTestActivity : AppCompatActivity() {
             insets
         }
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
+        // Initial prompt before any pose is detected.
+        overlayView.showStartPosition(
+            emptyList(), exercise.name, exercise.setupInstruction,
+            exercise.startPositionHint, inPosition = false, holdProgress = 0f, exercise.color
+        )
 
+        cameraExecutor = Executors.newSingleThreadExecutor()
         setupPoseLandmarker()
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
+        if (allPermissionsGranted()) startCamera()
+        else requestPermissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
     private fun exerciseFor(type: String): Exercise = when (type) {
@@ -126,81 +136,131 @@ class ExerciseTestActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewFinder.surfaceProvider)
-                }
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewFinder.surfaceProvider)
+            }
 
             val imageAnalyzer = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, { image ->
-                        processImage(image)
-                    })
-                }
+                .also { it.setAnalyzer(cameraExecutor) { image -> processImage(image) } }
 
             val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyzer
-                )
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
         }, ContextCompat.getMainExecutor(this))
     }
 
     private fun processImage(imageProxy: ImageProxy) {
         imageProxy.use { proxy ->
             val bitmap = proxy.toBitmap()
-
-            // Rotate + mirror for the front camera.
             val matrix = Matrix().apply {
                 postRotate(proxy.imageInfo.rotationDegrees.toFloat())
                 postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
             }
-            val rotatedBitmap = Bitmap.createBitmap(
-                bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true
-            )
-
+            val rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
             val mpImage = BitmapImageBuilder(rotatedBitmap).build()
-            val timestampMs = System.currentTimeMillis()
-
-            poseLandmarker?.detectAsync(mpImage, timestampMs)
+            poseLandmarker?.detectAsync(mpImage, System.currentTimeMillis())
         }
     }
 
     private fun returnLivestreamResult(result: PoseLandmarkerResult, input: MPImage) {
         val landmarks = result.landmarks()
         if (landmarks.isEmpty()) return
-
         val poseLandmarks = landmarks[0]
-
-        val (reps, _, feedback) = workoutManager.processLandmarks(poseLandmarks)
-        val exercise = workoutManager.currentStep?.exercise
-
         val points = poseLandmarks.map { Pair(it.x(), it.y()) }
+        lastPoints = points
+
+        when (sessionState) {
+            SessionState.WAITING -> {
+                val inPosition = exercise.isInStartPosition(poseLandmarks)
+                val holdProgress = startDetector.update(inPosition, points, System.currentTimeMillis())
+                runOnUiThread {
+                    overlayView.showStartPosition(
+                        points, exercise.name, exercise.setupInstruction,
+                        exercise.startPositionHint, inPosition, holdProgress, exercise.color
+                    )
+                }
+                if (holdProgress >= 1f && sessionState == SessionState.WAITING) {
+                    startCountdown()
+                }
+            }
+
+            SessionState.COUNTDOWN -> {
+                // Rendering is driven by the countdown coroutine; just keep the skeleton fresh.
+                runOnUiThread { overlayView.showCountdown(points, countdownTextOrEmpty(), exercise.color) }
+            }
+
+            SessionState.EXERCISING -> {
+                val (_, _, feedback) = exercise.processLandmarks(poseLandmarks)
+                val prog = exercise.progress().coerceAtMost(target)
+                runOnUiThread {
+                    overlayView.showExercise(
+                        points, exercise.name, prog, target, exercise.isTimeBased,
+                        feedback, exercise.color, exercise.lastRepScore, exercise.lastRepMetrics
+                    )
+                }
+                if (exercise.progress() >= target) finishSession()
+            }
+
+            SessionState.FINISHED -> { /* no-op */ }
+        }
+    }
+
+    private var countdownText = ""
+    private fun countdownTextOrEmpty() = countdownText
+
+    private fun startCountdown() {
+        sessionState = SessionState.COUNTDOWN
+        countdownJob?.cancel()
+        countdownJob = lifecycleScope.launch {
+            for (n in 5 downTo 1) {
+                countdownText = n.toString()
+                overlayView.showCountdown(lastPoints, countdownText, exercise.color)
+                delay(1000)
+            }
+            countdownText = "GO!"
+            overlayView.showCountdown(lastPoints, countdownText, exercise.color)
+            delay(700)
+            exercise.reset() // fresh timers/state right before counting begins
+            sessionState = SessionState.EXERCISING
+        }
+    }
+
+    private fun finishSession() {
+        if (sessionState == SessionState.FINISHED) return
+        sessionState = SessionState.FINISHED
+
+        val history = exercise.repHistory
+        val scores = history.map { it.formScore }
+        val avgScore = if (scores.isNotEmpty()) scores.average().toInt()
+            else if (exercise.isTimeBased) 100 else 0
+        val avgEcc = if (history.isNotEmpty()) history.map { it.eccentricDurationMs }.average().toLong() else 0L
+        val avgConc = if (history.isNotEmpty()) history.map { it.concentricDurationMs }.average().toLong() else 0L
+        val best = scores.maxOrNull() ?: 0
 
         runOnUiThread {
-            overlayView.updateResults(
-                points,
-                exercise?.name ?: "Finished",
-                reps,
-                feedback,
-                exercise?.color ?: android.graphics.Color.GREEN,
-                exercise?.lastRepScore ?: -1,
-                exercise?.lastRepMetrics
-            )
+            val intent = Intent(this, ResultActivity::class.java).apply {
+                putExtra(ResultActivity.EXTRA_NAME, exercise.name)
+                putExtra(ResultActivity.EXTRA_TIME_BASED, exercise.isTimeBased)
+                putExtra(ResultActivity.EXTRA_ACHIEVED, exercise.progress().coerceAtMost(target))
+                putExtra(ResultActivity.EXTRA_TARGET, target)
+                putExtra(ResultActivity.EXTRA_AVG_SCORE, avgScore)
+                putExtra(ResultActivity.EXTRA_AVG_ECC, avgEcc)
+                putExtra(ResultActivity.EXTRA_AVG_CONC, avgConc)
+                putExtra(ResultActivity.EXTRA_BEST, best)
+                putExtra(ResultActivity.EXTRA_SCORES, scores.toIntArray())
+            }
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -214,6 +274,7 @@ class ExerciseTestActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        countdownJob?.cancel()
         poseLandmarker?.close()
         cameraExecutor.shutdown()
     }

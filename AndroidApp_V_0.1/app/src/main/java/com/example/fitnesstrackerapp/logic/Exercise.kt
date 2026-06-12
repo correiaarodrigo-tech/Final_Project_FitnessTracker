@@ -17,6 +17,27 @@ interface Exercise {
 
     fun reset()
 
+    /** How the user should orient toward the camera (e.g. side profile vs front). */
+    val setupInstruction: String
+        get() = "Face the camera"
+
+    /** Short description of the start pose (e.g. "Stand tall, legs straight"). */
+    val startPositionHint: String
+        get() = "Get into start position"
+
+    /**
+     * True when the body is in this exercise's start pose. Used by the
+     * auto-start flow: being in position + holding still triggers the countdown.
+     */
+    fun isInStartPosition(landmarks: List<NormalizedLandmark>): Boolean = true
+
+    /** True for holds measured in seconds (e.g. Plank); false for rep-based exercises. */
+    val isTimeBased: Boolean
+        get() = false
+
+    /** Progress toward the goal: rep count, or seconds held for time-based holds. */
+    fun progress(): Int = repetitions
+
     /**
      * Per-rep evaluation history. Empty by default for exercises that do not
      * score form (e.g. Plank, Rest); rep-based exercises override this with a

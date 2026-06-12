@@ -15,6 +15,8 @@ class LungeExercise : Exercise {
     override var repetitions: Int = 0
     override var state: String = "UP"
     override var feedback: String = "Start Lunge (Alternate Legs)"
+    override val setupInstruction: String = "FACE the camera"
+    override val startPositionHint: String = "Stand tall, feet together"
 
     override val repHistory = mutableListOf<RepMetrics>()
 
@@ -43,6 +45,30 @@ class LungeExercise : Exercise {
     private val RIGHT_HIP = 24
     private val RIGHT_KNEE = 26
     private val RIGHT_ANKLE = 28
+
+    private val RIGHT_SHOULDER = 12
+
+    override fun isInStartPosition(landmarks: List<NormalizedLandmark>): Boolean {
+        if (landmarks.size <= RIGHT_FOOT) return false
+        val shoulder = landmarks[RIGHT_SHOULDER]
+        val hip = landmarks[RIGHT_HIP]
+
+        // Standing upright with both legs extended.
+        val vertical = kotlin.math.abs(shoulder.y() - hip.y()) >
+            kotlin.math.abs(shoulder.x() - hip.x())
+
+        val leftKnee = AngleCalculator.calculateAngle(
+            landmarks[LEFT_HIP].x(), landmarks[LEFT_HIP].y(),
+            landmarks[LEFT_KNEE].x(), landmarks[LEFT_KNEE].y(),
+            landmarks[LEFT_ANKLE].x(), landmarks[LEFT_ANKLE].y()
+        )
+        val rightKnee = AngleCalculator.calculateAngle(
+            landmarks[RIGHT_HIP].x(), landmarks[RIGHT_HIP].y(),
+            landmarks[RIGHT_KNEE].x(), landmarks[RIGHT_KNEE].y(),
+            landmarks[RIGHT_ANKLE].x(), landmarks[RIGHT_ANKLE].y()
+        )
+        return vertical && leftKnee > 150.0 && rightKnee > 150.0
+    }
 
     override fun processLandmarks(landmarks: List<NormalizedLandmark>): Triple<Int, String, String> {
         if (landmarks.size <= RIGHT_FOOT) return Triple(repetitions, state, feedback)

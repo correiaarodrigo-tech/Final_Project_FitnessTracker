@@ -110,13 +110,14 @@ To offer rich, customizable training plans, we will expand our AI-tracking model
 
 ---
 
-### 📍 Milestone 3: AI-Driven Scoring & Audio Feedback
+### 📍 Milestone 3: AI-Driven Scoring & Audio Feedback ✅ *(Form Scoring implemented — see Development Log below)*
 This module analyzes movement quality in real-time, providing both visual and auditory guidance.
 
-#### 1. Form Scoring Metric
+#### 1. Form Scoring Metric ✅
 A weighted score from 0 to 100 is computed for each repetition:
-*   **Range of Motion (ROM)** (60% weight): Checks if the joint reaches the target flex/extension angles.
-*   **Alignment/Posture** (40% weight): Verifies supporting joint lines (e.g., straight spine/back alignment).
+*   **Range of Motion (ROM)** (up to −40 pts): Checks if the joint reaches the target flex/extension angles.
+*   **Eccentric tempo** (up to −30 pts): Penalizes lowering too fast (no control) or too slow.
+*   **Concentric tempo** (up to −25 pts): Penalizes using momentum on the lift.
 
 #### 2. Text-to-Speech (TTS) Engine
 Uses Android's native `TextToSpeech` to announce cues:
@@ -138,3 +139,31 @@ $$\text{Kcal Burned} = \text{MET} \times 3.5 \times \frac{\text{Weight (kg)}}{20
 
 #### 2. Progress Charts
 Draws weekly workout histories directly onto a custom Jetpack Compose `Canvas` element, ensuring a highly responsive UI with zero heavy external graphing dependencies.
+
+---
+
+## ✅ Development Log
+
+### 2026-06-12 — Real-Time Exercise Evaluation Engine
+Implements the core of Milestone 3 (Form Scoring): every repetition is now timed, measured against reference angles, and scored.
+
+*   **`logic/RepMetrics.kt`** — per-rep data model: eccentric/concentric duration (ms), min/max joint angle (ROM), form score (0–100), and correction cues.
+*   **`logic/ExerciseConfig.kt`** — per-exercise reference values: ideal bottom/top angles (with tolerance) and recommended tempo ranges for each phase.
+*   **`logic/RepPhaseTracker.kt`** — state machine (`AT_TOP → DESCENDING → ASCENDING`) that times the **eccentric** (lowering) and **concentric** (lifting) phases from the live joint angle and captures the real range of motion. Partial reps (returning up without reaching depth) are discarded.
+*   **`logic/FormEvaluator.kt`** — compares each completed rep against the `ExerciseConfig` reference and produces the 0–100 score plus actionable feedback ("Go deeper", "Lower more slowly", "Avoid momentum").
+*   **`Exercise` interface** — extended with `repHistory`, `lastRepMetrics`, `lastRepScore` (defaults keep Plank/Rest untouched).
+*   **Push-Up / Squat / Lunge** — migrated from the simple UP/DOWN flag to the phase tracker + evaluator; reference angles preserved (70°/150° push-up, 70°/160° squat, 80°/160° lunge back knee).
+
+### 2026-06-12 — "Test Exercises" Section & Guided Session Flow
+A new dashboard section with one card per exercise (Push-Up, Squat, Lunge, Plank), each launching a guided single-exercise session.
+
+*   **`ExerciseTestActivity`** — one generic camera activity parametrized by `EXERCISE_TYPE` (no duplicated camera pipeline). Session state machine:
+    1.  **WAITING** — the user gets into the exercise's start position and holds still ~1.5 s (auto-start; no touch or gesture needed). Each exercise defines `isInStartPosition()` (e.g. horizontal torso + extended elbows for push-up, standing + straight knees for squat/lunge) and `setupInstruction` with the camera-facing direction (side-on for push-up/squat/plank, front for lunge).
+    2.  **COUNTDOWN** — 5 → 1 → **GO!** full-screen counter.
+    3.  **EXERCISING** — counts **20 reps** (or **20 s** hold for the plank) with live form evaluation.
+    4.  **FINISHED** — hands off to the results screen.
+*   **`logic/StartPositionDetector.kt`** — auto-start trigger: in-position + body stillness (average torso/leg landmark movement below threshold) for 1.5 s fills a progress bar and starts the countdown.
+*   **`PlankExercise`** — rewritten as time-based with an **accumulating** hold timer (brief posture breaks pause instead of resetting), plus `isTimeBased`/`progress()` support.
+*   **`ResultActivity`** — post-exercise summary in Jetpack Compose matching the app theme: score/completion ring, stat cards (reps, best rep, avg lowering/lifting tempo), and a per-rep form bar chart.
+*   **`OverlayView`** — rewritten as a phase-aware HUD in the dark/neon aesthetic: top panel with name + progress bar, centered cue pill, bottom form-evaluation panel (color-coded by score), rounded skeleton rendering. The legacy `updateResults()` API is kept so `MainActivity`/`DemoPushUpActivity` still work.
+*   **Robustness** — `PoseLandmarker` initialization wrapped in try/catch in all camera activities: on unsupported ABIs (e.g. x86_64 emulators — MediaPipe ships ARM-only native libs) the screen shows a toast and exits cleanly instead of crashing. **Pose features must be tested on a physical ARM device.**

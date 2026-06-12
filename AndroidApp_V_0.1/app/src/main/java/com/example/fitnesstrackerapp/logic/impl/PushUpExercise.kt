@@ -15,6 +15,8 @@ class PushUpExercise : Exercise {
     override var repetitions: Int = 0
     override var state: String = "UP"
     override var feedback: String = "Start Push-Up"
+    override val setupInstruction: String = "Turn SIDE-ON to the camera"
+    override val startPositionHint: String = "Plank position, arms extended"
 
     override val repHistory = mutableListOf<RepMetrics>()
 
@@ -30,10 +32,29 @@ class PushUpExercise : Exercise {
     private val tracker = RepPhaseTracker(config)
     private val evaluator = FormEvaluator(config)
 
-    // MediaPipe Pose Landmarks (right arm)
+    // MediaPipe Pose Landmarks (right arm + hip for body orientation)
     private val SHOULDER = 12
     private val ELBOW = 14
     private val WRIST = 16
+    private val HIP = 24
+
+    override fun isInStartPosition(landmarks: List<NormalizedLandmark>): Boolean {
+        if (landmarks.size <= HIP) return false
+        val shoulder = landmarks[SHOULDER]
+        val hip = landmarks[HIP]
+
+        // Torso closer to horizontal than vertical -> plank-like posture,
+        // which rules out simply standing with straight arms.
+        val horizontal = kotlin.math.abs(shoulder.x() - hip.x()) >
+            kotlin.math.abs(shoulder.y() - hip.y())
+
+        val elbowAngle = AngleCalculator.calculateAngle(
+            shoulder.x(), shoulder.y(),
+            landmarks[ELBOW].x(), landmarks[ELBOW].y(),
+            landmarks[WRIST].x(), landmarks[WRIST].y()
+        )
+        return horizontal && elbowAngle > 140.0
+    }
 
     override fun processLandmarks(landmarks: List<NormalizedLandmark>): Triple<Int, String, String> {
         if (landmarks.size <= WRIST) return Triple(repetitions, state, feedback)
