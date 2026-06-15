@@ -82,12 +82,24 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
-## Objetivos Semanais (03-09 Maio)
+<details>
+  <summary><b>15/06/2026</b></summary>
+  
+- Criação de Vídeos ilustrativos das implementações funcionais da aplicação.
+- Implementação suporte audio para exercios. (Em desenvolvimento)
+- Planeamento de elementos Gamificação aplicação.
+- Planeamento testes com utilizadores.
 
-- [ ] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
+
+</details>
+
+## Objetivos Semanais (14-20 Junho)
+
+- Planeamento de otimizações e métricas sobre lógica negócio (resolução imagem maior ou menor, angulos de exercicio maior ou menor... )
+- [x] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
 - [ ] Desenhar plano de implementação Ollama no projeto.
-- [ ] Pensar / Desenhar Estrutura de Dados para Utilizadores / Exercícios.
-- [ ] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
+- [x] Pensar / Desenhar Estrutura de Dados para Utilizadores / Exercícios.
+- [x] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
 - Dica ao construir os slides: 1 min por folha, fazer video da demo em vez de live.
 - Outra dica: perguntar a Joana / Jaison problemas identificados com processamento imagem, desafios, soluções... (Projetos idênticos)
 
@@ -100,3 +112,20 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 ## Figma
 
 Link - https://www.figma.com/design/wSXHzneXyKGZCTNtxxvbXm/Projeto-Final---FitnessTracking?node-id=0-1&t=3xgmSqZSZ6habhqy-1
+
+## Funcionalidades Aplicação
+
+###  Autenticação e Login
+https://github.com/user-attachments/assets/9a9a8690-698d-446a-a72c-90059b276c34
+###  Dados Utilizador e edição
+https://github.com/user-attachments/assets/226ddb1f-8874-43c8-9075-0b979594e4b8
+###  Estatisticas Utilizador
+https://github.com/user-attachments/assets/bd1314a2-cb20-4b94-8589-b98f078e5fce
+###  Vista geral hub utilizador
+https://github.com/user-attachments/assets/677ec16e-456a-4229-849b-2f0a062bdfdf
+###  Calibração 
+https://github.com/user-attachments/assets/a69d4c37-c23b-4934-8f15-7ea7e88a25d4
+###  Exercicio Agachamento real time
+https://github.com/user-attachments/assets/42a02141-1ec1-4bf3-98a5-5dfbe93effd3
+###  Resultados exercicio
+https://github.com/user-attachments/assets/02eea182-ff08-405c-acd8-cbe90ddb5083
