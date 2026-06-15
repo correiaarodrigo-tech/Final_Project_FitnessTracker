@@ -82,12 +82,24 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
-## Objetivos Semanais (03-09 Maio)
+<details>
+  <summary><b>15/06/2026</b></summary>
+  
+- Criação de Vídeos ilustrativos das implementações funcionais da aplicação.
+- Implementação suporte audio para exercios. (Em desenvolvimento)
+- Planeamento de elementos Gamificação aplicação.
+- Planeamento testes com utilizadores.
 
-- [ ] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
+
+</details>
+
+## Objetivos Semanais (14-20 Junho)
+
+- Planeamento de otimizações e métricas sobre lógica negócio (resolução imagem maior ou menor, angulos de exercicio maior ou menor... )
+- [x] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
 - [ ] Desenhar plano de implementação Ollama no projeto.
-- [ ] Pensar / Desenhar Estrutura de Dados para Utilizadores / Exercícios.
-- [ ] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
+- [x] Pensar / Desenhar Estrutura de Dados para Utilizadores / Exercícios.
+- [x] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
 - Dica ao construir os slides: 1 min por folha, fazer video da demo em vez de live.
 - Outra dica: perguntar a Joana / Jaison problemas identificados com processamento imagem, desafios, soluções... (Projetos idênticos)
 
