@@ -110,7 +110,7 @@ To offer rich, customizable training plans, we will expand our AI-tracking model
 
 ---
 
-### 📍 Milestone 3: AI-Driven Scoring & Audio Feedback ✅ *(Form Scoring implemented — see Development Log below)*
+### 📍 Milestone 3: AI-Driven Scoring & Audio Feedback ✅ *(Form Scoring and native Text-To-Speech engine implemented)*
 This module analyzes movement quality in real-time, providing both visual and auditory guidance.
 
 #### 1. Form Scoring Metric ✅
@@ -119,30 +119,48 @@ A weighted score from 0 to 100 is computed for each repetition:
 *   **Eccentric tempo** (up to −30 pts): Penalizes lowering too fast (no control) or too slow.
 *   **Concentric tempo** (up to −25 pts): Penalizes using momentum on the lift.
 
-#### 2. Text-to-Speech (TTS) Engine
+#### 2. Text-to-Speech (TTS) Engine ✅
 Uses Android's native `TextToSpeech` to announce cues:
 *   *Form Corrections*: "Keep your hips straight!", "Lower your chest!", "Go deeper!"
 *   *Pacing & Motivation*: "Nice rep!", "Perfect form!", "Three more left!"
 
 ---
 
-### 📍 Milestone 4: Gamification & Analytics
+### 📍 Milestone 4: Gamification & Analytics ✅ *(MET-based calories, XP awards, and Canvas stats charts implemented)*
+
 Gamifying the fitness experience helps users maintain consistency.
 
-#### 1. Kcal/Energy Expenditure Formula
+#### 1. Kcal/Energy Expenditure Formula ✅
 Calculated using the Metabolic Equivalent of Task (MET) formula:
 $$\text{Kcal Burned} = \text{MET} \times 3.5 \times \frac{\text{Weight (kg)}}{200} \times \text{Duration (minutes)}$$
 
-*   *Vigorous exercises (Push-up, Squat, Lunge, Press)*: **8.0 MET**
+*   *Vigorous exercises (Push-up, Squat, Lunge, Press)*: **8.0 MET** (Mini Plan uses average **6.0 MET** for the whole routine)
 *   *Moderate/Core exercises (Plank, Mountain Climber)*: **4.0 MET**
 *   *Rest / Break*: **1.3 MET**
 
-#### 2. Progress Charts
+#### 2. Progress Charts ✅
 Draws weekly workout histories directly onto a custom Jetpack Compose `Canvas` element, ensuring a highly responsive UI with zero heavy external graphing dependencies.
 
 ---
 
 ## ✅ Development Log
+
+### 2026-06-16 — Audio Guidance Cues (Text-To-Speech)
+Completed the implementation of the Text-To-Speech audio guidance coaching cues.
+
+*   **Coaching Assistant (`TTSHelper.kt`)**: Implemented native Android `TextToSpeech` integration. Supports a 4-second rate-limiting cooldown to prevent speech overlap, with a rep-completion override.
+*   **Calibration UI Alert (`OverlayView.kt`)**: Added notice *"Note: Audio guidance will be used and is advised (optional)"* below the start position progress bar.
+*   **Announcements Integration (`MainActivity.kt` & `ExerciseTestActivity.kt`)**:
+    *   `MainActivity` announces each plan step's target and name, speaks completed reps with scores and form cues, and handles rest transition announcements.
+    *   `ExerciseTestActivity` speaks the workout countdown ("Get ready", "5", "4", "3", "2", "1", "Go!") and provides dynamic hold state verbal reminders.
+
+### 2026-06-15 — Workout Plan Integration & Statistics Dashboard
+Completed the integration of the Squat-Rest-Lunge mini-plan and implemented the full performance stats dashboard.
+
+*   **Guided Plan Execution (`StartPlanActivity.kt` & `MainActivity.kt`)**: [StartPlanActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/StartPlanActivity.kt) presents details of the Squat-Rest-Lunge mini plan with duration, MET (6.0), and estimated calorie badges. Upon starting, [MainActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/MainActivity.kt) guides the user through 10 squats, a 15-second rest, and 10 lunges.
+*   **Post-Workout Analytics & Database Sync (`MainActivity.kt`)**: When the workout is finished, [MainActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/MainActivity.kt) calculates duration and MET-based calories using the user's weight from Firestore (defaulting to 70kg). It saves the record under `/users/{uid}/workouts` (fields: `date`, `workoutName`, `durationSeconds`, `caloriesBurned`, `totalReps`, `averageFormScore`), updates user profile `xpPoints` and `level` via Firestore transaction, and routes to [ResultActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/ResultActivity.kt).
+*   **Performance Statistics & Custom Canvas Chart (`ViewStatisticsActivity.kt`)**: Implemented the full statistics screen in [ViewStatisticsActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/ViewStatisticsActivity.kt). It queries workouts from Firestore and plots daily reps over the last 7 calendar days using a custom Compose `Canvas` bar chart with rounded corners and a `PrimaryCyan`/`SecondaryPurple` gradient. Bar heights animate scaling on load.
+*   **Developer Diagnostics & Seeding**: Added a "Clear History" action to wipe the sub-collection and a "Seed Mock Data" action to auto-populate the database with 5 historical workouts spanning the last 5 days for easy visual testing and GIF captures.
 
 ### 2026-06-12 — Real-Time Exercise Evaluation Engine
 Implements the core of Milestone 3 (Form Scoring): every repetition is now timed, measured against reference angles, and scored.

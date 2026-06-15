@@ -2,6 +2,44 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-06-16] Milestone 3 Refinements: Audio Guidance Cues (Text-To-Speech)
+
+### Added
+*   **Text-To-Speech Coaching Assistant (`TTSHelper.kt`)**: Implemented a native Android `TextToSpeech` manager. It is configured to run rate-limited verbal instructions to prevent voice overlapping (4-second cooldown), while supporting an immediate override for rep completions and countdown progress.
+*   **Calibration Screen Audio Warning (`OverlayView.kt`)**: Added a clear notification text *"Note: Audio guidance will be used and is advised (optional)"* at the bottom of the start position card. This informs athletes that audio coaching is active without making it mandatory.
+
+### Modified
+*   **Guided Workout Plan Audio Cues (`MainActivity.kt`)**:
+    *   Instructs TTS to announce the start of each workout step (e.g. *"Start Squat exercise. Target is 10 reps."*) or resting breaks.
+    *   Announces each completed repetition immediately with its score and form coaching notes (e.g. *"Rep 3. Score 88. Go deeper."*).
+    *   Announces real-time exercise execution hints (e.g., *"Sit back, go deeper..."*, *"Rest finished! Get ready."*).
+*   **Single Exercise Testing Audio Feedback (`ExerciseTestActivity.kt`)**:
+    *   Announces the startup countdown verbally (e.g., *"Get ready! 5, 4, 3, 2, 1, Go!"*).
+    *   Announces completed repetitions and scores for reps-based exercises, and hold status prompts for time-based exercises (e.g. Plank).
+
+---
+
+## [2026-06-15] Milestone 4: Workout Plan Integration & Statistics Dashboard
+
+### Added
+*   **Workout Plan Detail Screen (`StartPlanActivity.kt`)**: Replaced the static placeholder with a fully styled training overview. Shows badges for estimated duration (~1.5 mins), MET (6.0), and average calorie burn (~15 kcal), as well as a list of workout steps: 10 Squats, 15s Rest, and 10 Lunges. Includes a premium gradient "START WORKOUT" button that initiates the camera workout.
+*   **Activity Statistics Screen (`ViewStatisticsActivity.kt`)**: Implemented the full Jetpack Compose dashboard for user activity:
+    *   **Live Firestore Query**: Queries `/users/{uid}/workouts` ordered by date descending to fetch historical data.
+    *   **Custom Canvas Bar Chart**: Draws a custom 7-day progress bar chart in Compose `Canvas` showing repetitions completed per day. Includes vertical neon sweep gradients and animated scaling on screen load.
+    *   **Biometric Stats Cards**: Dynamically aggregates total workouts completed, active time (formatted in minutes or hours/minutes), total calories burned, and average form score.
+    *   **Activity Log**: Shows a chronological list of recent workouts, detailing the name, reps, exact date/time, duration, average form score, and calories burned.
+    *   **Developer Actions**: Added a "Clear History" button to wipe the user's workouts sub-collection and a "Seed Mock Data" button to auto-generate 5 past workouts for robust visual testing.
+
+### Modified
+*   **Guided Workout Plan Loop (`MainActivity.kt` & `WorkoutManager.kt`)**: Exposed training steps list in `WorkoutManager` and updated `MainActivity` to run the Squat-Rest-Lunge sequence.
+*   **Workout Persistence & Scoring (`MainActivity.kt`)**:
+    *   Calculates active duration and MET-based calories: `MET (6.0) * 3.5 * weight / 200 * (duration / 60)`. Weight is queried dynamically from user profile (defaulting to 70.0 kg).
+    *   Stores the workout log in the Firestore sub-collection `/users/{uid}/workouts`.
+    *   Updates the user's Profile (`xpPoints` and `level`) in a Firestore Transaction, awarding `(reps * 10) + (avgScore / 2)` XP.
+    *   Launches `ResultActivity` passing the aggregated metrics.
+
+---
+
 ## [2026-06-10] Milestone 1 Layout Fixes: Tablet Centering & Title Re-alignment
 
 ### Added

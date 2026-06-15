@@ -116,6 +116,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private val centerSubPaint = Paint().apply {
         color = cTextSecondary; textSize = 40f; isAntiAlias = true; textAlign = Paint.Align.CENTER
     }
+    private val audioAdvisedPaint = Paint().apply {
+        color = cTextSecondary; textSize = 28f; isAntiAlias = true; textAlign = Paint.Align.CENTER
+    }
 
     // ---- Public render API ----
 
@@ -353,6 +356,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 11f, 11f, progressFillPaint
             )
         }
+        canvas.drawText("Note: Audio guidance will be used and is advised (optional)", cx, topY + cardH + 54f, audioAdvisedPaint)
     }
 
     // ---- COUNTDOWN phase ----

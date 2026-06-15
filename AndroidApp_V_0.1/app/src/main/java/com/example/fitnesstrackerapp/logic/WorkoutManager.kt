@@ -2,7 +2,7 @@ package com.example.fitnesstrackerapp.logic
 
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 
-class WorkoutManager(private val steps: List<TrainingStep>) {
+class WorkoutManager(val steps: List<TrainingStep>) {
     private var currentStepIndex = 0
     val currentStep: TrainingStep?
         get() = if (currentStepIndex < steps.size) steps[currentStepIndex] else null

@@ -63,6 +63,9 @@ class ExerciseTestActivity : AppCompatActivity() {
     private var countdownJob: Job? = null
     private var lastPoints: List<Pair<Float, Float>> = emptyList()
 
+    private var ttsHelper: com.example.fitnesstrackerapp.logic.TTSHelper? = null
+    private var lastReps = 0
+
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) startCamera()
@@ -77,6 +80,7 @@ class ExerciseTestActivity : AppCompatActivity() {
 
         val type = intent.getStringExtra(EXTRA_EXERCISE_TYPE) ?: ExerciseType.PUSHUP
         exercise = exerciseFor(type)
+        ttsHelper = com.example.fitnesstrackerapp.logic.TTSHelper(this)
 
         viewFinder = findViewById(R.id.viewFinder)
         overlayView = findViewById(R.id.overlayView)
@@ -202,6 +206,34 @@ class ExerciseTestActivity : AppCompatActivity() {
             SessionState.EXERCISING -> {
                 val (_, _, feedback) = exercise.processLandmarks(poseLandmarks)
                 val prog = exercise.progress().coerceAtMost(target)
+
+                // TTS Voice cues logic
+                if (exercise.isTimeBased) {
+                    val rawFeedback = feedback
+                    if (!rawFeedback.startsWith("Remaining: ")) {
+                        ttsHelper?.speak(rawFeedback, overrideCooldown = false)
+                    }
+                } else {
+                    val reps = exercise.progress()
+                    if (reps > lastReps) {
+                        lastReps = reps
+                        val lastMetrics = exercise.lastRepMetrics
+                        val score = lastMetrics?.formScore
+                        val primaryCue = lastMetrics?.feedback?.firstOrNull()
+                        val speakText = if (score != null && primaryCue != null) {
+                            "Rep $reps. Score $score. $primaryCue"
+                        } else {
+                            "Rep $reps."
+                        }
+                        ttsHelper?.speak(speakText, overrideCooldown = true)
+                    } else {
+                        val rawFeedback = feedback
+                        if (!rawFeedback.startsWith("Rep ")) {
+                            ttsHelper?.speak(rawFeedback, overrideCooldown = false)
+                        }
+                    }
+                }
+
                 runOnUiThread {
                     overlayView.showExercise(
                         points, exercise.name, prog, target, exercise.isTimeBased,
@@ -221,16 +253,20 @@ class ExerciseTestActivity : AppCompatActivity() {
     private fun startCountdown() {
         sessionState = SessionState.COUNTDOWN
         countdownJob?.cancel()
+        ttsHelper?.speak("Get ready!", overrideCooldown = true)
         countdownJob = lifecycleScope.launch {
             for (n in 5 downTo 1) {
                 countdownText = n.toString()
                 overlayView.showCountdown(lastPoints, countdownText, exercise.color)
+                ttsHelper?.speak(countdownText, overrideCooldown = true)
                 delay(1000)
             }
             countdownText = "GO!"
             overlayView.showCountdown(lastPoints, countdownText, exercise.color)
+            ttsHelper?.speak("Go!", overrideCooldown = true)
             delay(700)
             exercise.reset() // fresh timers/state right before counting begins
+            lastReps = 0
             sessionState = SessionState.EXERCISING
         }
     }
@@ -277,6 +313,7 @@ class ExerciseTestActivity : AppCompatActivity() {
         countdownJob?.cancel()
         poseLandmarker?.close()
         cameraExecutor.shutdown()
+        ttsHelper?.shutdown()
     }
 
     companion object {
