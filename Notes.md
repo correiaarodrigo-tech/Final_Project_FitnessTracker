@@ -63,7 +63,7 @@ APLICAÇÃO ANDROID + MEDIAPIPE
 
 --
 
-Links da reunião 18 Junho
+## Links da reunião 18 Junho
 
 https://github.com/cmu-perceptual-computing-lab/openpose
  
