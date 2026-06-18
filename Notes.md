@@ -59,3 +59,25 @@ APLICAÇÃO ANDROID + MEDIAPIPE
  5. Guardar no histórico, mostrar texto ao utilizador
 
 [Base de Dados] → armazena feedback com timestamp e série, apresneta feedback visual
+
+
+--
+
+Links da reunião 18 Junho
+
+https://github.com/cmu-perceptual-computing-lab/openpose
+ 
+https://dl.acm.org/doi/fullHtml/10.1145/3556223.3556260
+ 
+https://github.com/Pushtogithub23/Tracking-Physical-Activities-with-MediaPipe-and-OpenCV
+ 
+https://github.com/vinsouza99/BodyBuddy
+ 
+https://dev.to/yoshan0921/fitness-app-development-with-real-time-posture-detection-using-mediapipe-38do
+ 
+https://www.joiv.org/index.php/joiv/article/view/2993/1168
+ 
+https://ieeexplore.ieee.org/abstract/document/11490277?casa_token=yK4YWTIYEXUAAAAA:Rk52TLD7l4a08ki5xjwNaSAAWBkdyLVhocgKFdqCiD7ixjTkbXFzB7Xao2AVg91m5e6TmMwcCQ
+ 
+https://www.youtube.com/watch?v=mRXskYUXA-A
+ 
