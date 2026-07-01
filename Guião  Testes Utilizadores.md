@@ -1,19 +1,35 @@
 # GUIÃO DE TESTES COM UTILIZADORES — FITNESS TRACKER
-**Objetivo:** Validar a eficácia do algoritmo de deteção por ângulos (BlazePose MediaPipe) e identificar restrições de ambiente (luz, distância, resolução, oclusão).
+**Objetivo:** Validar a autonomia do utilizador no fluxo inicial (Login/Navegação) e a eficácia do algoritmo de deteção por ângulos (BlazePose) sob restrições de ambiente.
 
 ---
 
 ## FICHA DE METADADOS (A preencher pelo Observador)
-* **ID Utilizador:** ______
+* **Nome Utilizador:** ______
 * **Data:** ___/___/2026
-* **Dispositivo:** [ ] Portátil (Webcam)  [ ] Smartphone  [ ] Tablet
-* **Distância da Câmara:** ______ metros
+* **Dispositivo:** [ ] Próprio  [ ] Observador
+* **Distância da Câmara aprox:** ______ metros
 * **Iluminação:** [ ] Boa/Direta  [ ] Fraca/Penumbra  [ ] Contra-luz (Janela atrás)
+* **Outros dados (ex: Espaço amplo, roupa escura):** ________________________
 
 ---
 
-## 1. PROTOCOLO DE OBSERVAÇÃO ATIVA
-*Garantir enquadramento de corpo inteiro antes de iniciar.*
+## 0. FLUXO INICIAL E AUTONOMIA (Sem Intervenção)
+*Nota para o Observador: Entregar o dispositivo na página inicial e não dar pistas.*
+
+### Instruções Diretas ao Utilizador:
+1. "Por favor, tente entrar na aplicação (fazer login ou criar conta se necessário)."
+2. "Explore o menu e tente iniciar uma sessão de treino autónoma com os exercícios disponíveis."
+
+### Registo de Ocorrências (Interface e Navegação):
+* **Autenticação (Login/Registo):** [ ] Fluido  [ ] Hesitou  [ ] Bloqueou/Errou
+* **Início do Exercício:** [ ] Encontrou o botão sozinho  [ ] Demorou a perceber  [ ] Precisou de ajuda
+* **Erros de UX Notados (Ex: botões confusos, falta de feedback visual):**
+  ______________________________________________________________________
+
+---
+
+## 1. PROTOCOLO DE OBSERVAÇÃO ATIVA (Deteção e Ângulos)
+*Garantir enquadramento de corpo inteiro antes de iniciar a parte física.*
 
 ### Instruções Diretas ao Utilizador:
 1. "Posicione-se em frente à câmara até que a aplicação o identifique."
@@ -36,20 +52,20 @@
 ## 2. ENTREVISTA QUALITATIVA PÓS-TESTE
 *Formular de modo neutro. Registar respostas curtas.*
 
-1. **Como descreve a experiência global de deteção do corpo pela aplicação?**
+1. **Como correu o processo inicial de entrar na app e encontrar o treino? Sentiu alguma confusão?**
    R: __________________________________________________________________
 
-2. **Sentiu necessidade de alterar o ritmo ou a amplitude do movimento para a app contar?**
+2. **Como descreve a experiência de deteção do corpo pela câmara?**
    R: __________________________________________________________________
 
-3. **Encontrou dificuldades no posicionamento inicial do dispositivo ou com a luz ambiente?**
+3. **Sentiu necessidade de alterar o ritmo ou a amplitude do movimento para a app contar?**
    R: __________________________________________________________________
 
-4. **Identificou algum exercício onde a contagem ou pontuação tenham falhado claramente?**
+4. **Encontrou dificuldades no posicionamento inicial do dispositivo ou com a luz ambiente?**
    R: __________________________________________________________________
 
 ---
 
 ## 3. QUESTIONÁRIO DE USABILIDADE SIMPLIFICADO (SUS)
 *Solicitar ao utilizador que classifique de 1 (Discordo Totalmente) a 5 (Concordo Totalmente).*
-link aqui
+Inserir link aqui do SUS
