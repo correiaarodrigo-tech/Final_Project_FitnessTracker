@@ -138,14 +138,14 @@ Abaixo estão detalhados os parâmetros cinemáticos e landmarks (MediaPipe) par
 *   **Fontes de Validação:**
     *   *NSCA (Single-Joint arm kinetics):* Proíbe balanço da articulação glenoumeral (ombro), forçando a ativação do bícipete braquial.
 
-### 6. Polichinelos (Jumping Jacks) — [ROADMAP]
+### 6. Jumping Jacks — [ROADMAP]
 *   **Protocolo:** Saltos coordenados laterais com abertura simultânea de membros.
 *   **Métricas de Abertura (OUT):** Distância Tornozelo-Tornozelo (27 a 28) $> 1.5 \times$ largura de ombros AND mãos acima do ombro ($Y_{pulso} < Y_{ombro}$).
 *   **Métricas de Fecho (IN):** Distância Tornozelo-Tornozelo $\approx$ largura de ombros AND mãos ao lado da anca.
 *   **Fontes de Validação:**
     *   *ACSM (Cardiorespiratory warm-up):* Cadência rápida e simetria de membros para ativação neuromuscular.
 
-### 7. Press de Ombros (Overhead Press) — [ROADMAP]
+### 7. Overhead Press — [ROADMAP]
 *   **Protocolo:** Barra ou halteres à altura dos ombros. Empurrar verticalmente até esticar braços acima da cabeça.
 *   **Articulação Chave:** Cotovelo e Ombros.
 *   **Ângulo Inicial (DOWN):** Cotovelos dobrados a $\le 90^\circ$ junto aos ombros.
@@ -153,7 +153,7 @@ Abaixo estão detalhados os parâmetros cinemáticos e landmarks (MediaPipe) par
 *   **Fontes de Validação:**
     *   *NSCA (Vertical Push):* Estabilidade da coluna (manter lordose fisiológica) e extensão bilateral simétrica.
 
-### 8. Escalador (Mountain Climbers) — [ROADMAP]
+### 8. Mountain Climbers — [ROADMAP]
 *   **Protocolo:** Posição de prancha alta. Dobrar pernas alternadamente trazendo os joelhos em direção ao peito.
 *   **Métricas Chaves:** Perna de apoio em prancha reta ($\theta \approx 180^\circ \pm 15^\circ$) AND perna ativa flete joelho (joelho $\le 70^\circ$ do quadril).
 *   **Fontes de Validação:**
