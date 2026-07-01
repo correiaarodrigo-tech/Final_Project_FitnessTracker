@@ -4,7 +4,7 @@
 ---
 
 ## FICHA DE METADADOS (A preencher pelo Observador)
-* **Nome Utilizador:** ______
+* **Nome utilizador Avaliado:** ______
 * **Data:** ___/___/2026
 * **Dispositivo:** [ ] Próprio  [ ] Observador
 * **Distância da Câmara aprox:** ______ metros
