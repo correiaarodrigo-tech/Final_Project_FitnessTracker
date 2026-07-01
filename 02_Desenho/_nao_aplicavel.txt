@@ -1,0 +1,1 @@
+Este diretório conterá os diagramas de arquitetura detalhados (MVVM), diagramas de classes e sequências da aplicação, esquemas lógicos de base de dados (Firestore) e wireframes/mockups de interface (UI) na entrega final do projeto.

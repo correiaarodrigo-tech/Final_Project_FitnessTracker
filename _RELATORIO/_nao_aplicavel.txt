@@ -1,0 +1,1 @@
+Este diretório conterá a versão digital final do Relatório oficial do projeto compilada em PDF (PRJ_##_#aluno1_#aluno2.pdf) para entrega e avaliação pelo júri.

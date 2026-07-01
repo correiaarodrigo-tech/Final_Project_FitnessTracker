@@ -1,0 +1,29 @@
+========================================================================
+AI FITNESS TRACKER - CONJUNTO DE PROMPTS DE IA GENERATIVA
+========================================================================
+Este ficheiro reúne e cataloga as prompts mais significativas submetidas ao assistente de IA para a modelação, desenvolvimento de lógica de negócio e refinação de interface da aplicação.
+
+------------------------------------------------------------------------
+PROMPT 1: Lógica de Deteção de Repetições e Ângulo Cinemático (Kotlin)
+------------------------------------------------------------------------
+"Escreve uma classe Kotlin para calcular o ângulo formado por três pontos (articulações) representados por NormalizedLandmark do MediaPipe. O cotovelo será o vértice para a flexão (ombro, cotovelo, pulso) e o joelho para o agachamento (anca, joelho, tornozelo). Adicionalmente, desenha uma máquina de estados sequencial para contar repetições, prevenindo falsos positivos de oscilações da câmara. O utilizador deve transitar do estado 'UP' para 'DOWN' (ao dobrar a articulação abaixo de 70º) e regressar a 'UP' (ao esticar acima de 150º) para completar uma repetição."
+
+------------------------------------------------------------------------
+PROMPT 2: Avaliação de Forma Física e Cadência (FormEvaluator)
+------------------------------------------------------------------------
+"Desenvolve um avaliador de forma em Kotlin que receba os dados de uma repetição concluída (duração da descida em ms, duração da subida em ms, e ângulo mínimo alcançado) e compare-os com um modelo ideal. O score deve ir de 0 a 100 baseando-se em:
+- Amplitude de Movimento (ROM): penaliza se não descer abaixo do limiar (ex: 70º)
+- Tempo Excêntrico (descida lenta e controlada, ideal 2-4 segundos)
+- Tempo Concêntrico (subida estável sem impulsos, ideal 0.8-2 segundos)
+Deves devolver um score numérico e uma lista de notas corretivas em Português como 'Desce mais devagar' ou 'Desce mais fundo'."
+
+------------------------------------------------------------------------
+PROMPT 3: Integração de Feedback por Voz (Text-to-Speech)
+------------------------------------------------------------------------
+"Cria um helper TTS em Kotlin para Android que inicialize o TextToSpeech nativo. Precisamos de anunciar correções de postura e o número da repetição com o respetivo score. Para evitar ruído constante e falas sobrepostas, cria um sistema de rate-limiting (cooldown de 4 segundos) para as correções dinâmicas, mas que seja imediatamente ignorado (override) quando uma repetição é concluída para podermos ouvir de imediato ex: 'Repetição 3. Score 85. Desce mais'."
+
+------------------------------------------------------------------------
+PROMPT 4: Gráfico Dinâmico Jetpack Compose Canvas (ViewStatisticsActivity)
+------------------------------------------------------------------------
+"Escreve um ecrã de estatísticas em Jetpack Compose que carregue o histórico de treinos do Firestore. Desenha um gráfico de barras usando Canvas (sem bibliotecas externas) para mostrar o número total de repetições nos últimos 7 dias. Cada barra deve ser desenhada com cantos arredondados, gradiente vertical neon (ciano para roxo) e ter uma animação de escala que cresce de 0 a 1 quando o ecrã carrega. Mostra também os nomes abreviados dos dias da semana (ex: Seg, Ter) e o número de repetições acima de cada barra."
+========================================================================

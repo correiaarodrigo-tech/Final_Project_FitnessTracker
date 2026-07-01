@@ -1,0 +1,1 @@
+Este diretório conterá os planos de testes funcionais, relatórios de verificação automatizada (Gradle, Kotlin compilers), testes unitários e logs de validação experimental na entrega final do projeto.

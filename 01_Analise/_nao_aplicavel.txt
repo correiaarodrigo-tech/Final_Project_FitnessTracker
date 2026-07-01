@@ -1,0 +1,1 @@
+Este diretório conterá os diagramas de Casos de Uso UML, a especificação detalhada de requisitos funcionais e não funcionais, e as matrizes de priorização de requisitos na entrega final do projeto.

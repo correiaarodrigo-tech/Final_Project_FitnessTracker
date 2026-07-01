@@ -16,3 +16,10 @@ __pycache__/
 # Dados sensíveis
 *.env
 config_local.py
+
+# Documentos do projeto (templates, enunciados, PDFs)
+documentos fornecidos projeto/
+
+# Overleaf relatorio LaTeX local files
+src/overleaf/
+
