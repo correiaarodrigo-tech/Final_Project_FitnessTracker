@@ -10,7 +10,6 @@ Projeto de final de curso - Aplicação para monitorização de exercícios em t
 ## Links Úteis
 
 - Drive de recursos -> https://iselpt-my.sharepoint.com/:f:/g/personal/a51598_alunos_isel_pt/IgDmtY9-GcMRT6fJk1uhffsZAcqzwMO2dog03hfgFe_jKHI?e=OK5wBT
-- Forms (Avaliação SuS) -> https://docs.google.com/forms/d/e/1FAIpQLSeMdEUKaM967SH-1HRSSQsBR04-Mcq67C3s2UG5aFf0qPgrmg/viewform?usp=sharing&ouid=111181290584913837555
 
 ## Pré-requisitos iniciais
 
