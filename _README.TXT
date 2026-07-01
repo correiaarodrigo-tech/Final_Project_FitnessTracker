@@ -17,10 +17,11 @@ ESTRUTURA DE PASTAS E CONTEÚDOS:
   |-- 00_Planeamento/      - Planeamento de milestones, roadmap de desenvolvimento e planos.
   |-- 01_Analise/          - Documentos de requisitos, modelação de casos de uso.
   |-- 02_Desenho/          - Diagramas de arquitetura (MVVM), esquemas de base de dados (Firestore) e UI.
-  |-- 03_Implementacao/    - Código fonte e instruções de build (aponta para /AndroidApp_V_0.1 e /src).
+  |-- 03_Implementacao/    - Código fonte completo do projeto:
+  |     |-- AndroidApp_V_0.1/ - Aplicação nativa Android (Kotlin + Compose + MediaPipe).
+  |     |-- POC_Python/       - Protótipo em Python com análise de poses por OpenCV e scripts.
   |-- 04_Teste/            - Relatórios de compilação, planos de verificação e testes práticos.
   |-- _RELATORIO/          - Pasta de entrega do relatório oficial do projeto em formato PDF.
   |
-  |-- AndroidApp_V_0.1/    - Código fonte completo da aplicação Android nativa (Kotlin + Compose + MediaPipe + Firebase).
-  |-- src/                 - Módulos auxiliares em Python e o rascunho do relatório LaTeX em /src/overleaf.
+  |-- overleaf/            - Pasta contendo o rascunho do relatório LaTeX pronto para envio ao Overleaf.
 ========================================================================
