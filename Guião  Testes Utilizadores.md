@@ -68,4 +68,5 @@
 
 ## 3. QUESTIONÁRIO DE USABILIDADE SIMPLIFICADO (SUS)
 *Solicitar ao utilizador que classifique de 1 (Discordo Totalmente) a 5 (Concordo Totalmente).*
-Inserir link aqui do SUS
+
+- Forms (Avaliação SuS) -> https://docs.google.com/forms/d/e/1FAIpQLSeMdEUKaM967SH-1HRSSQsBR04-Mcq67C3s2UG5aFf0qPgrmg/viewform?usp=sharing&ouid=111181290584913837555
