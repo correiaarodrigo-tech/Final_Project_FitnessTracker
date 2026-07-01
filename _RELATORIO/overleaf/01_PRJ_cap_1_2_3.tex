@@ -1,0 +1,130 @@
+%%________________________________________________________________________
+%% LEIM | PROJETO
+%% 2026
+%% Relatório - Capítulos 1, 2 e 3
+%%________________________________________________________________________
+
+%%________________________________________________________________________
+\chapter{Introdução}
+\label{ch:introducao}
+%%________________________________________________________________________
+
+A prática de exercício físico tem vindo a registar um crescimento acentuado fora do ambiente tradicional dos ginásios, motivada pela conveniência dos treinos em casa. Contudo, a ausência de um profissional especializado (como um \textit{personal trainer} ou fisioterapeuta) aumenta significativamente o risco de lesões musculoesqueléticas devido a posturas incorretas ou cadências desadequadas. A monitorização manual por parte do utilizador é difícil e distrai da execução do movimento.
+
+O principal objetivo deste projeto consiste no desenvolvimento de uma aplicação móvel nativa em Android capaz de rastrear poses corporais, detetar e contar repetições de forma autónoma e fornecer feedback biomecânico corretivo em tempo real, utilizando apenas a câmara frontal do dispositivo móvel. 
+
+Os principais contributos deste trabalho são:
+\begin{itemize}
+    \item Um motor de avaliação postural em tempo real baseado em regras cinemáticas e análise vetorial de ângulos articulares;
+    \item Uma máquina de estados sequencial robusta para a contagem de repetições e identificação de fases concêntrica/excêntrica;
+    \item Um assistente de treino por voz nativo (Text-To-Speech) que providencia avisos de correção postural imediatos (com proteção de latência e sobreposição de fala);
+    \item Um painel analítico interativo implementado em Jetpack Compose Canvas para representação gráfica de regularidade sem dependências externas;
+    \item Sincronização persistente na nuvem e lógica social de rede de amigos com verificação de estado online.
+\end{itemize}
+
+O presente relatório encontra-se estruturado da seguinte forma: o Capítulo \ref{ch:trabalhoRelacionado} aborda as tecnologias de estimativa de pose e soluções similares. O Capítulo \ref{ch:modeloProposto} apresenta os requisitos, fundamentos de ângulos articulares e modelação matemática do sistema. O Capítulo \ref{ch:implementacaoDoModelo} detalha as opções tecnológicas e de código (Android, MediaPipe, Firebase). O Capítulo \ref{ch:validacaoTestes} reporta as experiências experimentais efetuadas e, por fim, o Capítulo \ref{ch:conclusoesTrabalhoFuturo} sumariza os resultados e perspetivas futuras.
+
+
+%%________________________________________________________________________
+\chapter{Trabalho Relacionado}
+\label{ch:trabalhoRelacionado}
+%%________________________________________________________________________
+
+O rastreio de atividade humana por visão computacional tem sofrido grandes avanços científicos. As abordagens tradicionais focavam-se em sensores inerciais acoplados ao corpo (IMUs), os quais, apesar de precisos, revelavam-se desconfortáveis e dispendiosos para o utilizador comum. A transição para câmaras convencionais permitiu a emergência de frameworks como:
+
+\begin{itemize}
+    \item \textbf{OpenPose:} Baseado em redes convolucionais que detetam poses em múltiplas pessoas simultaneamente. Apesar do rigor, o seu elevado peso computacional exige processamento gráfico dedicado (GPUs), inviabilizando a execução local em dispositivos móveis comuns;
+    \item \textbf{YOLO-pose:} Focado na deteção rápida de caixas delimitadoras e poses combinadas. Embora seja rápido, a sua precisão em orientações laterais de corpo inteiro pode oscilar e exige inicializações complexas;
+    \item \textbf{MediaPipe BlazePose:} Otimizado especificamente para dispositivos móveis (Edge Computing). Utiliza uma arquitetura leve de duas fases (deteção de corpo na primeira frame e rastreio subsequente de 33 landmarks corporais em 3D), permitindo latência inferior a 15ms em smartphones modernos.
+\end{itemize}
+
+Ao contrário de sistemas que enviam as frames de vídeo para processamento num servidor central (gerando problemas de largura de banda e de privacidade do utilizador), este projeto adota processamento local no telemóvel (Edge Computing). Isto garante privacidade total e feedback instantâneo, essencial para a prevenção imediata de lesões.
+
+
+%%________________________________________________________________________
+\chapter{Modelo Proposto}
+\label{ch:modeloProposto}
+%%________________________________________________________________________
+
+Neste capítulo, formalizamos a estrutura funcional da aplicação, detalhando os requisitos do sistema, os limiares biomecânicos e a formulação da avaliação cinemática dos exercícios implementados.
+
+%%________________________________________________________________________
+\section{Requisitos}
+\label{sec:requisitos}
+%%________________________________________________________________________
+
+O sistema foi modelado para dar suporte a atletas autónomos, identificando-se os seguintes requisitos:
+\begin{itemize}
+    \item \textbf{Requisitos Funcionais:}
+    \begin{enumerate}
+        \item Captar poses corporais da câmara frontal em tempo real;
+        \item Detetar início da atividade quando o utilizador se encontra parado na pose inicial (calibração);
+        \item Contar repetições e fases do exercício (UP/DOWN/REST);
+        \item Gerar feedback áudio e visual corretivo e motivacional imediato;
+        \item Sincronizar dados de treino do atleta com uma base de dados remota;
+        \item Apresentar um histórico interativo e gráficos semanais de progresso;
+        \item Gerir rede de amigos com envio e aceitação de pedidos de amizade.
+    \end{enumerate}
+    \item \textbf{Requisitos Não Funcionais:}
+    \begin{enumerate}
+        \item Tempo de inferência e cálculo de ângulos inferior a 30ms no dispositivo móvel;
+        \item Prevenção de bloqueio automático do ecrã (\textit{screen wake lock}) durante treinos;
+        \item Interface visual adaptável a ecrãs de tablets (limitação de largura e centramento);
+        \item Segurança na autenticação de utilizadores.
+    \end{enumerate}
+\end{itemize}
+
+
+%%________________________________________________________________________
+\section{Fundamentos Biomecânicos}
+\label{sec:fundamentos}
+%%________________________________________________________________________
+
+Para validar a execução de cada exercício e garantir o rigor científico do sistema de avaliação, baseamo-nos nas diretrizes estabelecidas pelo \textit{American College of Sports Medicine} (ACSM) \cite{ACSM_Guidelines_2021}, pela \textit{National Strength and Conditioning Association} (NSCA) \cite{NSCA_Essentials_2016} e pelo programa nacional português \textit{FITescola} \cite{FITescola_Manual_2016}. Estas entidades regulam a Amplitude de Movimento (ROM) e a postura ideal para evitar lesões musculoesqueléticas. Definem-se as seguintes regras cinemáticas e lógicas de avaliação baseadas em MediaPipe landmarks:
+
+\begin{enumerate}
+    \item \textbf{Agachamento (Squat):} Analisa o ângulo $\theta$ do joelho formado pela anca (ponto 24), joelho (ponto 26, vértice) e tornozelo (ponto 28). De acordo com a NSCA \cite{NSCA_Essentials_2016}, o agachamento paralelo exige flexão completa da coxa até que a linha do fémur fique paralela ao solo (ângulo do joelho $\le 90^\circ$, idealmente profunda $\le 70^\circ$).
+    \begin{itemize}
+        \item Limiar UP (Extensão): $\theta \ge 150^\circ$ (pernas em extensão vertical);
+        \item Limiar DOWN (Flexão): $\theta \le 70^\circ$ (descente completa, ROM validada);
+        \item Estabilidade do Tronco: A inclinação do tronco em relação à vertical (Ombro-Anca-Vertical) não deve exceder os $45^\circ$.
+    \end{itemize}
+    
+    \item \textbf{Flexão de Braços (Push-Up):} Monitoriza o ângulo $\theta$ do cotovelo entre o ombro (ponto 12), cotovelo (ponto 14, vértice) e pulso (ponto 16).
+    \begin{itemize}
+        \item Limiar UP (Extensão): $\theta \ge 150^\circ$ (braços totalmente estendidos);
+        \item Limiar DOWN (Flexão): $\theta \le 70^\circ$ (peito próximo do chão, aproximando o ângulo reto clássico de $90^\circ$ do teste da ACSM \cite{ACSM_Guidelines_2021});
+        \item Alinhamento de Prancha: O alinhamento geral do corpo (Ombro-Anca-Tornozelo) deve manter-se a $180^\circ \pm 15^\circ$ para evitar descaimento pélvico (cifose).
+    \end{itemize}
+
+    \item \textbf{Afundo (Lunge):} Monitoriza a flexão bilateral em membros inferiores. O joelho da perna dianteira deve atingir uma flexão $\le 80^\circ - 90^\circ$ (ângulo reto ideal, com joelho sobre o calcanhar) e o joelho traseiro deve pairar rente ao solo (ângulo $\le 80^\circ - 90^\circ$), mantendo o tronco verticalizado de acordo com as normas da NSCA \cite{NSCA_Essentials_2016}.
+
+    \item \textbf{Prancha Isométrica (Plank):} Avalia a estabilização estática do core. O alinhamento dos landmarks do Ombro (12), Anca (24) e Tornozelo (28) deve manter-se a $\theta \approx 180^\circ \pm 15^\circ$ ao longo do tempo total sob tensão.
+\end{enumerate}
+
+
+%%________________________________________________________________________
+\section{Abordagem de Avaliação de Forma}
+\label{sec:abordagem}
+%%________________________________________________________________________
+
+A lógica de pontuação e deteção assenta numa Máquina de Estados Finita e em análise temporal do movimento:
+
+\begin{figure}[h]
+   \centering
+   % Nota: Representação lógica da máquina de estados
+   \begin{tabular}{ccccc}
+      \framebox{AT\_TOP} & $\xrightarrow{\text{Ângulo desce abaixo de } 150^\circ}$ & \framebox{DESCENDING} & $\xrightarrow{\text{Atinge ROM ideal } (\le 70^\circ)}$ & \framebox{DESCENDED} \\
+      \null & \null & \null & \null & $\downarrow$ \\
+      \framebox{Rep++} & $\xleftarrow{\text{Ângulo ultrapassa } 150^\circ}$ & \framebox{ASCENDING} & $\xleftarrow{\text{Início da subida}}$ & \framebox{AT\_BOTTOM}
+   \end{tabular}
+   \caption{Diagrama de transição de estados de repetição}
+   \label{fig:stateMachine}
+\end{figure}
+
+A qualidade de cada repetição é avaliada numa escala de 0 a 100 pontos, ponderando:
+\begin{itemize}
+    \item \textbf{Dedução de ROM (40\%):} Se o atleta iniciar a subida antes de atingir o limiar de flexão ideal (ex: agachar apenas até $90^\circ$ em vez de $\le 70^\circ$), o score é penalizado proporcionalmente ao desvio;
+    \item \textbf{Cadência Excêntrica (30\%):} A descida deve ser controlada, demorando entre 2.0 e 4.0 segundos. Descer demasiado depressa deduz pontos;
+    \item \textbf{Cadência Concêntrica (30\%):} A subida deve durar entre 0.8 e 2.0 segundos, penalizando movimentos explosivos descontrolados.
+\end{itemize}

@@ -20,6 +20,4 @@ config_local.py
 # Documentos do projeto (templates, enunciados, PDFs)
 documentos fornecidos projeto/
 
-# Overleaf relatorio LaTeX local files
-_RELATORIO/overleaf/
 

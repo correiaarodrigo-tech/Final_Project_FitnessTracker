@@ -1,0 +1,104 @@
+%%________________________________________________________________________
+%% LEIM | PROJETO
+%% 2026
+%% Relatório - Capítulos 4, 5 e 6
+%%________________________________________________________________________
+
+%%________________________________________________________________________
+\chapter{Implementação do Modelo}
+\label{ch:implementacaoDoModelo}
+%%________________________________________________________________________
+
+Neste capítulo, descrevemos a arquitetura e detalhes técnicos de concretização da aplicação nativa desenvolvida para Android utilizando a linguagem Kotlin e o ecossistema Jetpack Compose.
+
+%%________________________________________________________________________
+\section{Arquitetura e Fluxo de Visão por Computador}
+\label{sec:arquiteturaMobile}
+%%________________________________________________________________________
+
+A aplicação segue a arquitetura **MVVM (Model-View-ViewModel)** com fluxos assíncronos de dados. O pipeline de processamento de imagem da câmara assenta na seguinte estrutura:
+\begin{enumerate}
+    \item \textbf{Captura de Imagem (CameraX):} Configura a câmara frontal do dispositivo móvel para obter frames no formato RGBA\_8888 de forma contínua e assíncrona;
+    \item \textbf{Pré-processamento:} Roda o bitmap da frame de acordo com a rotação física do dispositivo e aplica um efeito de espelho (\textit{mirror}) para que a experiência do utilizador seja intuitiva;
+    \item \textbf{Scheduler do MediaPipe:} O motor BlazePose opera em modo \textit{Live Stream}. O MediaPipe proativamente descarta frames antigas se a taxa de captação da câmara for superior à velocidade de inferência da rede neural no telemóvel, prevenindo o aumento de latência acumulada;
+    \item \textbf{Lógica de Negócio Local:} Após a inferência, a lista de 33 coordenadas normalized 3D é canalizada para a classe Kotlin correspondente ao exercício ativo.
+\end{enumerate}
+
+
+%%________________________________________________________________________
+\section{Módulos de Código Principais}
+\label{sec:modulosCodigo}
+%%________________________________________________________________________
+
+O processamento cinemático e as interações de treino apoiam-se nas seguintes classes implementadas:
+\begin{itemize}
+    \item \textbf{\texttt{RepPhaseTracker}:} Mede a duração em milissegundos das fases descendente (excêntrica) e ascendente (concêntrica) e regista a amplitude de movimento mínima da articulação central durante a repetição;
+    \item \textbf{\texttt{FormEvaluator}:} Implementa as penalizações de score descritas no Capítulo \ref{ch:modeloProposto} e devolve strings estruturadas de correção física;
+    \item \textbf{\texttt{TTSHelper}:} Wrapper do motor de síntese de voz nativo do Android. Implementa um limite temporal de repetição (cooldown) para evitar saturação acústica do atleta, com exceção da conclusão de repetições e números de contagens, que são pronunciados de imediato;
+    \item \textbf{\texttt{OverlayView}:} Vista customizada que desenha o esqueleto corporal do utilizador e elementos informativos (HUD) em neon, incluindo avisos de calibração ("Note: Audio guidance will be used...").
+\end{itemize}
+
+
+%%________________________________________________________________________
+\section{Integração de Base de Dados e Gamificação}
+\label{sec:integracaoDados}
+%%________________________________________________________________________
+
+Quando o utilizador conclui um treino, a aplicação calcula as calorias queimadas e executa uma escrita remota no Cloud Firestore:
+\begin{itemize}
+    \item Grava os dados do treino na coleção \texttt{/users/\{userId\}/workouts};
+    \item Executa uma **Transação do Firestore** para atualizar de forma segura os campos \texttt{xpPoints} e \texttt{level} no perfil principal do utilizador. Desta forma, previne-se inconsistência de dados em escritas concorrentes.
+\end{itemize}
+
+
+%%________________________________________________________________________
+\chapter{Validação e Testes}
+\label{ch:validacaoTestes}
+%%________________________________________________________________________
+
+A validação da aplicação foi realizada recorrendo a testes automatizados de compilação, simulações de base de dados e validações experimentais com utilizadores.
+
+%%________________________________________________________________________
+\section{Validação e Compilação Automatizada}
+\label{sec:testesCompilacao}
+%%________________________________________________________________________
+
+A integridade do código fonte foi garantida através de builds contínuos executados com a ferramenta Gradle:
+\begin{itemize}
+    \item \textbf{Compilação de Kotlin:} Executou-se a tarefa \texttt{compileDebugKotlin} para validar tipos estáticos e resolver dependências de bibliotecas de terceiros;
+    \item \textbf{Geração de APK:} A tarefa \texttt{assembleDebug} empacotou com sucesso o ficheiro APK assinado para instalação e depuração física.
+\end{itemize}
+
+
+%%________________________________________________________________________
+\section{Testes no Dispositivo e Limitações Físicas}
+\label{sec:testesFisicos}
+%%________________________________________________________________________
+
+Uma limitação identificada nas ferramentas nativas do MediaPipe (PoseLandmarker) é o facto de compilarem binários nativos de partilha de código (\texttt{.so}) maioritariamente para a arquitetura **ARM**. 
+Ao testar a aplicação em emuladores x86\_64 em sistemas Windows, a inicialização do pose landmarker falhava. O código foi robustecido com um bloco \texttt{try-catch} para desativar a câmara com segurança e mostrar um aviso ao programador/utilizador para correr a aplicação exclusivamente num dispositivo físico ARM. 
+
+Em testes reais num smartphone físico moderno (Android 13, CPU Octa-core ARM), o processador local manteve uma taxa de frames de inferência estável próxima dos 25-30 FPS com tempo de computação de regras cinemáticas inferior a 1ms por frame, validando o modelo Edge Computing adotado.
+
+
+%%________________________________________________________________________
+\section{Validação de Analítica e Estado Social}
+\label{sec:testesAnalitica}
+%%________________________________________________________________________
+
+Os testes de painel interativo e rede social cobriram:
+\begin{itemize}
+    \item \textbf{Seeding de Dados:} Testou-se a lógica de auto-seeding inserindo 5 treinos passados simulados. O painel estatístico em Jetpack Compose Canvas interpretou corretamente as datas e desenhou barras com altura proporcional às repetições completadas;
+    \item \textbf{Limpeza de Histórico:} O botão "Clear History" eliminou de forma limpa todas as entradas na sub-coleção remota, atualizando instantaneamente os gráficos para o estado vazio;
+    \item \textbf{Rede Social:} Validou-se a mecânica de aceitação de pedidos de amizade entre dois perfis distintos na consola Firebase, confirmando que a transação atómica adiciona os códigos correspondentes em simultâneo a ambos os utilizadores.
+\end{itemize}
+
+
+%%________________________________________________________________________
+\chapter{Conclusões e Trabalho Futuro}
+\label{ch:conclusoesTrabalhoFuturo}
+%%________________________________________________________________________
+
+Este trabalho demonstrou que é possível desenvolver um assistente de fitness inteligente de elevado desempenho num smartphone convencional sem hardware de medição dedicado. A integração da deteção de pose local (MediaPipe), do motor cinemático em Kotlin e do feedback sonoro (Text-to-Speech) provou ser eficaz para a contagem rigorosa de repetições e a prevenção de erros posturais graves.
+
+Como trabalho futuro, planeia-se expandir o motor de pose para a avaliação postural tridimensional completa (alinhamento tridimensional de ombros-anca-tornozelo), suportar exercícios adicionais de membros superiores (como flexão de bíceps com halteres) e implementar desafios de treino competitivos em tempo real entre atletas ligados na rede de amigos.
