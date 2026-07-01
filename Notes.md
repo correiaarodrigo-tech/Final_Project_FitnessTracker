@@ -86,7 +86,7 @@ https://www.youtube.com/watch?v=mRXskYUXA-A
 ## Fundamentação Biomecânica - Fontes de Referência Oficial
 ------------------------------------------------------------------------
 
-Para garantir rigor académico e afastar a lógica de "parecer correto" (it kinda felt right), a nossa estimativa de pose e pontuação baseia-se em cruzamento analítico de três grandes fontes de autoridade:
+Para garantir rigor académico, a nossa estimativa de pose e pontuação baseia-se em cruzamento analítico de três grandes fontes de autoridade:
 1.  **ACSM (American College of Sports Medicine):** *Guidelines for Exercise Testing and Prescription* e *ACSM's Resources for the Personal Trainer*. Estabelece os protocolos padrão de endurance muscular, amplitudes de movimento clínicas e limites seguros.
 2.  **NSCA (National Strength and Conditioning Association):** *Essentials of Strength Training and Conditioning*. Define a cinemática articular detalhada (ângulos ótimos, vetores de carga) e o alinhamento da coluna/tronco (Core stabilization).
 3.  **FITescola / DGE (Direção-Geral da Educação, Portugal):** *Manual de Testes da Aptidão Física FITescola*. Serve como referência da Educação Física escolar em Portugal, regulando a execução de flexões e cadências com falha de forma.
