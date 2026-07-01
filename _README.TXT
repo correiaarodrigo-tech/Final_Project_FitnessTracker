@@ -22,6 +22,5 @@ ESTRUTURA DE PASTAS E CONTEÚDOS:
   |     |-- POC_Python/       - Protótipo em Python com análise de poses por OpenCV e scripts.
   |-- 04_Teste/            - Relatórios de compilação, planos de verificação e testes práticos.
   |-- _RELATORIO/          - Pasta de entrega do relatório oficial do projeto em formato PDF.
-  |
-  |-- overleaf/            - Pasta contendo o rascunho do relatório LaTeX pronto para envio ao Overleaf.
+  |     |-- overleaf/      - Pasta contendo o rascunho do relatório LaTeX pronto para envio ao Overleaf.
 ========================================================================

@@ -90,6 +90,17 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - Planeamento de elementos Gamificação aplicação.
 - Planeamento testes com utilizadores.
 
+</details>
+
+<details>
+  <summary><b>01/07/2026</b></summary>
+  
+- Reestruturação completa do repositório para entrega final segundo as normas do ISEL (pastas `00_Planeamento`, `01_Analise`, `02_Desenho`, `03_Implementacao`, `04_Teste` e `_RELATORIO`).
+- Relocalização do código da aplicação Android nativa e do protótipo Python para dentro da pasta `03_Implementacao`.
+- Configuração do `.gitignore` para ignorar rascunhos LaTeX locais e ficheiros de templates.
+- Criação dos ficheiros de índice `_README.TXT` e `prompt_set.TXT` na raiz.
+- Elaboração completa do rascunho de todos os capítulos do relatório LaTeX na pasta `_RELATORIO/overleaf/`.
+- Verificação e compilação bem-sucedida do código Kotlin da aplicação Android na sua nova localização.
 
 </details>
 

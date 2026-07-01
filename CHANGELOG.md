@@ -2,6 +2,22 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-07-01] Delivery Restructuring & LaTeX Drafting
+
+### Added
+*   **Root Folder Structure (ISEL Guidelines)**: Created standard project delivery folders at the root: `00_Planeamento`, `01_Analise`, `02_Desenho`, `03_Implementacao`, `04_Teste`, and `_RELATORIO`.
+*   **Root Index Ficheiros**:
+    *   `_README.TXT`: Description of the repository, authors (Rodrigo Correia #45155, David Delgado #51598) and directory layout.
+    *   `prompt_set.TXT`: Structured log of AI prompts used to design core controllers.
+*   **Relatório Draft (`_RELATORIO/overleaf/`)**: Created and fully drafted the LaTeX template inside `_RELATORIO/overleaf` (configured abstract, metadata, and Chapters 1 to 6).
+
+### Modified
+*   **Project Relocation**: Moved `AndroidApp_V_0.1/` and `POC_Python/` into `03_Implementacao/` folder.
+*   **Gitignore Paths**: Configured `.gitignore` to exclude `documentos fornecidos projeto/` and `_RELATORIO/overleaf/` to prevent committing templates.
+*   **Build Validation**: Confirmed that moving `AndroidApp_V_0.1` to the subdirectory compiles successfully using `./gradlew.bat compileDebugKotlin`.
+
+---
+
 ## [2026-06-16] Milestone 3 Refinements: Audio Guidance Cues (Text-To-Speech)
 
 ### Added
