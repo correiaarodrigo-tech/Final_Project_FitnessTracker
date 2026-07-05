@@ -4,10 +4,12 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Centered dumbbell rotated 45 degrees for a dynamic, modern app icon -->
+    <!-- Centered dumbbell rotated 45 degrees and scaled to 65% size to avoid edge clipping -->
     <group
         android:pivotX="54"
         android:pivotY="54"
+        android:scaleX="0.65"
+        android:scaleY="0.65"
         android:rotation="45">
         
         <!-- Handle bar -->

@@ -8,6 +8,7 @@ This log tracks the modifications, enhancements, and feature implementations of 
 *   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Added a fully functional Plan Builder screen. Enforces rest step insertions ($\ge 30$ seconds) in between all exercises. Validates range bounds: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps per leg), and Rest (30-120s). Saves to Firebase Firestore and passes dynamically.
 *   **Disclaimer & Calibration Popup (`StartPlanActivity.kt`)**: Added an AlertDialog disclaimer before plan launches. Advises a camera calibration distance of 2 to 6 meters with full body in frame, and provides brief descriptions of form targets.
 *   **Active Leg Prefix for Lunges (`LungeExercise.kt`)**: Automatically tracks active leading leg (LEFT or RIGHT) based on coordinate mapping, prepending it to user cues.
+*   **Stylized App Icon**: Added a generic white dumbbell icon rotated 45 degrees over a technical dark background with grid lines, scaled down to 65% to fit all device mask shapes (circle, teardrop, squircle).
 
 ### Modified
 *   **Overlay HUD Size Scaling (`OverlayView.kt`)**: Scaled up font sizes significantly (Title to $65\text{f}$, Big Reps count to $110\text{f}$, and Cues to $64\text{f}$) for visibility from 5 meters away.
