@@ -88,9 +88,9 @@ class SquatExercise : Exercise {
             feedback = "Rep $repetitions • $score/100 — ${notes.first()}"
         } else {
             feedback = when (tracker.phase) {
-                RepPhaseTracker.Phase.DESCENDING -> "Sit back, go deeper..."
-                RepPhaseTracker.Phase.ASCENDING -> "Drive up!"
-                RepPhaseTracker.Phase.AT_TOP -> if (repetitions == 0) "Start Squat" else "Ready for next rep"
+                RepPhaseTracker.Phase.DESCENDING -> "Desce!"
+                RepPhaseTracker.Phase.ASCENDING -> "Sobe!"
+                RepPhaseTracker.Phase.AT_TOP -> if (repetitions == 0) "Agacha!" else "Outra rep!"
             }
         }
 

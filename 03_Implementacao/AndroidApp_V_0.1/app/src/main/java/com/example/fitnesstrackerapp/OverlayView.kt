@@ -81,11 +81,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private val dimPaint = Paint().apply { color = cDim; style = Paint.Style.FILL }
 
     private val titlePaint = Paint().apply {
-        color = Color.WHITE; textSize = 46f; isAntiAlias = true
+        color = Color.WHITE; textSize = 65f; isAntiAlias = true
         typeface = android.graphics.Typeface.DEFAULT_BOLD
     }
     private val bigCountPaint = Paint().apply {
-        color = Color.WHITE; textSize = 64f; isAntiAlias = true
+        color = Color.WHITE; textSize = 110f; isAntiAlias = true
         textAlign = Paint.Align.RIGHT
         typeface = android.graphics.Typeface.DEFAULT_BOLD
     }
@@ -96,14 +96,14 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private val pillPaint = Paint().apply { color = cPanel; style = Paint.Style.FILL; isAntiAlias = true }
     private val pillTextPaint = Paint().apply {
-        color = Color.WHITE; textSize = 42f; isAntiAlias = true; textAlign = Paint.Align.CENTER
+        color = Color.WHITE; textSize = 64f; isAntiAlias = true; textAlign = Paint.Align.CENTER
     }
 
     private val scorePaint = Paint().apply {
-        textSize = 50f; isAntiAlias = true; typeface = android.graphics.Typeface.DEFAULT_BOLD
+        textSize = 65f; isAntiAlias = true; typeface = android.graphics.Typeface.DEFAULT_BOLD
     }
-    private val metricPaint = Paint().apply { color = Color.WHITE; textSize = 34f; isAntiAlias = true }
-    private val cuePaint = Paint().apply { color = cYellow; textSize = 31f; isAntiAlias = true }
+    private val metricPaint = Paint().apply { color = Color.WHITE; textSize = 48f; isAntiAlias = true }
+    private val cuePaint = Paint().apply { color = cYellow; textSize = 46f; isAntiAlias = true }
 
     private val centerBigPaint = Paint().apply {
         color = Color.WHITE; textSize = 230f; isAntiAlias = true; textAlign = Paint.Align.CENTER
@@ -242,26 +242,26 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         // Top HUD: name + progress count + progress bar
         val margin = 30f
         val top = 40f
-        val panelH = 150f
+        val panelH = 190f
         val rect = RectF(margin, top, w - margin, top + panelH)
         roundedPanel(canvas, rect, accent)
 
-        canvas.drawText(exerciseName, margin + 36f, top + 62f, titlePaint)
+        canvas.drawText(exerciseName, margin + 36f, top + 85f, titlePaint)
 
         val unit = if (isTimeBased) "s" else "reps"
         if (target > 0) {
             bigCountPaint.color = Color.WHITE
-            canvas.drawText("$progress / $target", w - margin - 36f, top + 70f, bigCountPaint)
+            canvas.drawText("$progress / $target", w - margin - 36f, top + 95f, bigCountPaint)
             metricPaint.color = cTextSecondary
             metricPaint.textAlign = Paint.Align.RIGHT
-            canvas.drawText(unit, w - margin - 36f, top + 110f, metricPaint)
+            canvas.drawText(unit, w - margin - 36f, top + 150f, metricPaint)
             metricPaint.textAlign = Paint.Align.LEFT
             metricPaint.color = Color.WHITE
 
             // Progress bar
             val barL = margin + 36f
             val barR = w - margin - 36f
-            val barTop = top + panelH - 34f
+            val barTop = top + panelH - 28f
             val barBot = barTop + 14f
             canvas.drawRoundRect(RectF(barL, barTop, barR, barBot), 7f, 7f, progressTrackPaint)
             val frac = (progress.toFloat() / target).coerceIn(0f, 1f)
@@ -269,16 +269,16 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             canvas.drawRoundRect(RectF(barL, barTop, barL + (barR - barL) * frac, barBot), 7f, 7f, progressFillPaint)
         } else {
             bigCountPaint.color = Color.WHITE
-            canvas.drawText("$progress", w - margin - 36f, top + 80f, bigCountPaint)
+            canvas.drawText("$progress", w - margin - 36f, top + 115f, bigCountPaint)
         }
 
         // Current cue pill (just under HUD)
         if (feedback.isNotEmpty()) {
-            val pillW = (pillTextPaint.measureText(feedback) + 70f).coerceAtMost(w - 2 * margin)
-            val pillTop = top + panelH + 22f
-            val pillRect = RectF((w - pillW) / 2f, pillTop, (w + pillW) / 2f, pillTop + 70f)
-            canvas.drawRoundRect(pillRect, 35f, 35f, pillPaint)
-            canvas.drawText(feedback, w / 2f, pillTop + 47f, pillTextPaint)
+            val pillW = (pillTextPaint.measureText(feedback) + 90f).coerceAtMost(w - 2 * margin)
+            val pillTop = top + panelH + 30f
+            val pillRect = RectF((w - pillW) / 2f, pillTop, (w + pillW) / 2f, pillTop + 90f)
+            canvas.drawRoundRect(pillRect, 45f, 45f, pillPaint)
+            canvas.drawText(feedback, w / 2f, pillTop + 62f, pillTextPaint)
         }
 
         // Form evaluation panel (bottom-left)

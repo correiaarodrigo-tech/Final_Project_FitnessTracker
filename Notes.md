@@ -83,6 +83,21 @@ sequenceDiagram
 - **Otimização de Leituras**: Em bases NoSQL, leituras de agregação (como médias e somatórios históricos) são computacionalmente caras e lentas se feitas sob demanda. Armazenar a média corrente diretamente no documento do perfil permite exibir dados ao utilizador em tempo real com apenas uma leitura de documento.
 - **Competição Escalável**: As tabelas de classificações (Ladders de XP, Kcal, Cadência) podem ordenar e limitar os utilizadores diretamente pelos campos pre-calculados, reduzindo o tráfego da rede para uma única chamada de consulta simples.
 
+### Hierarquia de Coleções NoSQL:
+
+```mermaid
+graph TD
+    usersCol[(Coleção: users)] --> userDoc{Documento: users/userId}
+    userDoc --> userFields["Campos de Perfil e Agregados"]
+    
+    userDoc --> workoutsCol[(Sub-Coleção: workouts)]
+    workoutsCol --> workoutDoc{Documento: workouts/workoutId}
+    workoutDoc --> workoutFields["Detalhes do Treino (workoutName, date, totalReps, volume...)"]
+    
+    userDoc --> plansCol[(Sub-Coleção: custom_plans)]
+    plansCol --> planDoc{Documento: custom_plans/planId}
+    planDoc --> planFields["Configuração do Plano (planName, stepsJson)"]
+```
 
 --
 

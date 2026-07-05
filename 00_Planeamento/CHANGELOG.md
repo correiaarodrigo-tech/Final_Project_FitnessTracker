@@ -2,6 +2,22 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-07-05] Usability Refinements & Custom Plan Creator (Usability Prep)
+
+### Added
+*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Added a fully functional Plan Builder screen. Enforces rest step insertions ($\ge 30$ seconds) in between all exercises. Validates range bounds: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps per leg), and Rest (30-120s). Saves to Firebase Firestore and passes dynamically.
+*   **Disclaimer & Calibration Popup (`StartPlanActivity.kt`)**: Added an AlertDialog disclaimer before plan launches. Advises a camera calibration distance of 2 to 6 meters with full body in frame, and provides brief descriptions of form targets.
+*   **Active Leg Prefix for Lunges (`LungeExercise.kt`)**: Automatically tracks active leading leg (LEFT or RIGHT) based on coordinate mapping, prepending it to user cues.
+
+### Modified
+*   **Overlay HUD Size Scaling (`OverlayView.kt`)**: Scaled up font sizes significantly (Title to $65\text{f}$, Big Reps count to $110\text{f}$, and Cues to $64\text{f}$) for visibility from 5 meters away.
+*   **TTS Voice Debounce (`TTSHelper.kt`)**: Implemented a 500ms post-delayed debounce for postural cues using Android Handler to prevent stuttering. Queue flush immediately sounds rep counts. Changed engine speech locale to Portuguese.
+*   **Brief Cues (`FormEvaluator.kt` & Exercises)**: Translated and shortened form cues to snapping Portuguese alerts (e.g. `"Desce!"`, `"Sobe!"`, `"Excelente!"`).
+*   **Leaderboard Wrap Protection (`ViewStatisticsActivity.kt`)**: Re-arranged row items to stack name and stats score vertically, protecting the UI against long names.
+*   **Mock Seeding Protection (`ViewStatisticsActivity.kt`)**:
+    *   Removed "Clear History" button from the regular UI to protect user data from deletion.
+    *   Modified seeding batch to append to the existing list instead of overwriting.
+
 ## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards
 
 ### Added

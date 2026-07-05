@@ -51,12 +51,7 @@ class MainActivity : AppCompatActivity() {
     private var lastReps = 0
     private var lastExerciseName = ""
 
-    // Scalable Workout Manager for the Mini Plan
-    private val workoutManager = WorkoutManager(listOf(
-        TrainingStep(SquatExercise(), targetReps = 10),
-        TrainingStep(RestExercise(15), isRest = true),
-        TrainingStep(LungeExercise(), targetReps = 10)
-    ))
+    private lateinit var workoutManager: WorkoutManager
 
     private var workoutStartTime = 0L
 
@@ -71,9 +66,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        // Parse plan steps from intent
+        val planName = intent.getStringExtra("EXTRA_PLAN_NAME") ?: "Mini Plano"
+        val stepsJson = intent.getStringExtra("EXTRA_PLAN_STEPS_JSON")
+        workoutManager = WorkoutManager(parsePlanSteps(stepsJson))
 
         workoutStartTime = System.currentTimeMillis()
         ttsHelper = com.example.fitnesstrackerapp.logic.TTSHelper(this)
@@ -96,6 +96,35 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
+    }
+
+    private fun parsePlanSteps(jsonStr: String?): List<TrainingStep> {
+        val list = mutableListOf<TrainingStep>()
+        if (!jsonStr.isNullOrBlank()) {
+            try {
+                val arr = org.json.JSONArray(jsonStr)
+                for (i in 0 until arr.length()) {
+                    val obj = arr.getJSONObject(i)
+                    val type = obj.getString("type")
+                    val value = obj.getInt("value")
+                    val step = when (type) {
+                        "SQUAT" -> TrainingStep(SquatExercise(), targetReps = value)
+                        "PUSHUP" -> TrainingStep(PushUpExercise(), targetReps = value)
+                        "LUNGE" -> TrainingStep(LungeExercise(), targetReps = value)
+                        else -> TrainingStep(RestExercise(value), isRest = true, targetSeconds = value)
+                    }
+                    list.add(step)
+                }
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Failed to parse custom plan JSON: ${e.localizedMessage}")
+            }
+        }
+        if (list.isEmpty()) {
+            list.add(TrainingStep(SquatExercise(), targetReps = 10))
+            list.add(TrainingStep(RestExercise(15), isRest = true, targetSeconds = 15))
+            list.add(TrainingStep(LungeExercise(), targetReps = 10))
+        }
+        return list
     }
 
     private fun setupPoseLandmarker() {

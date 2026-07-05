@@ -95,12 +95,15 @@ class LungeExercise : Exercise {
         val cycle = tracker.update(backKneeAngle)
         state = if (tracker.phase == RepPhaseTracker.Phase.DESCENDING) "DOWN" else "UP"
 
+        val legPrefix = if (currentForwardLeg == "RIGHT") "Perna Direita: " else "Perna Esquerda: "
+
         if (cycle != null) {
             // Only count the rep when the user has switched the leading leg.
             if (currentForwardLeg != lastForwardLeg) {
                 repetitions++
                 lastForwardLeg = currentForwardLeg
                 val (score, notes) = evaluator.evaluate(cycle)
+                val legSpecificNotes = notes.map { "$legPrefix$it" }
                 repHistory.add(
                     RepMetrics(
                         repNumber = repetitions,
@@ -109,19 +112,19 @@ class LungeExercise : Exercise {
                         minAngleDeg = cycle.minAngleDeg,
                         maxAngleDeg = cycle.maxAngleDeg,
                         formScore = score,
-                        feedback = notes
+                        feedback = legSpecificNotes
                     )
                 )
-                feedback = "Rep $repetitions • $score/100 — ${notes.first()}"
+                feedback = "Rep $repetitions • $score/100 — $legPrefix${notes.first()}"
             } else {
-                feedback = "Switch legs to count the rep"
+                feedback = "Alterna as pernas!"
             }
         } else {
             feedback = when (tracker.phase) {
-                RepPhaseTracker.Phase.DESCENDING -> "Lower the back knee..."
-                RepPhaseTracker.Phase.ASCENDING -> "Stand up!"
+                RepPhaseTracker.Phase.DESCENDING -> "${legPrefix}Desce!"
+                RepPhaseTracker.Phase.ASCENDING -> "${legPrefix}Sobe!"
                 RepPhaseTracker.Phase.AT_TOP ->
-                    if (repetitions == 0) "Start Lunge (Alternate Legs)" else "Switch and repeat!"
+                    if (repetitions == 0) "Começa o afundo!" else "Alterna perna!"
             }
         }
 

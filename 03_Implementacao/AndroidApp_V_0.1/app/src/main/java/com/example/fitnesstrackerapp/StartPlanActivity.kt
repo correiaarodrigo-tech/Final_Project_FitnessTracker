@@ -14,7 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,12 +24,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnesstrackerapp.ui.theme.*
+import org.json.JSONArray
+import org.json.JSONObject
 
 class StartPlanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
+
+        val planName = intent.getStringExtra("EXTRA_PLAN_NAME") ?: "Mini Plano: Agachamento, Flexão, Afundo"
+        val stepsJson = intent.getStringExtra("EXTRA_PLAN_STEPS_JSON") ?: getDefaultStepsJson()
+
         setContent {
             FitnessTheme {
                 Surface(
@@ -37,8 +43,13 @@ class StartPlanActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     PlanOverviewScreen(
+                        planName = planName,
+                        stepsJson = stepsJson,
                         onStartWorkout = {
-                            val intent = Intent(this@StartPlanActivity, MainActivity::class.java)
+                            val intent = Intent(this@StartPlanActivity, MainActivity::class.java).apply {
+                                putExtra("EXTRA_PLAN_NAME", planName)
+                                putExtra("EXTRA_PLAN_STEPS_JSON", stepsJson)
+                            }
                             startActivity(intent)
                             finish()
                         },
@@ -48,13 +59,72 @@ class StartPlanActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun getDefaultStepsJson(): String {
+        return JSONArray().apply {
+            put(JSONObject().apply { put("type", "SQUAT"); put("value", 10) })
+            put(JSONObject().apply { put("type", "REST"); put("value", 15) })
+            put(JSONObject().apply { put("type", "PUSHUP"); put("value", 10) })
+            put(JSONObject().apply { put("type", "REST"); put("value", 15) })
+            put(JSONObject().apply { put("type", "LUNGE"); put("value", 10) })
+        }.toString()
+    }
 }
 
+private data class ParsedStep(val type: String, val value: Int)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanOverviewScreen(
+    planName: String,
+    stepsJson: String,
     onStartWorkout: () -> Unit,
     onBack: () -> Unit
 ) {
+    // Parse steps
+    val parsedSteps = remember(stepsJson) {
+        val list = mutableListOf<ParsedStep>()
+        try {
+            val arr = JSONArray(stepsJson)
+            for (i in 0 until arr.length()) {
+                val obj = arr.getJSONObject(i)
+                list.add(ParsedStep(obj.getString("type"), obj.getInt("value")))
+            }
+        } catch (e: Exception) {
+            // Fallback
+            list.add(ParsedStep("SQUAT", 10))
+            list.add(ParsedStep("REST", 15))
+            list.add(ParsedStep("LUNGE", 10))
+        }
+        list
+    }
+
+    // Dynamic stats calculations
+    val totalDurationSecs = remember(parsedSteps) {
+        parsedSteps.sumOf { step ->
+            if (step.type == "REST") step.value else step.value * 3 // approx 3s per rep
+        }
+    }
+    val averageMet = remember(parsedSteps) {
+        val totalMetWeighted = parsedSteps.sumOf { step ->
+            val met = when (step.type) {
+                "SQUAT" -> 6.0
+                "PUSHUP" -> 4.0
+                "LUNGE" -> 6.0
+                else -> 1.0 // REST
+            }
+            val weight = if (step.type == "REST") step.value else step.value * 3
+            met * weight
+        }
+        if (totalDurationSecs > 0) totalMetWeighted / totalDurationSecs else 1.0
+    }
+    val totalCalories = remember(totalDurationSecs, averageMet) {
+        // Formula: Kcal = (DurationHours) * MET * 75kg
+        ((totalDurationSecs.toFloat() / 3600f) * averageMet * 75f).toInt().coerceAtLeast(1)
+    }
+
+    var showDisclaimer by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -79,7 +149,7 @@ fun PlanOverviewScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "← Back",
+                    text = "← Voltar",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = PrimaryCyan,
@@ -89,7 +159,7 @@ fun PlanOverviewScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Training Plan",
+                    text = "Plano de Treino",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -102,8 +172,8 @@ fun PlanOverviewScreen(
 
             // Plan Title
             Text(
-                text = "Mini Plan: Squat, Rest, Lunge",
-                fontSize = 26.sp,
+                text = planName,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 textAlign = TextAlign.Center,
@@ -117,9 +187,12 @@ fun PlanOverviewScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BadgeItem(text = "~1.5 mins", color = PrimaryCyan)
-                BadgeItem(text = "MET 6.0", color = SecondaryPurple)
-                BadgeItem(text = "~15 kcal", color = AccentGreen)
+                val mins = totalDurationSecs / 60
+                val secs = totalDurationSecs % 60
+                val durationStr = if (mins > 0) "~$mins min $secs s" else "~$secs s"
+                BadgeItem(text = durationStr, color = PrimaryCyan)
+                BadgeItem(text = "MET %.1f".format(averageMet), color = SecondaryPurple)
+                BadgeItem(text = "~$totalCalories kcal", color = AccentGreen)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -133,14 +206,14 @@ fun PlanOverviewScreen(
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        text = "Overview",
+                        text = "Descrição do Exercício",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "A short, high-intensity training routine containing a set of squats, a short resting period, and a set of lunges. Ideal for testing real-time pose geometry, form scoring, and audio-visual coaching cues.",
+                        text = "Um treino cardiovascular e muscular personalizado e adaptado às tuas capacidades. Siga as instruções no ecrã e utilize o feedback por voz para otimizar o seu desempenho e evitar lesões.",
                         fontSize = 13.sp,
                         color = TextSecondary,
                         lineHeight = 18.sp
@@ -152,7 +225,7 @@ fun PlanOverviewScreen(
 
             // Exercise Steps Title
             Text(
-                text = "Workout Steps (3)",
+                text = "Passos do Treino (${parsedSteps.size})",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -167,36 +240,38 @@ fun PlanOverviewScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                WorkoutStepCard(
-                    stepNumber = "1",
-                    title = "Squats",
-                    detail = "10 Repetitions",
-                    description = "Focus on range of motion (down to 70°). Stand side-on to the camera.",
-                    accentColor = PrimaryCyan
-                )
+                parsedSteps.forEachIndexed { index, step ->
+                    val isRest = step.type == "REST"
+                    val title = when (step.type) {
+                        "SQUAT" -> "Agachamentos (Squats)"
+                        "PUSHUP" -> "Flexões (Push-Ups)"
+                        "LUNGE" -> "Afundos (Lunges)"
+                        else -> "Recuperação Cardiovascular"
+                    }
+                    val detail = if (isRest) "${step.value} Segundos" else "${step.value} Repetições"
+                    val desc = when (step.type) {
+                        "SQUAT" -> "Fortalecimento de quadríceps e glúteos. Agache até as coxas ficarem paralelas ao chão."
+                        "PUSHUP" -> "Exercício peitoral e tríceps. Mantenha as costas retas e o core bem ativado."
+                        "LUNGE" -> "Trabalho de equilíbrio e força das pernas. Passada alternada focando na profundidade."
+                        else -> "Descanse para recuperar o ritmo cardíaco antes do próximo exercício."
+                    }
+                    val color = if (isRest) Color.Gray else if (step.type == "PUSHUP") AccentGreen else PrimaryCyan
 
-                WorkoutStepCard(
-                    stepNumber = "2",
-                    title = "Rest Period",
-                    detail = "15 Seconds",
-                    description = "Take a short break to recover before moving to the next exercise step.",
-                    accentColor = Color.Gray
-                )
-
-                WorkoutStepCard(
-                    stepNumber = "3",
-                    title = "Lunges",
-                    detail = "10 Repetitions",
-                    description = "Alternate legs. Monitors back knee bend (down to 80°). Face the camera.",
-                    accentColor = SecondaryPurple
-                )
+                    WorkoutStepCard(
+                        stepNumber = "${index + 1}",
+                        title = title,
+                        detail = detail,
+                        description = desc,
+                        accentColor = color
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             // Start Plan Button
             Button(
-                onClick = onStartWorkout,
+                onClick = { showDisclaimer = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(58.dp),
@@ -215,7 +290,7 @@ fun PlanOverviewScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "START WORKOUT",
+                        text = "INICIAR TREINO",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0C0F14),
@@ -226,6 +301,65 @@ fun PlanOverviewScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+
+    // Disclaimer & Calibration Confirmation Dialog
+    if (showDisclaimer) {
+        val exercisesOnly = parsedSteps.filter { it.type != "REST" }
+        val squatsCount = exercisesOnly.count { it.type == "SQUAT" }
+        val pushupsCount = exercisesOnly.count { it.type == "PUSHUP" }
+        val lungesCount = exercisesOnly.count { it.type == "LUNGE" }
+
+        AlertDialog(
+            onDismissRequest = { showDisclaimer = false },
+            title = {
+                Text(
+                    text = "Calibração & Preparação",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.White
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = "Vais iniciar o treino com as seguintes metas:",
+                        color = TextSecondary,
+                        fontSize = 13.sp
+                    )
+                    if (squatsCount > 0) Text("• Agachamentos: $squatsCount séries", color = Color.White, fontSize = 13.sp)
+                    if (pushupsCount > 0) Text("• Flexões: $pushupsCount séries", color = Color.White, fontSize = 13.sp)
+                    if (lungesCount > 0) Text("• Afundos: $lungesCount séries", color = Color.White, fontSize = 13.sp)
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "Aviso de Distância:\n" +
+                               "Para garantir a precisão da IA, coloca o teu telemóvel a uma distância sugerida de 2 a 6 metros do teu corpo. Garanta que o teu corpo inteiro (da cabeça aos pés) esteja visível na câmara.",
+                        color = PrimaryCyan,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDisclaimer = false
+                        onStartWorkout()
+                    }
+                ) {
+                    Text("COMEÇAR", color = PrimaryCyan, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDisclaimer = false }) {
+                    Text("CANCELAR", color = Color.Gray)
+                }
+            },
+            containerColor = DarkSurface,
+            shape = RoundedCornerShape(16.dp)
+        )
     }
 }
 

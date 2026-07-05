@@ -89,9 +89,9 @@ class PushUpExercise : Exercise {
             feedback = "Rep $repetitions • $score/100 — ${notes.first()}"
         } else {
             feedback = when (tracker.phase) {
-                RepPhaseTracker.Phase.DESCENDING -> "Lower under control..."
-                RepPhaseTracker.Phase.ASCENDING -> "Push up!"
-                RepPhaseTracker.Phase.AT_TOP -> if (repetitions == 0) "Start Push-Up" else "Ready for next rep"
+                RepPhaseTracker.Phase.DESCENDING -> "Desce!"
+                RepPhaseTracker.Phase.ASCENDING -> "Sobe!"
+                RepPhaseTracker.Phase.AT_TOP -> if (repetitions == 0) "Começa!" else "Outra rep!"
             }
         }
 

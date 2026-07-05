@@ -292,49 +292,25 @@ fun StatisticsScreen(onBack: () -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Developer actions
-                Row(
+                // Developer actions (Clear History button is hidden from regular UI for safety)
+                Button(
+                    onClick = {
+                        val uid = currentUser?.uid
+                        if (uid != null) {
+                            isSavingSeed = true
+                            seedMockData(uid, db) { seededList ->
+                                workouts = (workouts + seededList).sortedByDescending { it.getDateAsDate().time }
+                                isSavingSeed = false
+                                Toast.makeText(context, "Mock data seeded successfully!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan.copy(alpha = 0.15f)),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, PrimaryCyan.copy(alpha = 0.4f))
                 ) {
-                    Button(
-                        onClick = {
-                            val uid = currentUser?.uid
-                            if (uid != null) {
-                                isClearing = true
-                                clearHistory(uid, db) {
-                                    workouts = emptyList()
-                                    isClearing = false
-                                    Toast.makeText(context, "Workout history cleared!", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF4D4D).copy(alpha = 0.15f)),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, Color(0xFFFF4D4D).copy(alpha = 0.4f))
-                    ) {
-                        Text("Clear History", color = Color(0xFFFF4D4D), fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    }
-
-                    Button(
-                        onClick = {
-                            val uid = currentUser?.uid
-                            if (uid != null) {
-                                isSavingSeed = true
-                                seedMockData(uid, db) { seededList ->
-                                    workouts = seededList
-                                    isSavingSeed = false
-                                    Toast.makeText(context, "Mock data seeded successfully!", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan.copy(alpha = 0.15f)),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, PrimaryCyan.copy(alpha = 0.4f))
-                    ) {
-                        Text("Seed Mock Data", color = PrimaryCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    }
+                    Text("Seed Mock Data", color = PrimaryCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))
@@ -815,49 +791,32 @@ fun LeaderboardView(db: FirebaseFirestore) {
                     ) {
                         Row(
                             modifier = Modifier.padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                val rankColor = when (rank) {
-                                    1 -> Color(0xFFFFD700) // Gold
-                                    2 -> Color(0xFFC0C0C0) // Silver
-                                    3 -> Color(0xFFCD7F32) // Bronze
-                                    else -> Color.Transparent
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .size(28.dp)
-                                        .background(
-                                            if (rank <= 3) rankColor else Color.White.copy(alpha = 0.05f),
-                                            RoundedCornerShape(8.dp)
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "$rank",
-                                        color = if (rank <= 3) Color.Black else Color.White,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 13.sp
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                Column {
-                                    Text(
-                                        text = user.name.takeIf { it.isNotEmpty() } ?: "Anonymous Athlete",
-                                        color = Color.White,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 13.sp
-                                    )
-                                    Text(
-                                        text = "ID: ${user.numericId}",
-                                        color = TextSecondary,
-                                        fontSize = 10.sp
-                                    )
-                                }
+                            val rankColor = when (rank) {
+                                1 -> Color(0xFFFFD700) // Gold
+                                2 -> Color(0xFFC0C0C0) // Silver
+                                3 -> Color(0xFFCD7F32) // Bronze
+                                else -> Color.Transparent
                             }
+                            Box(
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .background(
+                                        if (rank <= 3) rankColor else Color.White.copy(alpha = 0.05f),
+                                        RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "$rank",
+                                    color = if (rank <= 3) Color.Black else Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
 
                             val scoreText = when (activeLadder) {
                                 0 -> "Lvl ${user.level} (${user.xpPoints} XP)"
@@ -865,12 +824,26 @@ fun LeaderboardView(db: FirebaseFirestore) {
                                 else -> String.format(Locale.US, "%.1f%% cadence", user.overallCadenceStability)
                             }
 
-                            Text(
-                                text = scoreText,
-                                color = if (rank == 1) PrimaryCyan else Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp
-                            )
+                            Column {
+                                Text(
+                                    text = user.name.takeIf { it.isNotEmpty() } ?: "Anonymous Athlete",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = scoreText,
+                                    color = if (rank == 1) PrimaryCyan else TextSecondary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                                Text(
+                                    text = "ID: ${user.numericId}",
+                                    color = TextSecondary.copy(alpha = 0.6f),
+                                    fontSize = 9.sp
+                                )
+                            }
                         }
                     }
                 }
