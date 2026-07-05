@@ -2,6 +2,38 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards
+
+### Added
+*   **Write-Time Client Aggregation Fields (`UserProfile.kt`)**: Added stats fields to track user performance directly on their user document:
+    *   `totalKcal`, `totalReps`, `totalWorkouts`, `overallCadenceStability` (lifetime).
+    *   `weeklyKcal`, `weeklyCadenceStability`, `weeklyWorkouts` (weekly reset).
+    *   `lastWeeklyReset` (weekly reset marker).
+*   **Leaderboards View (`ViewStatisticsActivity.kt`)**: Added a global leaderboards tab to show the top 10 users ranked by XP, Kcal, or Cadence Stability, retrieving pre-aggregated user documents directly.
+*   **Workout Detail Dialog (`ViewStatisticsActivity.kt`)**: Clickable cards in the history list now open a popup showing full biomechanical analysis: Volume (Reps $\times$ Weight), Cadence Score, Concentric/Eccentric tempos, and Standard Deviation.
+
+### Modified
+*   **Transactional Stats Write (`MainActivity.kt`)**: Expanded the workout submit transaction. It now calculates cadence standard deviation, translates it to a score out of 100, and atomically aggregates overall and weekly totals, handling auto-reset on a calendar-week boundary:
+
+```mermaid
+sequenceDiagram
+    participant App as Aplicação Android (Kotlin)
+    participant DB as Cloud Firestore (NoSQL)
+    App->>DB: Iniciar Transação Atómica
+    App->>DB: Escrever registo detalhado de treino em /workouts/
+    App->>DB: Ler documento de perfil /users/{uid}/
+    App->>DB: Validar data de Reset Semanal (último reset vs agora)
+    alt Se for semana diferente
+        App->>App: Resetar acumuladores semanais (weeklyKcal, weeklyWorkouts, weeklyCadence)
+    end
+    App->>App: Calcular novos acumuladores Lifetime e Semanais
+    App->>DB: Atualizar campos agregados e XP no documento do utilizador
+    DB-->>App: Transação Concluída com Sucesso
+    App->>App: Atualizar Compose UI (Dashboard & Ladders) instantaneamente
+```
+
+---
+
 ## [2026-07-01] Delivery Restructuring & LaTeX Drafting
 
 ### Added

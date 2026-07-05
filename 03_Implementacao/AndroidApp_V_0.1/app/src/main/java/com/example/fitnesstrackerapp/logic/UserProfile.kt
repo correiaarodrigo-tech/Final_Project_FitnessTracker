@@ -16,7 +16,17 @@ data class UserProfile(
     val friendsList: List<String> = emptyList(), // Store friend numericIds (e.g. "#12345")
     val createdAt: Any? = null,       // Can be Long (legacy) or Timestamp (new)
     val modifiedAt: Any? = null,      // Can be Long (legacy) or Timestamp (new)
-    val lastActive: Any? = null       // Can be Long (legacy) or Timestamp (new)
+    val lastActive: Any? = null,      // Can be Long (legacy) or Timestamp (new)
+    
+    // Aggregated statistics for ladders & fast summary loading
+    val totalKcal: Double = 0.0,
+    val totalReps: Int = 0,
+    val totalWorkouts: Int = 0,
+    val overallCadenceStability: Double = 0.0, // Score out of 100
+    val weeklyKcal: Double = 0.0,
+    val weeklyCadenceStability: Double = 0.0, // Score out of 100
+    val weeklyWorkouts: Int = 0,
+    val lastWeeklyReset: Any? = null   // Can be Timestamp or Long
 ) {
     // Safely resolve fields to Long milliseconds
     fun getDobLong(): Long = toMillis(dob)

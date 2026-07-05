@@ -58,7 +58,30 @@ APLICAÇÃO ANDROID + MEDIAPIPE
 
  5. Guardar no histórico, mostrar texto ao utilizador
 
-[Base de Dados] → armazena feedback com timestamp e série, apresneta feedback visual
+[Base de Dados] → armazena feedback com timestamp e série, apresenta feedback visual.
+
+Para manter as consultas a tabelas de classificação (ladders) rápidas e baratas ($O(1)$) sem necessitar de processamento contínuo em servidor, implementámos uma estratégia de **Agregação na Escrita via Transação de Cliente NoSQL**:
+
+```mermaid
+sequenceDiagram
+    participant App as Aplicação Android (Kotlin)
+    participant DB as Cloud Firestore (NoSQL)
+    App->>DB: Iniciar Transação Atómica
+    App->>DB: Escrever registo detalhado de treino em /workouts/
+    App->>DB: Ler documento de perfil /users/{uid}/
+    App->>DB: Validar data de Reset Semanal (último reset vs agora)
+    alt Se for semana diferente
+        App->>App: Resetar acumuladores semanais (weeklyKcal, weeklyWorkouts, weeklyCadence)
+    end
+    App->>App: Calcular novos acumuladores Lifetime e Semanais
+    App->>DB: Atualizar campos agregados e XP no documento do utilizador
+    DB-->>App: Transação Concluída com Sucesso
+    App->>App: Atualizar Compose UI (Dashboard & Ladders) instantaneamente
+```
+
+#### Razão da Decisão (Estratégia de Agregação na Escrita NoSQL):
+- **Otimização de Leituras**: Em bases NoSQL, leituras de agregação (como médias e somatórios históricos) são computacionalmente caras e lentas se feitas sob demanda. Armazenar a média corrente diretamente no documento do perfil permite exibir dados ao utilizador em tempo real com apenas uma leitura de documento.
+- **Competição Escalável**: As tabelas de classificações (Ladders de XP, Kcal, Cadência) podem ordenar e limitar os utilizadores diretamente pelos campos pre-calculados, reduzindo o tráfego da rede para uma única chamada de consulta simples.
 
 
 --

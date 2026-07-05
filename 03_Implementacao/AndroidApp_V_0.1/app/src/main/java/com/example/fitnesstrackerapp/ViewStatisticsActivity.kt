@@ -59,7 +59,13 @@ data class WorkoutLog(
     val durationSeconds: Int = 0,
     val caloriesBurned: Double = 0.0,
     val totalReps: Int = 0,
-    val averageFormScore: Int = 0
+    val averageFormScore: Int = 0,
+    val weightKg: Double? = null,
+    val volume: Double? = null,
+    val avgEccentricDurationMs: Long? = null,
+    val avgConcentricDurationMs: Long? = null,
+    val cadenceStability: Double? = null,
+    val cadenceScore: Double? = null
 ) {
     fun getDateAsDate(): Date {
         return when (date) {
@@ -130,8 +136,15 @@ fun StatisticsScreen(onBack: () -> Unit) {
             }
     }
 
+    var selectedTab by remember { mutableStateOf(0) }
+    var activeDetailWorkout by remember { mutableStateOf<WorkoutLog?>(null) }
+
     LaunchedEffect(currentUser) {
         fetchWorkouts()
+    }
+
+    if (activeDetailWorkout != null) {
+        WorkoutDetailDialog(workout = activeDetailWorkout!!, onDismiss = { activeDetailWorkout = null })
     }
 
     Box(
@@ -177,6 +190,54 @@ fun StatisticsScreen(onBack: () -> Unit) {
                 Spacer(modifier = Modifier.width(48.dp))
             }
 
+            // Tab Selector
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .background(Color.White.copy(alpha = 0.05f), RoundedCornerShape(12.dp))
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val tabModifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { selectedTab = 0 }
+                    .background(if (selectedTab == 0) PrimaryCyan.copy(alpha = 0.15f) else Color.Transparent)
+                    .padding(vertical = 10.dp)
+                
+                Box(
+                    modifier = tabModifier,
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "My Stats",
+                        color = if (selectedTab == 0) PrimaryCyan else TextSecondary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                }
+
+                val tabModifier2 = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { selectedTab = 1 }
+                    .background(if (selectedTab == 1) PrimaryCyan.copy(alpha = 0.15f) else Color.Transparent)
+                    .padding(vertical = 10.dp)
+
+                Box(
+                    modifier = tabModifier2,
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Leaderboards",
+                        color = if (selectedTab == 1) PrimaryCyan else TextSecondary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
             if (isLoading || isSavingSeed || isClearing) {
                 Box(
                     modifier = Modifier
@@ -209,20 +270,24 @@ fun StatisticsScreen(onBack: () -> Unit) {
                     )
                 }
             } else {
-                Spacer(modifier = Modifier.height(8.dp))
+                if (selectedTab == 0) {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                // Custom Canvas Chart
-                RepsCanvasChart(workouts = workouts)
+                    // Custom Canvas Chart
+                    RepsCanvasChart(workouts = workouts)
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // Stats Cards
-                StatsSummaryGrid(workouts = workouts)
+                    // Stats Cards
+                    StatsSummaryGrid(workouts = workouts)
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // History List
-                HistoryList(workouts = workouts)
+                    // History List (passing click handler)
+                    HistoryList(workouts = workouts, onWorkoutClick = { activeDetailWorkout = it })
+                } else {
+                    LeaderboardView(db = db)
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -528,7 +593,7 @@ fun StatsGridCard(
 }
 
 @Composable
-fun HistoryList(workouts: List<WorkoutLog>) {
+fun HistoryList(workouts: List<WorkoutLog>, onWorkoutClick: (WorkoutLog) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Workout History",
@@ -564,7 +629,9 @@ fun HistoryList(workouts: List<WorkoutLog>) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 workouts.forEach { log ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onWorkoutClick(log) },
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = DarkSurface),
                         border = BorderStroke(1.dp, BorderMuted)
@@ -630,6 +697,392 @@ fun HistoryList(workouts: List<WorkoutLog>) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun LeaderboardView(db: FirebaseFirestore) {
+    var activeLadder by remember { mutableStateOf(0) } // 0 = XP/Level, 1 = Kcal, 2 = Cadence Stability
+    var usersList by remember { mutableStateOf<List<com.example.fitnesstrackerapp.logic.UserProfile>>(emptyList()) }
+    var isLoadingLadders by remember { mutableStateOf(true) }
+
+    val orderByField = when (activeLadder) {
+        0 -> "xpPoints"
+        1 -> "totalKcal"
+        else -> "overallCadenceStability"
+    }
+
+    fun loadLadder() {
+        isLoadingLadders = true
+        db.collection("users")
+            .orderBy(orderByField, Query.Direction.DESCENDING)
+            .limit(10)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val list = snapshot.documents.mapNotNull { doc ->
+                    try {
+                        doc.toObject(com.example.fitnesstrackerapp.logic.UserProfile::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+                usersList = list
+                isLoadingLadders = false
+            }
+            .addOnFailureListener {
+                isLoadingLadders = false
+            }
+    }
+
+    LaunchedEffect(activeLadder) {
+        loadLadder()
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Global Leaderboards",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = "See how you stack up against the fitness community.",
+            fontSize = 12.sp,
+            color = TextSecondary,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        // Ladders Toggles
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            listOf("XP / Level", "Kcal Spent", "Cadence").forEachIndexed { index, label ->
+                val active = activeLadder == index
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { activeLadder = index },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (active) PrimaryCyan.copy(alpha = 0.15f) else DarkSurface
+                    ),
+                    border = BorderStroke(1.dp, if (active) PrimaryCyan else BorderMuted)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = label,
+                            color = if (active) Color.White else TextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if (isLoadingLadders) {
+            Box(
+                modifier = Modifier.fillMaxWidth().height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = PrimaryCyan)
+            }
+        } else if (usersList.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxWidth().height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No leaderboard records found.", color = TextSecondary, fontSize = 13.sp)
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                usersList.forEachIndexed { rankIndex, user ->
+                    val rank = rankIndex + 1
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                        border = BorderStroke(1.dp, BorderMuted)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                val rankColor = when (rank) {
+                                    1 -> Color(0xFFFFD700) // Gold
+                                    2 -> Color(0xFFC0C0C0) // Silver
+                                    3 -> Color(0xFFCD7F32) // Bronze
+                                    else -> Color.Transparent
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .background(
+                                            if (rank <= 3) rankColor else Color.White.copy(alpha = 0.05f),
+                                            RoundedCornerShape(8.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "$rank",
+                                        color = if (rank <= 3) Color.Black else Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column {
+                                    Text(
+                                        text = user.name.takeIf { it.isNotEmpty() } ?: "Anonymous Athlete",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp
+                                    )
+                                    Text(
+                                        text = "ID: ${user.numericId}",
+                                        color = TextSecondary,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+
+                            val scoreText = when (activeLadder) {
+                                0 -> "Lvl ${user.level} (${user.xpPoints} XP)"
+                                1 -> String.format(Locale.US, "%.1f kcal", user.totalKcal)
+                                else -> String.format(Locale.US, "%.1f%% cadence", user.overallCadenceStability)
+                            }
+
+                            Text(
+                                text = scoreText,
+                                color = if (rank == 1) PrimaryCyan else Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun WorkoutDetailDialog(workout: WorkoutLog, onDismiss: () -> Unit) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = DarkSurface),
+            border = BorderStroke(1.dp, BorderMuted)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Title & Close Button Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Workout Summary",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "✕",
+                        color = TextSecondary,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .clickable { onDismiss() }
+                            .padding(4.dp)
+                    )
+                }
+
+                // Workout Name
+                Text(
+                    text = workout.workoutName,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PrimaryCyan
+                )
+
+                // Date Time
+                val sdf = remember { SimpleDateFormat("MMMM d, yyyy 'at' HH:mm", Locale.getDefault()) }
+                Text(
+                    text = sdf.format(workout.getDateAsDate()),
+                    fontSize = 12.sp,
+                    color = TextSecondary
+                )
+
+                // Separator
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(BorderMuted.copy(alpha = 0.5f))
+                )
+
+                // Primary Rep / Kcal Grid
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DetailMetricCard(
+                        modifier = Modifier.weight(1f),
+                        label = "Repetitions",
+                        value = "${workout.totalReps}",
+                        metric = "reps"
+                    )
+                    DetailMetricCard(
+                        modifier = Modifier.weight(1f),
+                        label = "Calories",
+                        value = String.format(Locale.US, "%.1f", workout.caloriesBurned),
+                        metric = "kcal"
+                    )
+                }
+
+                // Form / Duration Grid
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DetailMetricCard(
+                        modifier = Modifier.weight(1f),
+                        label = "Average Form",
+                        value = "${workout.averageFormScore}%",
+                        metric = "score"
+                    )
+                    DetailMetricCard(
+                        modifier = Modifier.weight(1f),
+                        label = "Active Time",
+                        value = "${workout.durationSeconds / 60}m ${workout.durationSeconds % 60}s",
+                        metric = "duration"
+                    )
+                }
+
+                // Volume / Cadence Score Grid (Pre-aggregated variables)
+                val userWeight = workout.weightKg ?: 70.0
+                val volume = workout.volume ?: (workout.totalReps * userWeight)
+                val stabilityScore = workout.cadenceScore ?: 88.0
+                val stdDev = workout.cadenceStability ?: 720.0
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DetailMetricCard(
+                        modifier = Modifier.weight(1f),
+                        label = "Training Volume",
+                        value = String.format(Locale.US, "%.0f", volume),
+                        metric = "kg"
+                    )
+                    DetailMetricCard(
+                        modifier = Modifier.weight(1f),
+                        label = "Cadence Score",
+                        value = String.format(Locale.US, "%.1f%%", stabilityScore),
+                        metric = "stability"
+                    )
+                }
+
+                // Detailed Analysis Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.03f)),
+                    border = BorderStroke(1.dp, BorderMuted.copy(alpha = 0.2f))
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "Cadence Stability Analysis",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "Standard Deviation of repetition cycle duration is ${String.format(Locale.US, "%.0f", stdDev)}ms.",
+                            fontSize = 11.sp,
+                            color = TextSecondary
+                        )
+                        val avgEcc = workout.avgEccentricDurationMs ?: 2200L
+                        val avgConc = workout.avgConcentricDurationMs ?: 1200L
+                        Text(
+                            text = "Average concentric (lifting): ${String.format(Locale.US, "%.1f", avgConc / 1000.0)}s\nAverage eccentric (lowering): ${String.format(Locale.US, "%.1f", avgEcc / 1000.0)}s",
+                            fontSize = 11.sp,
+                            color = TextSecondary,
+                            lineHeight = 16.sp
+                        )
+                    }
+                }
+
+                // Close Button
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Done", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DetailMetricCard(modifier: Modifier, label: String, value: String, metric: String) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.05f)),
+        border = BorderStroke(1.dp, BorderMuted.copy(alpha = 0.2f))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = label,
+                color = TextSecondary,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = value,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = metric,
+                    color = PrimaryCyan,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 1.dp)
+                )
             }
         }
     }

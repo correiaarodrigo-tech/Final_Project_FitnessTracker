@@ -317,13 +317,37 @@ class MainActivity : AppCompatActivity() {
         val caloriesBurned = met * 3.5 * weight / 200.0 * (durationSeconds / 60.0)
         val roundedCalories = (kotlin.math.round(caloriesBurned * 10) / 10.0)
 
+        // Calculate cadence stability (Standard Deviation of rep durations)
+        var stdDev = 0.0
+        var cadenceScore = 100.0
+        if (history.size >= 2) {
+            val repTimes = history.map { (it.eccentricDurationMs + it.concentricDurationMs).toDouble() }
+            val mean = repTimes.average()
+            val variance = repTimes.map { (it - mean) * (it - mean) }.sum() / repTimes.size
+            stdDev = kotlin.math.sqrt(variance)
+            // 10000ms = 10s deviation yields 0 score, 0ms deviation yields 100 score
+            cadenceScore = ((10000.0 - stdDev) / 100.0).coerceIn(0.0, 100.0)
+        }
+        val roundedCadenceScore = (kotlin.math.round(cadenceScore * 10) / 10.0)
+        val roundedStdDev = (kotlin.math.round(stdDev * 10) / 10.0)
+        val volume = totalReps * weight
+
+        val avgEcc = if (history.isNotEmpty()) history.map { it.eccentricDurationMs }.average().toLong() else 0L
+        val avgConc = if (history.isNotEmpty()) history.map { it.concentricDurationMs }.average().toLong() else 0L
+
         val workoutData = hashMapOf(
             "date" to Timestamp(Date()),
             "workoutName" to "Mini Plan (Squat, Rest, Lunge)",
             "durationSeconds" to durationSeconds,
             "caloriesBurned" to roundedCalories,
             "totalReps" to totalReps,
-            "averageFormScore" to avgScore
+            "averageFormScore" to avgScore,
+            "weightKg" to weight,
+            "volume" to volume,
+            "avgEccentricDurationMs" to avgEcc,
+            "avgConcentricDurationMs" to avgConc,
+            "cadenceStability" to roundedStdDev,
+            "cadenceScore" to roundedCadenceScore
         )
 
         val navigateAction = {
@@ -335,8 +359,6 @@ class MainActivity : AppCompatActivity() {
                 putExtra(ResultActivity.EXTRA_AVG_SCORE, avgScore)
                 putExtra(ResultActivity.EXTRA_BEST, bestScore)
                 putExtra(ResultActivity.EXTRA_SCORES, scoresList.toIntArray())
-                val avgEcc = if (history.isNotEmpty()) history.map { it.eccentricDurationMs }.average().toLong() else 0L
-                val avgConc = if (history.isNotEmpty()) history.map { it.concentricDurationMs }.average().toLong() else 0L
                 putExtra(ResultActivity.EXTRA_AVG_ECC, avgEcc)
                 putExtra(ResultActivity.EXTRA_AVG_CONC, avgConc)
             }
@@ -351,13 +373,81 @@ class MainActivity : AppCompatActivity() {
                     val userRef = db.collection("users").document(uid)
                     db.runTransaction { tx ->
                         val snapshot = tx.get(userRef)
+                        
+                        // Core progression
                         val currentXp = snapshot.getLong("xpPoints")?.toInt() ?: 0
-                        val currentLvl = snapshot.getLong("level")?.toInt() ?: 1
                         val newXp = currentXp + (totalReps * 10) + (avgScore / 2)
                         val newLvl = 1 + (newXp / 1000)
                         
+                        // Lifetime stats aggregation
+                        val currentTotalKcal = snapshot.getDouble("totalKcal") ?: 0.0
+                        val currentTotalReps = snapshot.getLong("totalReps")?.toInt() ?: 0
+                        val currentTotalWorkouts = snapshot.getLong("totalWorkouts")?.toInt() ?: 0
+                        val currentOverallCadence = snapshot.getDouble("overallCadenceStability") ?: 0.0
+                        
+                        val newTotalKcal = currentTotalKcal + roundedCalories
+                        val newTotalReps = currentTotalReps + totalReps
+                        val newTotalWorkouts = currentTotalWorkouts + 1
+                        val newOverallCadence = if (currentTotalWorkouts == 0) {
+                            roundedCadenceScore
+                        } else {
+                            (currentOverallCadence * currentTotalWorkouts + roundedCadenceScore) / newTotalWorkouts
+                        }
+                        
+                        // Weekly stats aggregation with calendar reset check
+                        val now = Date()
+                        val lastResetVal = snapshot.get("lastWeeklyReset")
+                        var lastResetDate: Date? = null
+                        if (lastResetVal is Timestamp) {
+                            lastResetDate = lastResetVal.toDate()
+                        } else if (lastResetVal is Long) {
+                            lastResetDate = Date(lastResetVal)
+                        } else if (lastResetVal is Date) {
+                            lastResetDate = lastResetVal
+                        }
+                        
+                        val shouldResetWeekly = if (lastResetDate == null) {
+                            true
+                        } else {
+                            val calNow = java.util.Calendar.getInstance().apply { time = now }
+                            val calLast = java.util.Calendar.getInstance().apply { time = lastResetDate }
+                            calNow.get(java.util.Calendar.YEAR) != calLast.get(java.util.Calendar.YEAR) ||
+                            calNow.get(java.util.Calendar.WEEK_OF_YEAR) != calLast.get(java.util.Calendar.WEEK_OF_YEAR)
+                        }
+                        
+                        val newWeeklyKcal: Double
+                        val newWeeklyWorkouts: Int
+                        val newWeeklyCadence: Double
+                        val newWeeklyReset: Timestamp
+                        
+                        if (shouldResetWeekly) {
+                            newWeeklyKcal = roundedCalories
+                            newWeeklyWorkouts = 1
+                            newWeeklyCadence = roundedCadenceScore
+                            newWeeklyReset = Timestamp(now)
+                        } else {
+                            val currentWeeklyKcal = snapshot.getDouble("weeklyKcal") ?: 0.0
+                            val currentWeeklyWorkouts = snapshot.getLong("weeklyWorkouts")?.toInt() ?: 0
+                            val currentWeeklyCadence = snapshot.getDouble("weeklyCadenceStability") ?: 0.0
+                            
+                            newWeeklyKcal = currentWeeklyKcal + roundedCalories
+                            newWeeklyWorkouts = currentWeeklyWorkouts + 1
+                            newWeeklyCadence = (currentWeeklyCadence * currentWeeklyWorkouts + roundedCadenceScore) / newWeeklyWorkouts
+                            newWeeklyReset = if (lastResetVal is Timestamp) lastResetVal else Timestamp(now)
+                        }
+                        
+                        // Execute transaction updates
                         tx.update(userRef, "xpPoints", newXp)
                         tx.update(userRef, "level", newLvl)
+                        tx.update(userRef, "totalKcal", newTotalKcal)
+                        tx.update(userRef, "totalReps", newTotalReps)
+                        tx.update(userRef, "totalWorkouts", newTotalWorkouts)
+                        tx.update(userRef, "overallCadenceStability", newOverallCadence)
+                        tx.update(userRef, "weeklyKcal", newWeeklyKcal)
+                        tx.update(userRef, "weeklyWorkouts", newWeeklyWorkouts)
+                        tx.update(userRef, "weeklyCadenceStability", newWeeklyCadence)
+                        tx.update(userRef, "lastWeeklyReset", newWeeklyReset)
+                        tx.update(userRef, "lastActive", Timestamp(now))
                     }.addOnCompleteListener {
                         navigateAction()
                     }
