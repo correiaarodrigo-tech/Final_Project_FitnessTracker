@@ -104,6 +104,26 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
+<details>
+  <summary><b>04/07/2026</b></summary>
+  
+- Implementação da arquitetura NoSQL Firestore com agregação na escrita (Write-Time Aggregation) executada via transação de cliente Kotlin.
+- Implementação de ecrãs para listagem de leaderboards (ladders de XP, calorias e cadência) e detalhes de treinos com métricas biomecânicas avançadas (desvio padrão e tempos concêntrico/excêntrico).
+
+</details>
+
+<details>
+  <summary><b>05/07/2026 - 06/07/2026</b></summary>
+  
+- Implementação do criador de planos de treino interativo (Custom Plan Creator) em Compose, com validação de limites fisiológicos e inserção automática de descanso de pelo menos 30 segundos.
+- Escalonamento das fontes do HUD Overlay (número de repetições e cues) para leitura clara a mais de 5 metros de distância.
+- Otimizações de áudio no motor TTS (Text-to-Speech) com debounce de 0.5s para evitar sobreposições e mudança de idioma para português nativo.
+- Integração de feedback de perna ativa (esquerda/direita) nos afundos (lunges) e aviso de distância de calibração (2 a 6 metros) antes do treino.
+- Redesenho do ícone da aplicação com um halter diagonal branco sobre fundo técnico preto e grelha minimalista.
+- Criação do modelo visual da base de dados Firestore em `02_Desenho/BaseDados_Model.md` e relocalização de `PROJECT_ROADMAP.md` para a pasta `00_Planeamento`.
+
+</details>
+
 ## Objetivos Semanais (14-20 Junho)
 
 - Planeamento de otimizações e métricas sobre lógica negócio (resolução imagem maior ou menor, angulos de exercicio maior ou menor... )
