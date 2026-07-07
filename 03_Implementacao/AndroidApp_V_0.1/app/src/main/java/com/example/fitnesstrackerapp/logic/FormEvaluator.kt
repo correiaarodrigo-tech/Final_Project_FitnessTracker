@@ -1,15 +1,18 @@
 package com.example.fitnesstrackerapp.logic
 
 /**
- * Scores a completed repetition against an [ExerciseConfig] reference and
- * produces specific correction cues.
+ * Scores a completed rep and gives correction cues.
  *
- * Score breakdown (starts at 100):
- *  - Range of motion / depth ....... up to -40
- *  - Eccentric (lowering) tempo .... up to -30
- *  - Concentric (lifting) tempo .... up to -25
+ * Score starts at 100:
+ *  - Depth ............ up to -40
+ *  - Eccentric tempo ... up to -30
+ *  - Concentric tempo .. up to -25
  */
 class FormEvaluator(private val config: ExerciseConfig) {
+
+    companion object {
+        private const val MAX_DEPTH_PENALTY = 40.0
+    }
 
     fun evaluate(cycle: RepPhaseTracker.RepCycle): Pair<Int, List<String>> =
         evaluate(
@@ -28,12 +31,12 @@ class FormEvaluator(private val config: ExerciseConfig) {
         val feedback = mutableListOf<String>()
         var score = 100
 
-        // 1. Range of motion: only penalise not reaching enough depth.
+        // Depth: penalty grows the farther past the ideal the user stopped.
         val depthError = (minAngle - config.idealMinAngleDeg).coerceAtLeast(0.0)
-        if (depthError > config.minAngleTolerance) {
-            val penalty = ((depthError / config.minAngleTolerance) * 20.0)
-                .toInt().coerceIn(0, 40)
-            score -= penalty
+        val depthRange = (config.countThresholdDeg - config.idealMinAngleDeg).coerceAtLeast(1.0)
+        val depthPenalty = ((depthError / depthRange) * MAX_DEPTH_PENALTY).coerceIn(0.0, MAX_DEPTH_PENALTY)
+        if (depthPenalty > 0.0) {
+            score -= depthPenalty.toInt()
             feedback.add("Desce mais!")
         }
 

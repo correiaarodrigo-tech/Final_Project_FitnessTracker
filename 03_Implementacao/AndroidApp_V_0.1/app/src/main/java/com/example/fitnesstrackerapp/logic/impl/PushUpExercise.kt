@@ -24,6 +24,7 @@ class PushUpExercise : Exercise {
         name = "Push-Up",
         idealMinAngleDeg = 70.0,   // elbow bent at the bottom
         idealMaxAngleDeg = 150.0,  // arms extended at the top
+        countThresholdDeg = 90.0,  // below this it's not even a real attempt
         idealEccentricMs = 1500L..3000L,
         idealConcentricMs = 500L..2000L,
         eccentricLabel = "descent",

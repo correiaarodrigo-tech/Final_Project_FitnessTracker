@@ -24,8 +24,9 @@ class LungeExercise : Exercise {
 
     private val config = ExerciseConfig(
         name = "Lunge",
-        idealMinAngleDeg = 80.0,   // back knee bent at the bottom
+        idealMinAngleDeg = 87.0,   // back knee bent at the bottom
         idealMaxAngleDeg = 160.0,  // back leg extended standing
+        countThresholdDeg = 107.0, // below this it's not even a real attempt
         idealEccentricMs = 1500L..3000L,
         idealConcentricMs = 500L..2000L,
         eccentricLabel = "descent",

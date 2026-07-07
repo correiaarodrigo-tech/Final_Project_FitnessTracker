@@ -24,6 +24,7 @@ class SquatExercise : Exercise {
         name = "Squat",
         idealMinAngleDeg = 70.0,   // knee bent at the bottom
         idealMaxAngleDeg = 160.0,  // legs extended standing
+        countThresholdDeg = 90.0,  // below this it's not even a real attempt
         idealEccentricMs = 2000L..4000L,
         idealConcentricMs = 500L..2000L,
         eccentricLabel = "descent",
