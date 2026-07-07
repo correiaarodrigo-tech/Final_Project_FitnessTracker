@@ -2,6 +2,19 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-07-08] Continuous Form Scoring & Rep-Count Threshold
+
+### Added
+*   **Rep-Count Threshold (`ExerciseConfig.kt`)**: Added `countThresholdDeg`, a more lenient depth than the scoring target `idealMinAngleDeg`. A rep now counts once this looser threshold is crossed, instead of being silently discarded if it doesn't reach the ideal depth.
+*   **Plank Form Scoring (`PlankExercise.kt`)**: Plank now has a real form score for the first time. Alignment is scored continuously against a straight 180° shoulder-hip-knee line, dropping the more the body sags or pikes away from it. Each held segment (from entering to leaving the plank position) is recorded to `repHistory` with its own score, matching how the other exercises log completed reps.
+
+### Modified
+*   **Continuous Depth Penalty (`FormEvaluator.kt`)**: Replaced the fixed-tolerance / fixed-penalty depth check with a continuous linear scale: 0 penalty at the ideal depth, scaling up to -40 exactly at the count threshold. The further past the ideal the user stops, the worse the score.
+*   **Rep-Counting Logic (`RepPhaseTracker.kt`)**: The bottom-of-movement threshold used to decide when a rep counts now reads from `countThresholdDeg` instead of `idealMinAngleDeg`, decoupling "did this count as a rep" from "how good was it."
+*   **Exercise Configs (`SquatExercise.kt`, `PushUpExercise.kt`, `LungeExercise.kt`)**: Added `countThresholdDeg` values - 90° for Squat and Push-up, 107° for Lunge - so shallow attempts still count as reps but score lower, instead of vanishing from the rep count entirely.
+
+---
+
 ## [2026-07-05] Usability Refinements & Custom Plan Creator (Usability Prep)
 
 ### Added
