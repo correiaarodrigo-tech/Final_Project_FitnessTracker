@@ -21,7 +21,7 @@ Para garantir a representatividade dos testes, os 7 participantes foram mapeados
 Anotações brutas registadas em tempo real pelo observador durante a execução dos testes.
 
 ### Sessão 01: Leandra
-* **Ficha de Metadados:** Data: 04/07/2026 | Dispositivo: Próprio | Distância: 2.8m | Iluminação: Boa/Direta | Outros: Sala ampla, calças contrastantes.
+* **Ficha de Metadados:** Data: 04/07/2026 | Dispositivo: Próprio | Distância: 3m | Iluminação: Artificial (sala fechada com luzes) | Outros: Sala ampla, calças contrastantes.
 * **Fase 0 (Autonomia):** Login hesitante devido aos termos em inglês; precisou de 1 pista para avançar no menu. Botão de início encontrado após exploração rápida.
 * **Fase 1 (Protocolo & Ângulos):** Deteção inicial demorada (corpo de perfil). Squats: Correta. Lunges: Correta. Push-ups: Falhou 1 contagem. Oclusão notada no chão.
 * **Fase 2 (Entrevista Qualitativa):**
@@ -31,7 +31,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
   * *P4 (Falhas específicas):* Notou atraso no feedback das flexões.
 
 ### Sessão 02: António
-* **Ficha de Metadados:** Data: 04/07/2026 | Dispositivo: Observador | Distância: 2.5m | Iluminação: Fraca/Penumbra | Outros: Quarto com espaço reduzido.
+* **Ficha de Metadados:** Data: 04/07/2026 | Dispositivo: Observador | Distância: 3m | Iluminação: Natural (Sala com janela aberta, não na linha de visao da camera) | Outros: Calças constrantes.
 * **Fase 0 (Autonomia):** Errou a password duas vezes; bloqueou no jargão técnico do menu inicial. Precisou de ajuda direta para iniciar o treino.
 * **Fase 1 (Protocolo & Ângulos):** Deteção inicial falhou (exigiu reposicionar candeeiro). Squats: Falsos positivos (contou 6). Lunges: Falhou contagem. Push-ups: Falhou contagem.
 * **Fase 2 (Entrevista Qualitativa):**
@@ -41,7 +41,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
   * *P4 (Falhas específicas):* Lunges falharam de forma sistemática.
 
 ### Sessão 03: Mónica
-* **Ficha de Metadados:** Data: 11/07/2026 | Dispositivo: Observador | Distância: 3.0m | Iluminação: Contra-luz (Janela de fundo) | Outros: Roupa escura.
+* **Ficha de Metadados:** Data: 11/07/2026 | Dispositivo: Observador | Distância: 3m | Iluminação: Natural (Janela de fundo em ligeira contra-luz) | Outros: Roupa escura.
 * **Fase 0 (Autonomia):** Login fluido (reconheceu os campos básicos). Hesitou no menu ao procurar os exercícios livres.
 * **Fase 1 (Protocolo & Ângulos):** Deteção inicial demorada devido ao forte contraste da janela. Squats: Correta. Lunges: Correta. Push-ups: Falhou contagem (perda de tracking no chão).
 * **Fase 2 (Entrevista Qualitativa):**
@@ -51,7 +51,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
   * *P4 (Falhas específicas):* Não contou nenhuma flexão no chão.
 
 ### Sessão 04: Carlos
-* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Observador | Distância: 3.2m | Iluminação: Boa/Direta | Outros: Espaço de garagem.
+* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Observador | Distância: 3m | Iluminação: Natural (Sala com janela aberta, não na linha de visao da camera) | Outros: Sala Ampla.
 * **Fase 0 (Autonomia):** Avançou sem apoio no login. Encontrou o botão de treino rapidamente através dos ícones visuais.
 * **Fase 1 (Protocolo & Ângulos):** Deteção inicial imediata. Squats: Falhou contagem (2 não registadas). Lunges: Correta. Push-ups: Correta.
 * **Fase 2 (Entrevista Qualitativa):**
@@ -61,7 +61,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
   * *P4 (Falhas específicas):* Squats falharam por falta de amplitude profunda.
 
 ### Sessão 05: Mafalda
-* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Próprio | Distância: 2.7m | Iluminação: Boa/Direta | Outros: Praticante de Pilates.
+* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Próprio | Distância: 3m | Iluminação:  Natural (Sala com janela aberta, não na linha de visao da camera) | Outros: Sala Ampla.
 * **Fase 0 (Autonomia):** Registo autónomo fluido. Encontrou o ecrã de treino de imediato e iniciou sem qualquer instrução.
 * **Fase 1 (Protocolo & Ângulos):** Deteção imediata. Squats: Correta. Lunges: Correta. Push-ups: Correta (execução lenta ajudou o tracking).
 * **Fase 2 (Entrevista Qualitativa):**
@@ -71,7 +71,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
   * *P4 (Falhas específicas):* Nada a apontar, contagem exata.
 
 ### Sessão 06: Tomás
-* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Próprio | Distância: 2.8m | Iluminação: Boa/Direta | Outros: Ritmo de execução elevado.
+* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Próprio | Distância: 3m | Iluminação:  Natural (Sala com janela aberta, não na linha de visao da camera) | Outros: Sala Ampla, calções e tshirt claras.
 * **Fase 0 (Autonomia):** Fluxo imediato. Navegação intuitiva e instantânea pelas opções.
 * **Fase 1 (Protocolo & Ângulos):** Deteção imediata. Squats: Correta. Lunges: Correta. Push-ups: Falsos positivos (contou repetições fantasma na subida rápida).
 * **Fase 2 (Entrevista Qualitativa):**
@@ -81,7 +81,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
   * *P4 (Falhas específicas):* Flexões contaram repetições a mais devido à velocidade.
 
 ### Sessão 07: Tiago
-* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Observador | Distância: 4.1m | Iluminação: Boa/Direta | Outros: Utilizador muito alto (>1,90m), exigiu recuar muito o dispositivo.
+* **Ficha de Metadados:** Data: 12/07/2026 | Dispositivo: Observador | Distância: 3m | Iluminação:  Natural (Sala com janela aberta, não na linha de visao da camera) | Outros: Utilizador alto (+/- 1,90m), roupa escura.
 * **Fase 0 (Autonomia):** Login rápido. Encontrou o botão de treino sem dificuldades.
 * **Fase 1 (Protocolo & Ângulos):** Deteção demorada (dificuldade em enquadrar pés e cabeça em simultâneo). Squats: Falsos positivos. Lunges: Correta. Push-ups: Falhou contagem.
 * **Fase 2 (Entrevista Qualitativa):**
