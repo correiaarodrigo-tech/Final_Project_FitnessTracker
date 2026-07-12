@@ -94,9 +94,7 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
 
 ## 3. Matriz de Respostas ao Questionário Completo (SUS + Métricas Descritivas)
 
-Classificações atribuídas numa escala de 1 (**Discordo Totalmente**) a 5 (**Concordo Totalmente**).
-
-
+Os dados estatísticos e as métricas de resposta quantitativas (gráficos de distribuição de escala e scores finais) foram processados e agregados externamente. A visualização gráfica completa das respostas individuais e das médias consolidadas pode ser consultada diretamente através do dashboard gerado pela ferramenta de recolha de dados (Google Forms).
 
 ---
 
@@ -108,7 +106,7 @@ Classificações atribuídas numa escala de 1 (**Discordo Totalmente**) a 5 (**C
 
 ### Comportamento do Algoritmo e Ambiente (Fases 1 e 3)
 * **Problema de Escala e Distância (Acessibilidade Visual):** À distância necessária para o BlazePose capturar o corpo inteiro (2.5m a 4.1m), o texto do ecrã ficou virtualmente ilegível para a maioria. Utilizadores quebraram a postura correta para tentar ler o progresso no visor.
-* **Dificuldade de Posicionamento Autónomo (P15 e P16):** Utilizadores com maior estatura (Tiago) ou quartos com menos espaço (António e Mãe) sentiram grande complexidade em calibrar o ângulo ideal sem recorrer à ajuda de um terceiro.
+* **Dificuldade de Posicionamento Autónomo (P15 e P16):** Utilizadores com maior estatura (Tiago) ou quartos com menos espaço (António e Mónica) sentiram grande complexidade em calibrar o ângulo ideal sem recorrer à ajuda de um terceiro.
 * **Fidelidade da Contagem por Exercício:** 
-  * **Squats e Lunges:** Excelente consistência em execuções controladas. Registaram-se falhas (falsos negativos) em amplitudes curtas (Pai) e falsos positivos em execuções erráticas.
+  * **Squats e Lunges:** Excelente consistência em execuções controladas. Registaram-se falhas (falsos negativos) em amplitudes curtas (Carlos) e falsos positivos em execuções erráticas.
   * **Push-ups:** Apresentou a maior taxa de erro de tracking devido à oclusão dos nós articulares dos cotovelos/ombros no plano horizontal do chão.
