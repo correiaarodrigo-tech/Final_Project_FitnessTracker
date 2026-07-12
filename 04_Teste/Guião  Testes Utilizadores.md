@@ -53,15 +53,19 @@
 *Formular de modo neutro. Registar respostas curtas.*
 
 1. **Como correu o processo inicial de entrar na app e encontrar o treino? Sentiu alguma confusão?**
+   
    R: __________________________________________________________________
 
-2. **Como descreve a experiência de deteção do corpo pela câmara?**
+3. **Como descreve a experiência de deteção do corpo pela câmara?**
+   
    R: __________________________________________________________________
 
-3. **Sentiu necessidade de alterar o ritmo ou a amplitude do movimento para a app contar?**
+5. **Sentiu necessidade de alterar o ritmo ou a amplitude do movimento para a app contar?**
+   
    R: __________________________________________________________________
 
-4. **Encontrou dificuldades no posicionamento inicial do dispositivo ou com a luz ambiente?**
+7. **Encontrou dificuldades no posicionamento inicial do dispositivo ou com a luz ambiente?**
+   
    R: __________________________________________________________________
 
 ---
