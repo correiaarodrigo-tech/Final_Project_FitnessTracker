@@ -54,19 +54,19 @@
 
 1. **Como correu o processo inicial de entrar na app e encontrar o treino? Sentiu alguma confusão?**
    
-   R: __________________________________________________________________
+    __________________________________________________________________
 
 3. **Como descreve a experiência de deteção do corpo pela câmara?**
    
-   R: __________________________________________________________________
+    __________________________________________________________________
 
 5. **Sentiu necessidade de alterar o ritmo ou a amplitude do movimento para a app contar?**
    
-   R: __________________________________________________________________
+    __________________________________________________________________
 
 7. **Encontrou dificuldades no posicionamento inicial do dispositivo ou com a luz ambiente?**
    
-   R: __________________________________________________________________
+    __________________________________________________________________
 
 ---
 
