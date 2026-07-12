@@ -6,14 +6,13 @@ Este documento regista as métricas, observações e análises extraídas das se
 
 ## 1. Quadro de Segmentação por Perfis (Personas)
 
-Para garantir a representatividade dos testes, os 7 participantes foram mapeados em 3 grupos distintos de acordo com a sua literacia tecnológica e facilidade de interação com sistemas digitais.
-Para esta segmentação consideramos apenas conhecimentos relativos ao uso de dispositivos moveis e não conhecimentos da área da 'motricidade e fitness'.
+Para garantir a representatividade dos testes, os 7 participantes foram mapeados em 3 grupos distintos de acordo com a sua literacia tecnológica e facilidade de interação com sistemas digitais. Para esta segmentação consideramos apenas conhecimentos relativos ao uso de dispositivos móveis e não conhecimentos da área da 'motricidade e fitness'.
 
 | Grupo de Literacia | Participante | Idade | Foco Principal do Teste |
-| :--- | :--- | :---: | :--- | :--- |
+| :--- | :--- | :---: | :--- |
 | **Grupo A: Literacia Baixa**<br>*(Apenas conhecimentos simples de uso de telemóvel, geralmente necessitam apoio para usos menos convencionais fora de chamadas e mensagens)* | **Leandra**<br>**António** | 28<br>26 | Validação Modelo Avaliação exercício, dependência de assistência para iniciar e desenho aplicação. |
-| **Grupo B: Literacia Média**<br>*(Utilizadores comuns de smartphone, utilização banal de smarthphones e outras tarefas simples como conectar telemóvel a um dispositivo bluetooth ou )* | **Mónica**<br>**Carlos**<br>**Mafalda** | 55<br>58<br>27  |  Validação Modelo Avaliação exercício, dependência de assistência para iniciar.  |
-| **Grupo C: Literacia Avançada**<br>*(Área profissional tecnológica, ou similar. Conhecimentos de programação ou similar. Utilizador frequente de aplicações variadas para diversas necessidades.)* | **Tomás**<br>**Tiago** | 22<br>25 |  Validação Modelo Avaliação exercício, dependência de assistência para iniciar e desenho aplicação. Limites da avaliação / classificação. |
+| **Grupo B: Literacia Média**<br>*(Utilizadores comuns de smartphone, utilização banal de smartphones e outras tarefas simples como conectar telemóvel a um dispositivo bluetooth)* | **Mónica**<br>**Carlos**<br>**Mafalda** | 55<br>58<br>27 | Validação Modelo Avaliação exercício, dependência de assistência para iniciar. |
+| **Grupo C: Literacia Avançada**<br>*(Área profissional tecnológica, ou similar. Conhecimentos de programação ou similar. Utilizador frequente de aplicações variadas para diversas necessidades.)* | **Tomás**<br>**Tiago** | 22<br>25 | Validação Modelo Avaliação exercício, dependência de assistência para iniciar e desenho aplicação. Limites da avaliação / classificação. |
 
 ---
 
