@@ -11,9 +11,9 @@ Para esta segmentação consideramos apenas conhecimentos relativos ao uso de di
 
 | Grupo de Literacia | Participante | Idade | Condição Física / Estatuto | Foco Principal do Teste |
 | :--- | :--- | :---: | :--- | :--- |
-| **Grupo A: Literacia Baixa**<br>*(Apenas conhecimentos simples de uso de telemóvel, geralmente necessitam apoio para usos menos convencionais fora de chamadas e mensagens)* | **Leandra**<br>**António** | 28<br>26 | Uso básico de apps. | Validação de barreiras linguísticas, tamanho da letra e dependência de assistência para iniciar. |
-| **Grupo B: Literacia Média**<br>*(Utilizadores comuns de smartphone, utilização banal de smarthphones e outras tarefas simples como conectar telemóvel a um dispositivo bluetooth ou )* | **Mónica**<br>**Carlos**<br>**Mafalda** | 55<br>58<br>27 | Pratica caminhadas.<br>Atividade moderada.<br>Pratica Pilates/Yoga regularmente. | Avaliação da legibilidade das fontes à distância, clareza do fluxo de login e ritmo do áudio. |
-| **Grupo C: Literacia Avançada**<br>*(Área profissional tecnológica, ou similar)* | **Tomás**<br>**Tiago** | 22<br>25 | Pratica musculação.<br>Estatura alta (>1,90m); ativo. | Teste de stresse ao algoritmo: velocidade das repetições, limites de distância da câmara e oclusão. |
+| **Grupo A: Literacia Baixa**<br>*(Apenas conhecimentos simples de uso de telemóvel, geralmente necessitam apoio para usos menos convencionais fora de chamadas e mensagens)* | **Leandra**<br>**António** | 28<br>26 | Uso básico de apps. | Validação Modelo Avaliação exercício, dependência de assistência para iniciar e desenho aplicação. |
+| **Grupo B: Literacia Média**<br>*(Utilizadores comuns de smartphone, utilização banal de smarthphones e outras tarefas simples como conectar telemóvel a um dispositivo bluetooth ou )* | **Mónica**<br>**Carlos**<br>**Mafalda** | 55<br>58<br>27 | Pratica caminhadas.<br>Atividade moderada.<br>Pratica Pilates/Yoga regularmente. |  Validação Modelo Avaliação exercício, dependência de assistência para iniciar.  |
+| **Grupo C: Literacia Avançada**<br>*(Área profissional tecnológica, ou similar. Conhecimentos de programação ou similar. Utilizador frequente de aplicações variadas para diversas necessidades.)* | **Tomás**<br>**Tiago** | 22<br>25 | Pratica musculação / Ginásio.<br>Estatura alta (>1,90m); ativo. |  Validação Modelo Avaliação exercício, dependência de assistência para iniciar e desenho aplicação. Limites da avaliação / classificação. |
 
 ---
 
