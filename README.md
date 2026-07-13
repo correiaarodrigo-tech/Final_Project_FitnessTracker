@@ -124,6 +124,23 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 </details>
 
+<details>
+  <summary><b>08/07/2026</b></summary>
+  
+- Implementação de pontuação contínua por profundidade de repetição em `FormEvaluator.kt`.
+- Adição do parâmetro `countThresholdDeg` em `ExerciseConfig.kt` e `RepPhaseTracker.kt` para contar repetições menos profundas penalizando a pontuação em vez de descartar a repetição.
+- Reestruturação do `PlankExercise.kt` para registar cada segmento de prancha em `repHistory` com cálculo de pontuação em tempo real com base no alinhamento espinhal de 180°.
+
+</details>
+
+<details>
+  <summary><b>12/07/2026</b></summary>
+  
+- Conclusão e registo de 7 sessões de testes de usabilidade com utilizadores reais divididos em 3 perfis de literacia digital em `04_Teste/resultados_testes_usuabilidade.md`.
+- Revisão do guião de testes (`Guião  Testes Utilizadores.md`) e criação de estrutura para arquivo de declarações de consentimento assinado.
+
+</details>
+
 ## Objetivos Semanais (14-20 Junho)
 
 - Planeamento de otimizações e métricas sobre lógica negócio (resolução imagem maior ou menor, angulos de exercicio maior ou menor... )

@@ -27,9 +27,15 @@ Este documento serve como mapa de planeamento para redigir o relatório oficial 
     *   Citar a fundamentação científica: ACSM (cadências e teste de flexão), NSCA (alinhamento espinhal e agachamento paralelo) e FITescola (protocolo de falha e ritmo).
 
 ### Capítulo 3: Usabilidade e Validação Prática (~3 Páginas)
-*   **Protocolo de Teste de Utilizadores**: Resumo da aplicação do guião de testes localizado em `04_Teste/Guião  Testes Utilizadores.md` a um grupo de 5-10 pessoas.
-*   **Resultados de Usabilidade (SUS)**: Apresentação da pontuação média no formulário SUS e análise de satisfação.
-*   **Feedback Qualitativo e Melhorias**: Discussão das observações dos testes (ex: legibilidade do ecrã a 2 metros, clareza dos alertas de áudio TTS, velocidade do detector de calibração).
+*   **Protocolo de Teste de Utilizadores**: Descrição do protocolo baseado em `04_Teste/Guião  Testes Utilizadores.md` e `04_Teste/resultados_testes_usuabilidade.md`, aplicado a 7 participantes divididos em 3 Grupos de Literacia Tecnológica:
+    *   *Grupo A (Literacia Baixa - Leandra, António)*: Avaliação da autonomia inicial, suporte em jargões de login e dependência de apoio visual.
+    *   *Grupo B (Literacia Média - Mónica, Carlos, Mafalda)*: Teste de fluxos de treino padrão, calibração em ambientes domésticos e enquadramento.
+    *   *Grupo C (Literacia Avançada - Tomás, Tiago)*: Teste dos limites do algoritmo a ritmos elevados de execução, posturas limite e estaturas elevadas (>1,90m).
+*   **Resultados de Usabilidade (SUS e Métricas)**: Apresentação da análise quantitativa extraída via formulário (Google Forms) e taxas de sucesso por exercício (Squats e Lunges com excelente fiabilidade; Push-ups com oclusões no chão).
+*   **Feedback Qualitativo e Otimizações Identificadas**:
+    *   *Interface & Idioma*: Necessidade de seletor PT/EN para evitar hesitações na autenticação.
+    *   *Pacing do Áudio (TTS)*: Ajuste de cadência de voz a 0.5s para prevenir sobreposição de frases.
+    *   *Visibilidade à Distância*: Necessidade de ampliar a escala de texto do ecrã para distâncias de 2.5m a 4.1m.
 
 ### Capítulo 4: Conclusão e Trabalho Futuro (~1 Página)
 *   **Conclusão**: Síntese dos objetivos atingidos (deteção de pose local a 30 FPS, feedback por áudio funcional, tabelas de classificação).

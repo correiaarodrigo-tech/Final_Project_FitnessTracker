@@ -2,6 +2,15 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-07-12] Usability Tests & Results Logging
+
+### Added
+*   **Usability Evaluation Logs (`resultados_testes_usuabilidade.md`)**: Registered metrics and raw logs for 7 real usability test sessions. Structured the participants into 3 distinct tech-literacy groups (low, medium, advanced) and compiled critical UX/computer vision findings.
+*   **Consent Signatures Placeholder (`Assinaturas_decl_consentimento/`)**: Added a dedicated subfolder and placeholder file for archiving participant digital signatures/consent verification.
+
+### Modified
+*   **User Test Guide (`Guião  Testes Utilizadores.md`)**: Revised question flow, corrected numbering sequence, and clarified tasks for improved testing consistency.
+
 ## [2026-07-08] Continuous Form Scoring & Rep-Count Threshold
 
 ### Added

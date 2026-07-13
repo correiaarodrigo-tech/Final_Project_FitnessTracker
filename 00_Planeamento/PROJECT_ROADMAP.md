@@ -146,6 +146,15 @@ Draws weekly workout histories directly onto a custom Jetpack Compose `Canvas` b
 
 ## ✅ Development Log
 
+### 2026-07-12 — Usability Tests & Results Logging
+*   **Usability Evaluation Logs (`resultados_testes_usuabilidade.md`)**: Documented results from 7 usability test sessions across 3 smartphone literacy groups (low, medium, advanced).
+*   **User Test Guide (`Guião  Testes Utilizadores.md`)**: Corrected numbering and revised question flow for clarity.
+
+### 2026-07-08 — Continuous Form Scoring & Rep-Count Threshold
+*   **Continuous Depth Penalty (`FormEvaluator.kt`)**: Implemented linear depth scoring between ideal depth and count threshold.
+*   **Lenient Rep Counting (`RepPhaseTracker.kt` & configs)**: Added count thresholds to count shallow reps with a penalty instead of throwing them away.
+*   **Plank Alignment Scoring (`PlankExercise.kt`)**: Added alignment scoring relative to 180° and segment hold history logs.
+
 ### 2026-07-05 — Usability Refinements & Custom Plan Creator
 *   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Added Compose plan builder enforcing rest steps ($\ge 30$ seconds) in between exercises. Validates range bounds: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps per leg), and Rest (30-120s).
 *   **Disclaimer Dialog (`StartPlanActivity.kt`)**: Added popup advising a phone calibration distance of 2 to 6 meters with full body in frame.
