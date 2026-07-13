@@ -108,5 +108,5 @@ Os dados estatísticos e as métricas de resposta quantitativas (gráficos de di
 * **Problema de Escala e Distância (Acessibilidade Visual):** À distância necessária para o BlazePose capturar o corpo inteiro (2.5m a 4.1m), o texto do ecrã ficou virtualmente ilegível para a maioria. Utilizadores quebraram a postura correta para tentar ler o progresso no visor.
 * **Dificuldade de Posicionamento Autónomo (P15 e P16):** Utilizadores com maior estatura (Tiago) ou quartos com menos espaço (António e Mónica) sentiram grande complexidade em calibrar o ângulo ideal sem recorrer à ajuda de um terceiro.
 * **Fidelidade da Contagem por Exercício:** 
-  * **Squats e Lunges:** Excelente consistência em execuções controladas. Registaram-se falhas (falsos negativos) em amplitudes curtas (Carlos) e falsos positivos em execuções erráticas.
-  * **Push-ups:** Apresentou a maior taxa de erro de tracking devido à oclusão dos nós articulares dos cotovelos/ombros no plano horizontal do chão.
+  * **Squats e Push-ups:** Excelente consistência em execuções controladas. Registaram-se falhas (falsos negativos) em amplitudes curtas (Carlos) e falsos positivos em execuções erráticas, mas sem  erros críticos.
+  * **Squats:** Apresentou a maior taxa de erro, mas o tracking aparentou reconhecer o corpo.
