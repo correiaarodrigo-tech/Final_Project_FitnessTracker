@@ -147,6 +147,7 @@ Draws weekly workout histories directly onto a custom Jetpack Compose `Canvas` b
 ## ✅ Development Log
 
 ### 2026-07-16 — Usability Hotfixes & App-wide Localization
+*   **In-App Language Toggle**: Direct response to user feedback from the usability tests! Added a manual `preferredLanguage` toggle to Account Registration and Profile Editing (`AppCompatDelegate` via Compose). Implemented lazy NoSQL data class migration so existing users seamlessly default to System language without database refactoring.
 *   **App-wide Localization (`strings.xml`)**: Translated the entire UI to Portuguese (pt-PT) to eliminate the language barrier for low-literacy users, maintaining specific fitness terms (Squats, Lunges, XP, Level) in English.
 *   **Lunge Tracking Architecture (`LungeExercise.kt`)**: Remodeled tracking to follow the forward knee, permanently fixing occlusion false negatives.
 *   **HUD Visiblity Boost (`OverlayView.kt`)**: Redesigned overlay scaling parameters (150f rep counter, 18f stroke width) for optimal 2-6 meter readability.

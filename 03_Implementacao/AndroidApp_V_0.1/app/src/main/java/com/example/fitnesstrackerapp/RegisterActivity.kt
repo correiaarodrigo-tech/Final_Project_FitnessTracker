@@ -34,9 +34,12 @@ import com.example.fitnesstrackerapp.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import java.util.*
 
-class RegisterActivity : ComponentActivity() {
+class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -75,6 +78,9 @@ fun RegisterScreen(
     
     // Gender selection: MALE, FEMALE, OTHER
     var selectedGender by remember { mutableStateOf("OTHER") }
+    
+    // Language selection: SYSTEM, en, pt
+    var selectedLanguage by remember { mutableStateOf("SYSTEM") }
     
     // DOB representation
     var dobTimestamp by remember { mutableStateOf(0L) }
@@ -291,6 +297,37 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Language selector row
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Preferred Language",
+                        fontSize = 14.sp,
+                        color = TextSecondary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("SYSTEM" to "System", "en" to "EN", "pt" to "PT").forEach { (code, label) ->
+                            val isSelected = selectedLanguage == code
+                            Button(
+                                onClick = { selectedLanguage = code },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) PrimaryCyan else ComponentBg,
+                                    contentColor = if (isSelected) Color(0xFF0C0F14) else Color.White
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
                 // Gender selector row
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
@@ -384,6 +421,7 @@ fun RegisterScreen(
                                 weightKg = weight,
                                 heightCm = height,
                                 gender = selectedGender,
+                                preferredLanguage = selectedLanguage,
                                 xpPoints = 0,
                                 level = 1,
                                 friendsList = emptyList(),
@@ -396,6 +434,15 @@ fun RegisterScreen(
                             val db = FirebaseFirestore.getInstance()
                             db.collection("users").document(uid).set(profile)
                                 .addOnSuccessListener {
+                                    FirebaseAuth.getInstance().signOut()
+                                    
+                                    // Apply selected language
+                                    if (selectedLanguage != "SYSTEM") {
+                                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(selectedLanguage))
+                                    } else {
+                                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                                    }
+                                    
                                     isLoading = false
                                     onRegisterSuccess()
                                 }

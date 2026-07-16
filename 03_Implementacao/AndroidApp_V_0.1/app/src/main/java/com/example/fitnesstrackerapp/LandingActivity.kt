@@ -27,7 +27,11 @@ import androidx.compose.ui.unit.sp
 import com.example.fitnesstrackerapp.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 
-class LandingActivity : ComponentActivity() {
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+
+class LandingActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -328,10 +332,30 @@ fun LandingScreen(
                 errorMessage = null
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(email.trim(), password)
                     .addOnCompleteListener { task ->
-                        isLoading = false
                         if (task.isSuccessful) {
-                            onLoginSuccess()
+                            val uid = task.result?.user?.uid
+                            if (uid != null) {
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("users").document(uid).get()
+                                    .addOnSuccessListener { doc ->
+                                        isLoading = false
+                                        val lang = doc.getString("preferredLanguage") ?: "SYSTEM"
+                                        if (lang != "SYSTEM") {
+                                            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(lang))
+                                        } else {
+                                            AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                                        }
+                                        onLoginSuccess()
+                                    }
+                                    .addOnFailureListener {
+                                        isLoading = false
+                                        onLoginSuccess()
+                                    }
+                            } else {
+                                isLoading = false
+                                onLoginSuccess()
+                            }
                         } else {
+                            isLoading = false
                             errorMessage = task.exception?.localizedMessage ?: "Login failed. Please try again."
                         }
                     }

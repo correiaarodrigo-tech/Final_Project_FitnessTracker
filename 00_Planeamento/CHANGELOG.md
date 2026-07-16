@@ -2,9 +2,10 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
-## [2026-07-16] Usability Hotfixes & App-wide Localization
+## [2026-07-16] Usability Hotfixes, Localization & Language Toggle
 
 ### Added
+*   **In-App Language Toggle (`UserProfile.kt`, `RegisterActivity`, `EditProfileActivity`)**: Based entirely on feedback from the low-literacy usability test groups, we introduced a forced language toggle (System/English/Portuguese) during registration and in the profile editor. This leverages a lazy NoSQL migration, allowing existing users to seamlessly default to the System language without any database scripts.
 *   **App-wide Localization (`res/values-pt/strings.xml`)**: Full Portuguese translation of the UI, solving the high barrier of entry for Group A (low tech literacy) observed during usability testing. Kept core fitness terms (Squats, Lunges, XP) in English.
 
 ### Modified

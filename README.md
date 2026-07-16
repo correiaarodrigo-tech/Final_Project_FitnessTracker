@@ -25,7 +25,7 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
   <summary><b>16/07/2026</b></summary>
   
   *   **Testes de Usabilidade e Ações Corretivas**: Após a análise dos testes práticos aos 3 Grupos de Literacia Tecnológica, implementámos soluções críticas de usabilidade.
-  *   **Localização Global (pt-PT)**: Eliminação da barreira linguística para utilizadores com menor literacia, traduzindo integralmente a interface para Português (mantendo jargão de fitness em inglês).
+  *   **Localização Global (pt-PT) e Seletor de Idioma**: Com base direta no feedback dos utilizadores (especialmente o Grupo A com menor literacia), traduzimos integralmente a interface para Português. Adicionámos também um seletor manual de idioma (Sistema/Inglês/Português) na criação de conta e edição de perfil, facilitando o onboarding de novos utilizadores.
   *   **Visibilidade à Distância**: Refatoração do HUD (escala e espessura) para visualização clara a 4-6 metros.
   *   **Fix Oclusão Lunge**: Alteração do joelho rastreado para a perna frontal, eliminando falsos negativos no Lunge.
 </details>

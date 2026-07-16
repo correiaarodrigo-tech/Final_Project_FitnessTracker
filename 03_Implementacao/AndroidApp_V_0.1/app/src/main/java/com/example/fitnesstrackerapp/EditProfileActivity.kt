@@ -33,9 +33,12 @@ import com.example.fitnesstrackerapp.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import java.util.*
 
-class EditProfileActivity : ComponentActivity() {
+class EditProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -79,6 +82,7 @@ fun EditProfileScreen(
     var weightStr by remember { mutableStateOf("") }
     var heightStr by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf("OTHER") }
+    var selectedLanguage by remember { mutableStateOf("SYSTEM") }
     var friendsList by remember { mutableStateOf<List<String>>(emptyList()) }
     var friendsNamesMap by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var xpPoints by remember { mutableStateOf(0) }
@@ -110,6 +114,7 @@ fun EditProfileScreen(
                         weightStr = profile.weightKg.toString()
                         heightStr = profile.heightCm.toString()
                         selectedGender = profile.gender
+                        selectedLanguage = profile.preferredLanguage
                         friendsList = profile.friendsList
                         xpPoints = profile.xpPoints
                         level = profile.level
@@ -306,6 +311,35 @@ fun EditProfileScreen(
                                     singleLine = true,
                                     enabled = !isSaving
                                 )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Language selector row
+                            Text(
+                                text = "Preferred Language",
+                                fontSize = 14.sp,
+                                color = TextSecondary,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf("SYSTEM" to "System", "en" to "EN", "pt" to "PT").forEach { (code, label) ->
+                                    val isSelected = selectedLanguage == code
+                                    Button(
+                                        onClick = { selectedLanguage = code },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (isSelected) PrimaryCyan else ComponentBg,
+                                            contentColor = if (isSelected) Color(0xFF0C0F14) else Color.White
+                                        ),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Text(label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                    }
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -636,6 +670,7 @@ fun EditProfileScreen(
                                 weightKg = weight,
                                 heightCm = height,
                                 gender = selectedGender,
+                                preferredLanguage = selectedLanguage,
                                 xpPoints = xpPoints,
                                 level = level,
                                 friendsList = friendsList,
@@ -648,6 +683,12 @@ fun EditProfileScreen(
                             db.collection("users").document(uid).set(profile)
                                 .addOnSuccessListener {
                                     isSaving = false
+                                    // Apply selected language immediately so Dashboard reloads in correct locale
+                                    if (selectedLanguage != "SYSTEM") {
+                                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(selectedLanguage))
+                                    } else {
+                                        AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                                    }
                                     Toast.makeText(context, "Profile saved!", Toast.LENGTH_SHORT).show()
                                     onBack()
                                 }

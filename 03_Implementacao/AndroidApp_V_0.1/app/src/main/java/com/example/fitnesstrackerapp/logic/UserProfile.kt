@@ -13,6 +13,7 @@ data class UserProfile(
     val gender: String = "OTHER",     // "MALE", "FEMALE", "OTHER"
     val xpPoints: Int = 0,
     val level: Int = 1,
+    val preferredLanguage: String = "SYSTEM", // "SYSTEM", "en", "pt"
     val friendsList: List<String> = emptyList(), // Store friend numericIds (e.g. "#12345")
     val createdAt: Any? = null,       // Can be Long (legacy) or Timestamp (new)
     val modifiedAt: Any? = null,      // Can be Long (legacy) or Timestamp (new)
