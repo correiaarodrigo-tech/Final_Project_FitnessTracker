@@ -64,7 +64,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     )
 
     private val linePaint = Paint().apply {
-        strokeWidth = 9f
+        strokeWidth = 18f
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
         isAntiAlias = true
@@ -81,11 +81,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private val dimPaint = Paint().apply { color = cDim; style = Paint.Style.FILL }
 
     private val titlePaint = Paint().apply {
-        color = Color.WHITE; textSize = 65f; isAntiAlias = true
+        color = Color.WHITE; textSize = 80f; isAntiAlias = true
         typeface = android.graphics.Typeface.DEFAULT_BOLD
     }
     private val bigCountPaint = Paint().apply {
-        color = Color.WHITE; textSize = 110f; isAntiAlias = true
+        color = Color.WHITE; textSize = 150f; isAntiAlias = true
         textAlign = Paint.Align.RIGHT
         typeface = android.graphics.Typeface.DEFAULT_BOLD
     }
@@ -96,7 +96,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private val pillPaint = Paint().apply { color = cPanel; style = Paint.Style.FILL; isAntiAlias = true }
     private val pillTextPaint = Paint().apply {
-        color = Color.WHITE; textSize = 64f; isAntiAlias = true; textAlign = Paint.Align.CENTER
+        color = Color.WHITE; textSize = 75f; isAntiAlias = true; textAlign = Paint.Align.CENTER
     }
 
     private val scorePaint = Paint().apply {
@@ -226,8 +226,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         landmarks.forEach { p ->
             val cx = p.first * w
             val cy = p.second * h
-            canvas.drawCircle(cx, cy, 10f, jointPaint)
-            canvas.drawCircle(cx, cy, 4f, jointCorePaint)
+            canvas.drawCircle(cx, cy, 16f, jointPaint)
+            canvas.drawCircle(cx, cy, 8f, jointCorePaint)
         }
     }
 

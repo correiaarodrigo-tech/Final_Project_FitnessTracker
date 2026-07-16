@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -119,7 +120,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Create Account",
+            text = stringResource(R.string.register_title),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -149,7 +150,7 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Full Name", color = TextSecondary) },
+                    label = { Text(stringResource(R.string.name_label), color = TextSecondary) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -166,7 +167,7 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email Address", color = TextSecondary) },
+                    label = { Text(stringResource(R.string.email_label), color = TextSecondary) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
@@ -184,7 +185,7 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password (min. 6 chars)", color = TextSecondary) },
+                    label = { Text(stringResource(R.string.password_label), color = TextSecondary) },
                     visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
@@ -293,7 +294,7 @@ fun RegisterScreen(
                 // Gender selector row
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Gender",
+                        text = stringResource(R.string.sign_in_link),
                         fontSize = 14.sp,
                         color = TextSecondary,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -430,7 +431,7 @@ fun RegisterScreen(
                     CircularProgressIndicator(color = Color(0xFF0C0F14), modifier = Modifier.size(24.dp))
                 } else {
                     Text(
-                        text = "REGISTER",
+                        text = stringResource(R.string.btn_register),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0C0F14),

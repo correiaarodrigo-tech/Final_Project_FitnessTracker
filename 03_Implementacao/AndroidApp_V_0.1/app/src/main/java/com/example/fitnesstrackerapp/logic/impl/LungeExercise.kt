@@ -24,9 +24,9 @@ class LungeExercise : Exercise {
 
     private val config = ExerciseConfig(
         name = "Lunge",
-        idealMinAngleDeg = 87.0,   // back knee bent at the bottom
-        idealMaxAngleDeg = 160.0,  // back leg extended standing
-        countThresholdDeg = 107.0, // below this it's not even a real attempt
+        idealMinAngleDeg = 90.0,   // front knee bent at the bottom
+        idealMaxAngleDeg = 160.0,  // front leg extended standing
+        countThresholdDeg = 115.0, // lenient threshold to avoid missing reps due to occlusion
         idealEccentricMs = 1500L..3000L,
         idealConcentricMs = 500L..2000L,
         eccentricLabel = "descent",
@@ -77,32 +77,33 @@ class LungeExercise : Exercise {
         // 1. Detect Forward Leg (Mirrored assumption: smaller X is forward)
         val currentForwardLeg = if (landmarks[RIGHT_FOOT].x() < landmarks[LEFT_FOOT].x()) "RIGHT" else "LEFT"
 
-        // 2. Monitor BACK knee angle
-        val backKneeAngle = if (currentForwardLeg == "RIGHT") {
-            AngleCalculator.calculateAngle(
-                landmarks[LEFT_HIP].x(), landmarks[LEFT_HIP].y(),
-                landmarks[LEFT_KNEE].x(), landmarks[LEFT_KNEE].y(),
-                landmarks[LEFT_ANKLE].x(), landmarks[LEFT_ANKLE].y()
-            )
-        } else {
+        // 2. Monitor FORWARD knee angle instead of back knee angle to prevent occlusion
+        val trackedKneeAngle = if (currentForwardLeg == "RIGHT") {
             AngleCalculator.calculateAngle(
                 landmarks[RIGHT_HIP].x(), landmarks[RIGHT_HIP].y(),
                 landmarks[RIGHT_KNEE].x(), landmarks[RIGHT_KNEE].y(),
                 landmarks[RIGHT_ANKLE].x(), landmarks[RIGHT_ANKLE].y()
             )
+        } else {
+            AngleCalculator.calculateAngle(
+                landmarks[LEFT_HIP].x(), landmarks[LEFT_HIP].y(),
+                landmarks[LEFT_KNEE].x(), landmarks[LEFT_KNEE].y(),
+                landmarks[LEFT_ANKLE].x(), landmarks[LEFT_ANKLE].y()
+            )
         }
 
-        // 3. Phase + timing tracking on the back-knee angle.
-        val cycle = tracker.update(backKneeAngle)
+        // 3. Phase + timing tracking on the tracked knee angle.
+        val cycle = tracker.update(trackedKneeAngle)
         state = if (tracker.phase == RepPhaseTracker.Phase.DESCENDING) "DOWN" else "UP"
 
         val legPrefix = if (currentForwardLeg == "RIGHT") "Perna Direita: " else "Perna Esquerda: "
 
         if (cycle != null) {
-            // Only count the rep when the user has switched the leading leg.
+            // Softened requirement: if they don't alternate, we still count it but we warn them.
+            repetitions++
             if (currentForwardLeg != lastForwardLeg) {
-                repetitions++
                 lastForwardLeg = currentForwardLeg
+            }
                 val (score, notes) = evaluator.evaluate(cycle)
                 val legSpecificNotes = notes.map { "$legPrefix$it" }
                 repHistory.add(
@@ -118,7 +119,7 @@ class LungeExercise : Exercise {
                 )
                 feedback = "Rep $repetitions • $score/100 — $legPrefix${notes.first()}"
             } else {
-                feedback = "Alterna as pernas!"
+                feedback = "Rep $repetitions contada, mas tenta alternar!"
             }
         } else {
             feedback = when (tracker.phase) {

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -287,7 +288,7 @@ fun DashboardScreen(
             
             // Welcome Header
             Text(
-                text = if (userCode.isNotEmpty()) "Welcome Back, $firstName" else "Welcome Back",
+                text = stringResource(R.string.welcome_back, firstName),
                 fontSize = 16.sp,
                 color = TextSecondary,
                 fontWeight = FontWeight.Medium

@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -677,7 +678,7 @@ fun EditProfileScreen(
                                 CircularProgressIndicator(color = Color(0xFF0C0F14), modifier = Modifier.size(24.dp))
                             } else {
                                 Text(
-                                    text = "SAVE CHANGES",
+                                    text = stringResource(R.string.btn_save),
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF0C0F14),

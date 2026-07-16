@@ -1,3 +1,60 @@
 <resources>
     <string name="app_name">FitnessTrackerApp</string>
+    <!-- Landing / Login -->
+    <string name="login_title">Sign In</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="btn_sign_in">SIGN IN</string>
+    <string name="no_account">Don\'t have an account? </string>
+    <string name="create_account">Create one</string>
+    <string name="reset_password_title">Reset Password</string>
+    <string name="reset_password_desc">Enter your email address to receive a password reset link.</string>
+    <string name="btn_send">Send</string>
+    <string name="btn_close">Close</string>
+
+    <!-- Register -->
+    <string name="register_title">Create Account</string>
+    <string name="name_label">Full Name</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="have_account">Already have an account? </string>
+    <string name="sign_in_link">Sign in</string>
+
+    <!-- Dashboard & Generic -->
+    <string name="dashboard_title">Athlete Dashboard</string>
+    <string name="welcome_back">Welcome Back, %1$s</string>
+    <string name="create_plan">Create Plan</string>
+    <string name="start_plan">Start a Plan</string>
+    <string name="view_stats">View Statistics</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="leaderboards">Global Leaderboards</string>
+    <string name="btn_save">SAVE CHANGES</string>
+    <string name="btn_back">Back</string>
+
+    <!-- Social -->
+    <string name="friends_list">Friends List</string>
+    <string name="add_friend_code">Add Friend by Code (e.g. #12345)</string>
+    <string name="pending_requests">Pending Requests</string>
+    <string name="btn_accept">Accept</string>
+    <string name="btn_decline">Decline</string>
+    <string name="challenge_sent">Challenge issued to %1$s!</string>
+
+    <!-- Stats & Results -->
+    <string name="workout_summary">Workout Summary</string>
+    <string name="calories_burned">Calories Burned</string>
+    <string name="avg_form">Average Form</string>
+    <string name="training_volume">Training Volume</string>
+    <string name="cadence_analysis">Cadence Stability Analysis</string>
+    <string name="avg_concentric">Average concentric (lifting)</string>
+    <string name="avg_eccentric">Average eccentric (lowering)</string>
+
+    <!-- HUD / Cues -->
+    <string name="hud_get_ready">Get ready!</string>
+    <string name="hud_go">GO!</string>
+    <string name="hud_hold_still">Hold still...</string>
+    <string name="hud_almost">Almost there...</string>
+    <string name="hud_get_position">Get into position</string>
+    <string name="hud_rest">Take a rest break.</string>
+    <string name="hud_rest_finish">Rest finished! Get ready.</string>
 </resources>

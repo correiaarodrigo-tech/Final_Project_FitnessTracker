@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -87,12 +88,12 @@ fun LandingScreen(
 
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            title = { Text("Reset Password", color = Color.White) },
+            title = { Text(stringResource(R.string.reset_password_title), color = Color.White) },
             containerColor = DarkSurface,
             text = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Enter your email address to receive a password reset link.",
+                        text = stringResource(R.string.reset_password_desc),
                         color = TextSecondary,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -100,7 +101,7 @@ fun LandingScreen(
                     OutlinedTextField(
                         value = resetEmail,
                         onValueChange = { resetEmail = it },
-                        label = { Text("Email Address", color = TextSecondary) },
+                        label = { Text(stringResource(R.string.email_label), color = TextSecondary) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White,
@@ -155,7 +156,7 @@ fun LandingScreen(
                     if (isResetting) {
                         CircularProgressIndicator(color = Color(0xFF0C0F14), modifier = Modifier.size(16.dp))
                     } else {
-                        Text("Send", color = Color(0xFF0C0F14), fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_send), color = Color(0xFF0C0F14), fontWeight = FontWeight.Bold)
                     }
                 }
             },
@@ -164,7 +165,7 @@ fun LandingScreen(
                     onClick = { showResetDialog = false },
                     enabled = !isResetting
                 ) {
-                    Text("Close", color = TextSecondary)
+                    Text(stringResource(R.string.btn_close), color = TextSecondary)
                 }
             }
         )
@@ -236,7 +237,7 @@ fun LandingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Sign In",
+                    text = stringResource(R.string.login_title),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -251,7 +252,7 @@ fun LandingScreen(
                         email = it
                         errorMessage = null 
                     },
-                    label = { Text("Email", color = TextSecondary) },
+                    label = { Text(stringResource(R.string.email_label), color = TextSecondary) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -273,7 +274,7 @@ fun LandingScreen(
                         password = it
                         errorMessage = null
                     },
-                    label = { Text("Password", color = TextSecondary) },
+                    label = { Text(stringResource(R.string.password_label), color = TextSecondary) },
                     visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,
@@ -291,7 +292,7 @@ fun LandingScreen(
                 )
 
                 Text(
-                    text = "Forgot Password?",
+                    text = stringResource(R.string.forgot_password),
                     color = PrimaryCyan,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
@@ -359,7 +360,7 @@ fun LandingScreen(
                     CircularProgressIndicator(color = Color(0xFF0C0F14), modifier = Modifier.size(24.dp))
                 } else {
                     Text(
-                        text = "SIGN IN",
+                        text = stringResource(R.string.btn_sign_in),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0C0F14),
@@ -377,12 +378,12 @@ fun LandingScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Don't have an account? ",
+                text = stringResource(R.string.no_account),
                 color = TextSecondary,
                 fontSize = 14.sp
             )
             Text(
-                text = "Create one",
+                text = stringResource(R.string.create_account),
                 color = PrimaryCyan,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,

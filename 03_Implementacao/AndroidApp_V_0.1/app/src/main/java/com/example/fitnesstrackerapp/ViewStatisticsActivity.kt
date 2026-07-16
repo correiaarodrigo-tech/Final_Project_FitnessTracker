@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -876,7 +877,7 @@ fun WorkoutDetailDialog(workout: WorkoutLog, onDismiss: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Workout Summary",
+                        text = stringResource(R.string.workout_summary),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = Color.White
@@ -987,7 +988,7 @@ fun WorkoutDetailDialog(workout: WorkoutLog, onDismiss: () -> Unit) {
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
-                            text = "Cadence Stability Analysis",
+                            text = stringResource(R.string.cadence_analysis),
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
                             color = Color.White

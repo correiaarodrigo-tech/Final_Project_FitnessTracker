@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">FitnessTrackerApp</string>
+    <!-- Landing / Login -->
+    <string name="login_title">Iniciar Sessão</string>
+    <string name="email_label">Endereço de Email</string>
+    <string name="password_label">Palavra-passe</string>
+    <string name="forgot_password">Recuperar palavra-passe?</string>
+    <string name="btn_sign_in">INICIAR SESSÃO</string>
+    <string name="no_account">Não tem conta? </string>
+    <string name="create_account">Criar uma</string>
+    <string name="reset_password_title">Repor Palavra-passe</string>
+    <string name="reset_password_desc">Introduza o seu email para receber um link de reposição.</string>
+    <string name="btn_send">Enviar</string>
+    <string name="btn_close">Fechar</string>
+
+    <!-- Register -->
+    <string name="register_title">Criar Conta</string>
+    <string name="name_label">Nome Completo</string>
+    <string name="btn_register">REGISTAR</string>
+    <string name="have_account">Já tem uma conta? </string>
+    <string name="sign_in_link">Iniciar sessão</string>
+
+    <!-- Dashboard & Generic -->
+    <string name="dashboard_title">Painel do Atleta</string>
+    <string name="welcome_back">Bem-vindo de volta, %1$s</string>
+    <string name="create_plan">Criar Plano</string>
+    <string name="start_plan">Iniciar um Plano</string>
+    <string name="view_stats">Ver Estatísticas</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="sign_out">Terminar Sessão</string>
+    <string name="leaderboards">Classificações Globais</string>
+    <string name="btn_save">GUARDAR</string>
+    <string name="btn_back">Voltar</string>
+
+    <!-- Social -->
+    <string name="friends_list">Lista de Amigos</string>
+    <string name="add_friend_code">Adicionar Amigo por Código (ex: #12345)</string>
+    <string name="pending_requests">Pedidos Pendentes</string>
+    <string name="btn_accept">Aceitar</string>
+    <string name="btn_decline">Recusar</string>
+    <string name="challenge_sent">Desafio enviado a %1$s!</string>
+
+    <!-- Stats & Results -->
+    <string name="workout_summary">Resumo do Treino</string>
+    <string name="calories_burned">Calorias Queimadas</string>
+    <string name="avg_form">Forma Média</string>
+    <string name="training_volume">Volume de Treino</string>
+    <string name="cadence_analysis">Análise de Estabilidade de Cadência</string>
+    <string name="avg_concentric">Fase concêntrica média (subida)</string>
+    <string name="avg_eccentric">Fase excêntrica média (descida)</string>
+
+    <!-- HUD / Cues -->
+    <string name="hud_get_ready">Prepara-te!</string>
+    <string name="hud_go">VAI!</string>
+    <string name="hud_hold_still">Mantém a posição...</string>
+    <string name="hud_almost">Quase lá...</string>
+    <string name="hud_get_position">Coloca-te em posição</string>
+    <string name="hud_rest">Faz uma pausa.</string>
+    <string name="hud_rest_finish">Pausa terminada! Prepara-te.</string>
+</resources>
