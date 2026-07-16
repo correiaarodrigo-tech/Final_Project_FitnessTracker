@@ -95,6 +95,27 @@ Os testes de painel interativo e rede social cobriram:
 
 
 %%________________________________________________________________________
+\section{Testes de Usabilidade e Validação Prática}
+\label{sec:testesUsabilidade}
+%%________________________________________________________________________
+
+A validação da interface e da precisão do sistema em ambiente real foi conduzida através de testes de usabilidade estruturados. O protocolo envolveu 7 participantes, segmentados em três grupos com diferentes níveis de literacia tecnológica:
+\begin{itemize}
+    \item \textbf{Grupo A (Literacia Baixa - 2 participantes):} Foco na avaliação da autonomia inicial, compreensão do vocabulário da interface e dependência de apoio visual.
+    \item \textbf{Grupo B (Literacia Média - 3 participantes):} Foco no teste de fluxos de treino padrão e calibração da câmara em ambientes domésticos restritos.
+    \item \textbf{Grupo C (Literacia Avançada - 2 participantes):} Foco em testar os limites do algoritmo a ritmos elevados de execução e com utilizadores de estatura elevada (superiores a 1,90m).
+\end{itemize}
+
+A avaliação quantitativa recorreu à escala System Usability Scale (SUS), através de um questionário digital, demonstrando índices de satisfação em geral bastante positivos. Contudo, a análise qualitativa transversal (observação direta das métricas de erro e entrevistas pós-treino) permitiu identificar os seguintes pontos críticos de otimização:
+\begin{itemize}
+    \item \textbf{Interface e Idioma:} A ausência de tradução (aplicação nativamente em inglês) gerou entropia e hesitação no ecrã de registo inicial, especialmente nos elementos mais envelhecidos do Grupo A.
+    \item \textbf{Pacing do Feedback Sonoro (TTS):} Em ritmos elevados, o motor Text-to-Speech nativo do Android gerou sobreposição acústica (frases emitidas em simultâneo). Identificou-se a necessidade de um silêncio (debounce) forçado de 0.5 segundos entre instruções de voz para garantir a clareza do feedback sonoro.
+    \item \textbf{Visibilidade Funcional à Distância:} À distância necessária para o enquadramento completo do esqueleto corporal do atleta (entre 2.5m a 4.1m), o texto do ecrã (HUD) tornou-se ilegível, induzindo quebras da postura lombar nos utilizadores que tentavam focar os olhos no visor. 
+    \item \textbf{Fidelidade Cinemática por Oclusão (Lunges):} Enquanto os exercícios frontais de geometria aberta (Agachamentos e Flexões de Braços) demonstraram excelente robustez de leitura, os Afundos (\textit{Lunges}) apresentaram elevadas taxas de falha. Este falso negativo decorreu da oclusão visual da perna traseira face à perna da frente durante o plano lateral, o que interrompeu os cálculos angulares de validação.
+\end{itemize}
+
+
+%%________________________________________________________________________
 \chapter{Conclusões e Trabalho Futuro}
 \label{ch:conclusoesTrabalhoFuturo}
 %%________________________________________________________________________

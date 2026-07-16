@@ -33,12 +33,16 @@ O presente relatório encontra-se estruturado da seguinte forma: o Capítulo \re
 O rastreio de atividade humana por visão computacional tem sofrido grandes avanços científicos. As abordagens tradicionais focavam-se em sensores inerciais acoplados ao corpo (IMUs), os quais, apesar de precisos, revelavam-se desconfortáveis e dispendiosos para o utilizador comum. A transição para câmaras convencionais permitiu a emergência de frameworks como:
 
 \begin{itemize}
-    \item \textbf{OpenPose:} Baseado em redes convolucionais que detetam poses em múltiplas pessoas simultaneamente. Apesar do rigor, o seu elevado peso computacional exige processamento gráfico dedicado (GPUs), inviabilizando a execução local em dispositivos móveis comuns;
-    \item \textbf{YOLO-pose:} Focado na deteção rápida de caixas delimitadoras e poses combinadas. Embora seja rápido, a sua precisão em orientações laterais de corpo inteiro pode oscilar e exige inicializações complexas;
-    \item \textbf{MediaPipe BlazePose:} Otimizado especificamente para dispositivos móveis (Edge Computing). Utiliza uma arquitetura leve de duas fases (deteção de corpo na primeira frame e rastreio subsequente de 33 landmarks corporais em 3D), permitindo latência inferior a 15ms em smartphones modernos.
+    \item \textbf{OpenPose \cite{Cao_OpenPose_2019}:} Baseado em redes convolucionais que detetam poses em múltiplas pessoas simultaneamente. Apesar do rigor, o seu elevado peso computacional exige processamento gráfico dedicado (GPUs), inviabilizando a execução local em dispositivos móveis comuns;
+    \item \textbf{YOLO-pose \cite{Maji_YOLOPose_2022}:} Focado na deteção rápida de caixas delimitadoras e poses combinadas. Embora seja rápido, a sua precisão em orientações laterais de corpo inteiro pode oscilar e exige inicializações complexas;
+    \item \textbf{MediaPipe BlazePose \cite{Bazarevsky_BlazePose_2020}:} Otimizado especificamente para dispositivos móveis (Edge Computing). Utiliza uma arquitetura leve de duas fases (deteção de corpo na primeira frame e rastreio subsequente de 33 landmarks corporais em 3D), permitindo mais de 30 frames por segundo num Google Pixel 2.
 \end{itemize}
 
-Ao contrário de sistemas que enviam as frames de vídeo para processamento num servidor central (gerando problemas de largura de banda e de privacidade do utilizador), este projeto adota processamento local no telemóvel (Edge Computing). Isto garante privacidade total e feedback instantâneo, essencial para a prevenção imediata de lesões.
+Das três abordagens apresentadas, este projeto adota o MediaPipe BlazePose como motor de estimativa de pose, por ser a única otimizada para inferência local em dispositivos móveis sem necessidade de GPU dedicada. Ao contrário de sistemas que enviam as frames de vídeo para processamento num servidor central (gerando problemas de largura de banda e de privacidade do utilizador), este projeto adota processamento local no telemóvel (Edge Computing). Isto garante privacidade total e feedback instantâneo, sem depender de ligação à internet.
+
+Ao nível da aplicação, o MediaPipe já foi utilizado para outros fins de análise postural: Garg, Saxena e Gupta \cite{Garg_YogaMediaPipe_2023} usam o MediaPipe para extrair os landmarks corporais e, a partir destes, classificar posturas de ioga estáticas em categorias através de uma rede neuronal convolucional. Este projeto aplica o MediaPipe a um problema distinto: em vez de classificar uma pose estática isolada, avalia exercícios dinâmicos e repetitivos através de uma máquina de estados que acompanha a evolução do ângulo articular ao longo do tempo, contando repetições e penalizando desvios de amplitude e cadência.
+
+Para além da escolha tecnológica, a avaliação da qualidade de cada repetição apoia-se também num pressuposto teórico: a biomecânica articular documentada na literatura de goniometria, nomeadamente a obra de Norkin e White \cite{Norkin_White_2016}, detalhada na Secção \ref{sec:fundamentos} do Capítulo \ref{ch:modeloProposto}.
 
 
 %%________________________________________________________________________
@@ -46,7 +50,7 @@ Ao contrário de sistemas que enviam as frames de vídeo para processamento num 
 \label{ch:modeloProposto}
 %%________________________________________________________________________
 
-Neste capítulo, formalizamos a estrutura funcional da aplicação, detalhando os requisitos do sistema, os limiares biomecânicos e a formulação da avaliação cinemática dos exercícios implementados.
+Neste capítulo, formalizamos a estrutura funcional da aplicação, detalhando os requisitos do sistema, os limiares biomecânicos e a formulação da avaliação dos exercícios implementados.
 
 %%________________________________________________________________________
 \section{Requisitos}
@@ -74,57 +78,143 @@ O sistema foi modelado para dar suporte a atletas autónomos, identificando-se o
     \end{enumerate}
 \end{itemize}
 
-
 %%________________________________________________________________________
 \section{Fundamentos Biomecânicos}
 \label{sec:fundamentos}
 %%________________________________________________________________________
 
-Para validar a execução de cada exercício e garantir o rigor científico do sistema de avaliação, baseamo-nos nas diretrizes estabelecidas pelo \textit{American College of Sports Medicine} (ACSM) \cite{ACSM_Guidelines_2021}, pela \textit{National Strength and Conditioning Association} (NSCA) \cite{NSCA_Essentials_2016} e pelo programa nacional português \textit{FITescola} \cite{FITescola_Manual_2016}. Estas entidades regulam a Amplitude de Movimento (ROM) e a postura ideal para evitar lesões musculoesqueléticas. Definem-se as seguintes regras cinemáticas e lógicas de avaliação baseadas em MediaPipe landmarks:
+Para validar a execução de cada exercício e garantir o rigor científico do sistema de avaliação, apoiamo-nos na obra de referência de Norkin e White \cite{Norkin_White_2016}, que documenta a amplitude de movimento articular e a amplitude necessária para atividades funcionais concretas. Cada exercício é avaliado por dois limiares distintos: um limiar ideal, que reflete a execução tecnicamente correta, e um limiar de contagem, mais permissivo, que define a partir de que ângulo a repetição é sequer registada (a lógica de deteção que usa estes dois valores é detalhada na Secção \ref{sec:abordagem}).
+
+Os ângulos são sempre calculados a partir de três landmarks corporais fornecidos pelo modelo MediaPipe Pose \cite{Bazarevsky_BlazePose_2020}, identificados por um índice fixo de 0 a 32, ilustrado na Figura \ref{fig:landmarks}. Por convenção, os índices pares correspondem ao lado direito do utilizador e os ímpares ao lado esquerdo; como o utilizador está de frente para a câmara, o seu lado direito aparece do lado esquerdo da imagem.
+
+\begin{figure}[h]
+   \centering
+   \includegraphics[width=0.6\textwidth]{figuras/mediapipe_landmarks.png}
+   \caption{Topologia dos 33 landmarks do MediaPipe Pose \cite{Google_MediaPipe_PoseLandmarker_2024}.}
+   \label{fig:landmarks}
+\end{figure}
+
+Definem-se os seguintes valores por exercício:
 
 \begin{enumerate}
-    \item \textbf{Agachamento (Squat):} Analisa o ângulo $\theta$ do joelho formado pela anca (ponto 24), joelho (ponto 26, vértice) e tornozelo (ponto 28). De acordo com a NSCA \cite{NSCA_Essentials_2016}, o agachamento paralelo exige flexão completa da coxa até que a linha do fémur fique paralela ao solo (ângulo do joelho $\le 90^\circ$, idealmente profunda $\le 70^\circ$).
-    \begin{itemize}
-        \item Limiar UP (Extensão): $\theta \ge 150^\circ$ (pernas em extensão vertical);
-        \item Limiar DOWN (Flexão): $\theta \le 70^\circ$ (descente completa, ROM validada);
-        \item Estabilidade do Tronco: A inclinação do tronco em relação à vertical (Ombro-Anca-Vertical) não deve exceder os $45^\circ$.
-    \end{itemize}
-    
-    \item \textbf{Flexão de Braços (Push-Up):} Monitoriza o ângulo $\theta$ do cotovelo entre o ombro (ponto 12), cotovelo (ponto 14, vértice) e pulso (ponto 16).
-    \begin{itemize}
-        \item Limiar UP (Extensão): $\theta \ge 150^\circ$ (braços totalmente estendidos);
-        \item Limiar DOWN (Flexão): $\theta \le 70^\circ$ (peito próximo do chão, aproximando o ângulo reto clássico de $90^\circ$ do teste da ACSM \cite{ACSM_Guidelines_2021});
-        \item Alinhamento de Prancha: O alinhamento geral do corpo (Ombro-Anca-Tornozelo) deve manter-se a $180^\circ \pm 15^\circ$ para evitar descaimento pélvico (cifose).
-    \end{itemize}
+    \item \textbf{Agachamento (Squat):} Analisa o ângulo $\theta$ formado pelo quadril (ponto 24), joelho (ponto 26, vértice) e tornozelo (ponto 28).
+        \begin{itemize}
+            \item Limiar UP (Extensão): $\theta \ge 160^\circ$;
+            \item Limiar de Contagem: $\theta \le 90^\circ$;
+            \item Limiar Ideal (Flexão): $\theta \le 70^\circ$.
+        \end{itemize}
 
-    \item \textbf{Afundo (Lunge):} Monitoriza a flexão bilateral em membros inferiores. O joelho da perna dianteira deve atingir uma flexão $\le 80^\circ - 90^\circ$ (ângulo reto ideal, com joelho sobre o calcanhar) e o joelho traseiro deve pairar rente ao solo (ângulo $\le 80^\circ - 90^\circ$), mantendo o tronco verticalizado de acordo com as normas da NSCA \cite{NSCA_Essentials_2016}.
+    \item \textbf{Flexão de Braços (Push-Up):} Monitoriza o ângulo $\theta$ entre ombro (ponto 12), cotovelo (ponto 14, vértice) e pulso (ponto 16).
+        \begin{itemize}
+            \item Limiar UP (Extensão): $\theta \ge 150^\circ$;
+            \item Limiar de Contagem: $\theta \le 90^\circ$;
+            \item Limiar Ideal (Flexão): $\theta \le 70^\circ$.
+        \end{itemize}
 
-    \item \textbf{Prancha Isométrica (Plank):} Avalia a estabilização estática do core. O alinhamento dos landmarks do Ombro (12), Anca (24) e Tornozelo (28) deve manter-se a $\theta \approx 180^\circ \pm 15^\circ$ ao longo do tempo total sob tensão.
+    \item \textbf{Afundo (Lunge):} Monitoriza apenas a flexão do joelho traseiro (o que desce em direção ao chão); o joelho da perna da frente não é medido pelo sistema.
+        \begin{itemize}
+            \item Limiar UP (Extensão): $\theta \ge 160^\circ$;
+            \item Limiar de Contagem: $\theta \le 107^\circ$;
+            \item Limiar Ideal (Flexão): $\theta \le 87^\circ$.
+        \end{itemize}
+
+    \item \textbf{Prancha Isométrica (Plank):} Avalia a estabilização estática do core. O alinhamento dos landmarks do Ombro (12), Anca (24) e Tornozelo (28) deve manter-se próximo de $\theta \approx 170^\circ$, ao longo do tempo total sob tensão.
 \end{enumerate}
 
+%%________________________________________________________________________
+\subsection{Calibração e Validação dos Limiares}
+\label{sec:calibracaoLimiares}
+%%________________________________________________________________________
+
+Os valores angulares apresentados não foram pensados todos da mesma forma. Numa primeira iteração, foram fixados de forma empírica: experimentámos em frente à câmara, ajustando os graus até a contagem de repetições parecer fiável e a exigência de profundidade parecer razoável a olho.
+
+Numa segunda iteração, os limiares foram cruzados com a obra \textit{Measurement of Joint Motion: A Guide to Goniometry}, de Norkin e White \cite{Norkin_White_2016}, que documenta a amplitude de movimento articular e, nalguns capítulos, a amplitude necessária para atividades funcionais concretas. Um cuidado importante ao usar esta fonte é a convenção de ângulo: esta obra mede a flexão como o desvio a partir da posição anatómica neutra (perna esticada corresponde a $0^\circ$), enquanto o sistema aqui desenvolvido mede o ângulo interior entre os três pontos de referência (perna esticada corresponde a $180^\circ$). A conversão entre as duas é direta, $\theta_{\text{interior}} = 180^\circ - \theta_{\text{flexão}}$.
+
+No Agachamento, Rowe e colaboradores, citados em \cite{Norkin_White_2016} (p.332), definem que é necessária uma flexão mínima de $110^\circ$ do joelho para atividades funcionais básicas (andar, subir escadas, levantar de uma cadeira) e que uma flexão de apenas $90^\circ$ "não é suficiente para atividades normais". Convertidos para a convenção do sistema, estes dois valores correspondem exatamente aos $70^\circ$ (limiar ideal) e $90^\circ$ (limiar de contagem) já usados na primeira iteração, confirmando-os sem necessidade de ajuste.
+
+Na Flexão de Braços, o limiar ideal ($70^\circ$, correspondendo a $110^\circ$ de flexão do cotovelo) fica dentro da amplitude funcional documentada pela mesma obra (flexão máxima funcional de aproximadamente $140^\circ$), pelo que se mantém deliberadamente mais rigoroso sem ser anatomicamente irrealista. O limiar de contagem ($90^\circ$, $20^\circ$ acima do ideal) não tem fonte independente.
+
+No Lunge, para o qual esta obra não apresenta valor de referência, o limiar original ($80^\circ$) foi ajustado para $87^\circ$ depois de observação visual mostrar que rejeitava repetições bem executadas; o limiar de contagem ($107^\circ$) também não tem fonte independente. Para a Prancha, também sem valor de referência disponível, manteve-se o valor já usado pela janela de deteção original ($170^\circ$), sem introduzir um novo alvo.
+
+A Tabela \ref{tab:calibracaoLimiares} resume o resultado das duas iterações.
+
+\begin{table}[h]
+   \centering
+   \begin{tabular}{lccl}
+      \textbf{Exercício} & \textbf{1\textsuperscript{a} Iteração} & \textbf{2\textsuperscript{a} Iteração} & \textbf{Fonte de validação} \\
+      \hline
+      Agachamento & $70^\circ$ & $70^\circ$ (confirmado) & Rowe et al., in \cite{Norkin_White_2016} \\
+      Flexão de Braços & $70^\circ$ & $70^\circ$ (confirmado) & Norkin \& White \cite{Norkin_White_2016} \\
+      Lunge & $80^\circ$ & $87^\circ$ (ajustado) & Observação visual \\
+      Prancha & $170^\circ$ & $170^\circ$ (confirmado) & Janela de deteção existente \\
+      \hline
+   \end{tabular}
+   \caption{Limiares de profundidade/alinhamento antes e depois da validação}
+   \label{tab:calibracaoLimiares}
+\end{table}
 
 %%________________________________________________________________________
 \section{Abordagem de Avaliação de Forma}
 \label{sec:abordagem}
 %%________________________________________________________________________
 
-A lógica de pontuação e deteção assenta numa Máquina de Estados Finita e em análise temporal do movimento:
+O ângulo $\theta$ usado em todos os exercícios é calculado a partir de três landmarks, $A$, $B$ e $C$, onde $B$ é sempre o vértice (a articulação central). Usam-se apenas as coordenadas $x$ e $y$ de cada ponto no plano da imagem; a coordenada de profundidade $z$, também estimada pelo MediaPipe, não é utilizada. O ângulo obtém-se a partir do produto interno dos vetores $\vec{BA}$ e $\vec{BC}$:
+\[
+\theta = \arccos\left(\frac{\vec{BA} \cdot \vec{BC}}{|\vec{BA}||\vec{BC}|}\right)
+\]
+Esta é a fórmula geométrica aplicada a todos os ângulos definidos na Secção \ref{sec:fundamentos}.
+
+A lógica de deteção assenta numa máquina de estados finita de três estados, \texttt{AT\_TOP}, \texttt{DESCENDING} e \texttt{ASCENDING}, que processa este ângulo a cada frame, ilustrada na Figura \ref{fig:stateMachine}. A partir de \texttt{AT\_TOP}, o sistema entra em \texttt{DESCENDING} assim que o ângulo desce abaixo do início da fase excêntrica. Em \texttt{DESCENDING} há duas transições possíveis: se o ângulo atingir o limiar de contagem, a fase excêntrica termina e o sistema avança para \texttt{ASCENDING}; se o ângulo regressar ao topo sem atingir esse limiar, a tentativa é descartada e o sistema volta a \texttt{AT\_TOP} sem contar repetição. Em \texttt{ASCENDING}, ao atingir o limiar de extensão, a repetição é contabilizada.
 
 \begin{figure}[h]
    \centering
-   % Nota: Representação lógica da máquina de estados
-   \begin{tabular}{ccccc}
-      \framebox{AT\_TOP} & $\xrightarrow{\text{Ângulo desce abaixo de } 150^\circ}$ & \framebox{DESCENDING} & $\xrightarrow{\text{Atinge ROM ideal } (\le 70^\circ)}$ & \framebox{DESCENDED} \\
-      \null & \null & \null & \null & $\downarrow$ \\
-      \framebox{Rep++} & $\xleftarrow{\text{Ângulo ultrapassa } 150^\circ}$ & \framebox{ASCENDING} & $\xleftarrow{\text{Início da subida}}$ & \framebox{AT\_BOTTOM}
-   \end{tabular}
-   \caption{Diagrama de transição de estados de repetição}
+   \begin{tikzpicture}[
+      >=Stealth,
+      node distance=2.8cm,
+      state/.style={draw, rectangle, rounded corners, minimum width=2.4cm, minimum height=0.9cm, align=center, font=\small}
+   ]
+      \node[state] (top) {AT\_TOP};
+      \node[state, right=of top] (desc) {DESCENDING};
+      \node[state, right=of desc] (asc) {ASCENDING};
+
+      \draw[->] (top) -- node[above, font=\scriptsize] {início da descida} (desc);
+      \draw[->] (desc) -- node[above, font=\scriptsize] {limiar de contagem} (asc);
+      \draw[->] (asc) to[bend left=40] node[below, font=\scriptsize] {limiar de extensão (rep.\ completa)} (top);
+      \draw[->] (desc) to[bend right=30] node[above, font=\scriptsize] {limiar de extensão (rep.\ descartada)} (top);
+   \end{tikzpicture}
+   \caption{Máquina de estados da contagem de repetições.}
    \label{fig:stateMachine}
 \end{figure}
 
-A qualidade de cada repetição é avaliada numa escala de 0 a 100 pontos, ponderando:
+A qualidade de cada repetição parte de 100 pontos, dos quais se subtraem penalizações independentes, não uma distribuição percentual que soma 100. No pior caso, com falha máxima nas três categorias em simultâneo, uma repetição contabilizada fica com 15 pontos, nunca 0: o score reflete sempre que a repetição foi de facto executada até ao limiar de contagem, mesmo que com qualidade fraca.
+
 \begin{itemize}
-    \item \textbf{Dedução de ROM (40\%):} Se o atleta iniciar a subida antes de atingir o limiar de flexão ideal (ex: agachar apenas até $90^\circ$ em vez de $\le 70^\circ$), o score é penalizado proporcionalmente ao desvio;
-    \item \textbf{Cadência Excêntrica (30\%):} A descida deve ser controlada, demorando entre 2.0 e 4.0 segundos. Descer demasiado depressa deduz pontos;
-    \item \textbf{Cadência Concêntrica (30\%):} A subida deve durar entre 0.8 e 2.0 segundos, penalizando movimentos explosivos descontrolados.
+    \item \textbf{Dedução de ROM (até 40 pontos):} a repetição só é contabilizada a partir do limiar de contagem, mais permissivo do que o limiar ideal (valores completos por exercício na Secção \ref{sec:fundamentos}). Entre os dois limiares, a penalização cresce de forma linear e contínua até ao máximo de 40 pontos;
+    \item \textbf{Cadência Excêntrica (até 30 pontos):} A duração ideal da fase excêntrica varia por exercício: entre 2.0 e 4.0 segundos no Agachamento, e entre 1.5 e 3.0 segundos na Flexão de Braços e no Lunge. Descer demasiado depressa deduz 30 pontos; descer demasiado devagar deduz 10 pontos;
+    \item \textbf{Cadência Concêntrica (até 15 pontos):} A subida deve durar entre 0.5 e 2.0 segundos, igual em todos os exercícios. Subir demasiado depressa deduz 15 pontos; subir demasiado devagar deduz 10 pontos.
 \end{itemize}
+
+O mecanismo descrito acima, a máquina de estados e as três categorias de dedução, aplica-se aos três exercícios contados por repetição (Agachamento, Flexão de Braços e Lunge). A Prancha Isométrica, por não ter fases concêntrica e excêntrica distintas, é avaliada de forma diferente: em vez de percorrer os três estados, o sistema verifica continuamente se o ângulo do tronco se mantém dentro da janela de deteção ($155^\circ$ a $185^\circ$, Secção \ref{sec:fundamentos}); enquanto isso se mantiver verdadeiro, o tempo de prancha acumula-se e o score resulta do desvio médio do ângulo em relação ao valor ideal ($170^\circ$) ao longo de todo o segmento contínuo, e não de penalizações separadas por fase.
+
+O Lunge tem ainda uma condição adicional que a máquina de estados por si só não capta: como o sistema monitoriza apenas o joelho traseiro e o utilizador alterna a perna da frente entre repetições, um ciclo completo de \texttt{DESCENDING} para \texttt{ASCENDING} só é contabilizado como repetição se a perna da frente tiver mudado desde a última repetição contada. Isto evita que duas descidas seguidas da mesma perna, sem alternância, sejam contadas como duas repetições distintas.
+
+Para tornar concreta a interação entre a máquina de estados e a fórmula de pontuação, considere-se o Agachamento (limiar ideal $70^\circ$, limiar de contagem $90^\circ$, cadência excêntrica ideal entre 2.0 e 4.0s, concêntrica ideal entre 0.5 e 2.0s), acompanhando duas repetições distintas do mesmo utilizador.
+
+Na Repetição 1, o utilizador parte de \texttt{AT\_TOP} com o joelho a $165^\circ$. Ao descer abaixo dos $145^\circ$ (início da fase excêntrica), o sistema transita para \texttt{DESCENDING} e começa a contar o tempo. O ângulo mínimo atingido é $65^\circ$, ultrapassando o limiar de contagem ($90^\circ$), pelo que o sistema transita para \texttt{ASCENDING}; a fase excêntrica durou 2.5 segundos. Na subida, o joelho volta a ultrapassar os $160^\circ$ ao fim de 1.2 segundos (fase concêntrica), o que completa a repetição e a devolve a \texttt{AT\_TOP}. Como o ângulo mínimo ($65^\circ$) ultrapassa o limiar ideal ($70^\circ$), a dedução de ROM é nula; as durações de 2.5s e 1.2s ficam dentro dos intervalos ideais das respetivas fases, pelo que também não há dedução de cadência. O score final é $100$.
+
+Na Repetição 2, o mesmo percurso repete-se, mas o utilizador só desce até $82^\circ$ antes de inverter o movimento. Como $82^\circ$ ainda ultrapassa o limiar de contagem ($90^\circ$), a repetição continua a ser contabilizada, mas já não atinge o limiar ideal ($70^\circ$), pelo que a dedução de ROM deixa de ser nula: $\text{penalização} = \frac{82-70}{90-70} \times 40 = 24$ pontos. Mantendo as mesmas cadências da Repetição 1 (sem dedução adicional), o score final é $100 - 24 = 76$.
+
+A Tabela \ref{tab:exemploPratico} resume as duas repetições.
+
+\begin{table}[h]
+   \centering
+   \begin{tabular}{lccc}
+      \textbf{Repetição} & \textbf{Ângulo mínimo} & \textbf{Cadências (exc. / conc.)} & \textbf{Score final} \\
+      \hline
+      1 (profunda) & $65^\circ$ & 2.5s / 1.2s (dentro do ideal) & 100 \\
+      2 (rasa) & $82^\circ$ & 2.5s / 1.2s (dentro do ideal) & 76 \\
+      \hline
+   \end{tabular}
+   \caption{Exemplo prático de duas repetições de Agachamento e a pontuação resultante}
+   \label{tab:exemploPratico}
+\end{table}
