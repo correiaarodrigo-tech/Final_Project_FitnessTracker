@@ -21,14 +21,6 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 ## Diário de Bordo
 
-<details open>
-  <summary><b>16/07/2026</b></summary>
-  
-  *   **Testes de Usabilidade e Ações Corretivas**: Após a análise dos testes práticos aos 3 Grupos de Literacia Tecnológica, implementámos soluções críticas de usabilidade.
-  *   **Localização Global (pt-PT) e Seletor de Idioma**: Com base direta no feedback dos utilizadores (especialmente o Grupo A com menor literacia), traduzimos integralmente a interface para Português. Adicionámos também um seletor manual de idioma (Sistema/Inglês/Português) na criação de conta e edição de perfil, facilitando o onboarding de novos utilizadores.
-  *   **Visibilidade à Distância**: Refatoração do HUD (escala e espessura) para visualização clara a 4-6 metros.
-  *   **Fix Oclusão Lunge**: Alteração do joelho rastreado para a perna frontal, eliminando falsos negativos no Lunge.
-</details>
 
 <details>
   <summary><b>17/03/2026</b></summary>
@@ -148,6 +140,16 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - Conclusão e registo de 7 sessões de testes de usabilidade com utilizadores reais divididos em 3 perfis de literacia digital em `04_Teste/resultados_testes_usuabilidade.md`.
 - Revisão do guião de testes (`Guião  Testes Utilizadores.md`) e criação de estrutura para arquivo de declarações de consentimento assinado.
 
+</details>
+
+
+<details>
+  <summary><b>16/07/2026</b></summary>
+  
+  *   **Testes de Usabilidade e Ações Corretivas**: Após a análise dos testes práticos aos 3 Grupos de Literacia Tecnológica, implementámos soluções críticas de usabilidade.
+  *   **Localização Global (pt-PT) e Seletor de Idioma**: Com base direta no feedback dos utilizadores (especialmente o Grupo A com menor literacia), traduzimos integralmente a interface para Português. Adicionámos também um seletor manual de idioma (Sistema/Inglês/Português) na criação de conta e edição de perfil, facilitando o onboarding de novos utilizadores.
+  *   **Visibilidade à Distância**: Refatoração do HUD (escala e espessura) para visualização clara a 4-6 metros.
+  *   **Fix Oclusão Lunge**: Alteração do joelho rastreado para a perna frontal, eliminando falsos negativos no Lunge.
 </details>
 
 ## Objetivos Semanais (14-20 Junho)
