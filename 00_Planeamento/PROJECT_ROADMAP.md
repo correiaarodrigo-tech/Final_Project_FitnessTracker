@@ -146,6 +146,12 @@ Draws weekly workout histories directly onto a custom Jetpack Compose `Canvas` b
 
 ## ✅ Development Log
 
+### 2026-07-16 — Usability Hotfixes & App-wide Localization
+*   **App-wide Localization (`strings.xml`)**: Translated the entire UI to Portuguese (pt-PT) to eliminate the language barrier for low-literacy users, maintaining specific fitness terms (Squats, Lunges, XP, Level) in English.
+*   **Lunge Tracking Architecture (`LungeExercise.kt`)**: Remodeled tracking to follow the forward knee, permanently fixing occlusion false negatives.
+*   **HUD Visiblity Boost (`OverlayView.kt`)**: Redesigned overlay scaling parameters (150f rep counter, 18f stroke width) for optimal 2-6 meter readability.
+*   **Documentation Alignment**: Updated the `RELATORIO_GUIDE.md` to map out the official 40-page Linear Structure with 6 chapters.
+
 ### 2026-07-12 — Usability Tests & Results Logging
 *   **Usability Evaluation Logs (`resultados_testes_usuabilidade.md`)**: Documented results from 7 usability test sessions across 3 smartphone literacy groups (low, medium, advanced).
 *   **User Test Guide (`Guião  Testes Utilizadores.md`)**: Corrected numbering and revised question flow for clarity.

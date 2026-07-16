@@ -21,6 +21,15 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 
 ## Diário de Bordo
 
+<details open>
+  <summary><b>16/07/2026</b></summary>
+  
+  *   **Testes de Usabilidade e Ações Corretivas**: Após a análise dos testes práticos aos 3 Grupos de Literacia Tecnológica, implementámos soluções críticas de usabilidade.
+  *   **Localização Global (pt-PT)**: Eliminação da barreira linguística para utilizadores com menor literacia, traduzindo integralmente a interface para Português (mantendo jargão de fitness em inglês).
+  *   **Visibilidade à Distância**: Refatoração do HUD (escala e espessura) para visualização clara a 4-6 metros.
+  *   **Fix Oclusão Lunge**: Alteração do joelho rastreado para a perna frontal, eliminando falsos negativos no Lunge.
+</details>
+
 <details>
   <summary><b>17/03/2026</b></summary>
 

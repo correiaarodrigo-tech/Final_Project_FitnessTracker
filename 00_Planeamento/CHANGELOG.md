@@ -2,6 +2,16 @@
 
 This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
 
+## [2026-07-16] Usability Hotfixes & App-wide Localization
+
+### Added
+*   **App-wide Localization (`res/values-pt/strings.xml`)**: Full Portuguese translation of the UI, solving the high barrier of entry for Group A (low tech literacy) observed during usability testing. Kept core fitness terms (Squats, Lunges, XP) in English.
+
+### Modified
+*   **HUD Scaling & Visibility (`OverlayView.kt`)**: Drastically scaled up the on-screen typography (rep counter increased to 150f) and doubled the thickness of the MediaPipe skeleton tracking lines to guarantee visibility from 2 to 6 meters away.
+*   **Lunge Tracking Fix (`LungeExercise.kt`)**: Refactored the tracking logic to monitor the *forward* knee instead of the back knee. This permanently eliminates the false negatives caused by physical occlusion of the rear leg during side-profile execution. Thresholds were also made more lenient.
+*   **TTS Debounce (`TTSHelper.kt`)**: Confirmed implementation of a 500ms delay debounce for audio feedback cues to prevent voice overlap during rapid consecutive repetitions.
+
 ## [2026-07-12] Usability Tests & Results Logging
 
 ### Added

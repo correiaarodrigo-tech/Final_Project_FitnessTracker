@@ -1,60 +1,51 @@
-# Guia de Estrutura do Relatório (Opção Alternativa — Máx. 20 Páginas)
+# Guia de Estrutura do Relatório (Estrutura Linear)
 
-Este documento serve como mapa de planeamento para redigir o relatório oficial do projeto de fim de curso em LaTeX, no diretório `_RELATORIO/overleaf/`.
+Este documento serve como mapa de planeamento para redigir o relatório oficial do projeto, seguindo a **Estrutura Linear (Usual)** definida pelo ISEL (modelo "book" em LaTeX).
 
----
-
-## 📘 PARTE 1 — Decisões e Desenho (Máx 10 Páginas)
-
-### Capítulo 1: Introdução e Motivação (~2 Páginas)
-*   **Enquadramento do Problema**: Prática de exercício físico doméstico sem acompanhamento profissional; elevado risco de lesões por postura incorreta e falta de motivação (gamificação).
-*   **Objetivos do Projeto**: Desenvolver uma aplicação Android nativa que use inteligência artificial para monitorizar a postura do utilizador em tempo real, calcular métricas biomecânicas e motivá-lo com um sistema competitivo.
-*   **Decisão de Processamento Local (Edge AI)**: Justificar o uso de MediaPipe BlazePose rodando diretamente no telemóvel para menor latência, privacidade e ausência de custos com servidores de processamento de vídeo.
-*   **Contribuições do Trabalho**:
-    *   Modelo matemático para cálculo de ângulos e máquina de estados de repetição.
-    *   Algoritmo de avaliação de postura baseado em referências oficiais de cinesiologia (ACSM, NSCA).
-    *   Arquitetura de dados NoSQL pre-agregada na escrita (Write-Time Aggregation) para leaderboards escaláveis.
-
-### Capítulo 2: Decisões e Desenho Técnico (~4 Páginas)
-*   **Arquitetura do Cliente**: Uso de padrão MVVM (Model-View-ViewModel), Jetpack Compose para UI declarativa e CameraX para pipeline fluido de vídeo.
-*   **Arquitetura do Servidor (NoSQL Firestore)**:
-    *   **Estratégia de Agregação na Escrita (Write-Time Aggregation)**: Detalhar a transação no código Kotlin que atualiza os recordes do utilizador no momento do commit do treino.
-    *   **Análise de Prós e Contras**:
-        *   *Prós*: Leituras na base de dados altamente otimizadas ($O(1)$) para renderizar gráficos semanais e leaderboards globais. Sem custos de leitura excessivos.
-        *   *Contras*: Complexidade extra no código Kotlin da transação.
-*   **Métricas Biomecânicas e Cinemáticas (Limiares)**:
-    *   Apresentar os limiares de ângulo de flexão e extensão das articulações para os exercícios implementados (Agachamento $\le 70^\circ$, Flexão $\le 70^\circ$, Afundo $\le 80^\circ$).
-    *   Citar a fundamentação científica: ACSM (cadências e teste de flexão), NSCA (alinhamento espinhal e agachamento paralelo) e FITescola (protocolo de falha e ritmo).
-
-### Capítulo 3: Usabilidade e Validação Prática (~3 Páginas)
-*   **Protocolo de Teste de Utilizadores**: Descrição do protocolo baseado em `04_Teste/Guião  Testes Utilizadores.md` e `04_Teste/resultados_testes_usuabilidade.md`, aplicado a 7 participantes divididos em 3 Grupos de Literacia Tecnológica:
-    *   *Grupo A (Literacia Baixa - Leandra, António)*: Avaliação da autonomia inicial, suporte em jargões de login e dependência de apoio visual.
-    *   *Grupo B (Literacia Média - Mónica, Carlos, Mafalda)*: Teste de fluxos de treino padrão, calibração em ambientes domésticos e enquadramento.
-    *   *Grupo C (Literacia Avançada - Tomás, Tiago)*: Teste dos limites do algoritmo a ritmos elevados de execução, posturas limite e estaturas elevadas (>1,90m).
-*   **Resultados de Usabilidade (SUS e Métricas)**: Apresentação da análise quantitativa extraída via formulário (Google Forms) e taxas de sucesso por exercício (Squats e Lunges com excelente fiabilidade; Push-ups com oclusões no chão).
-*   **Feedback Qualitativo e Otimizações Identificadas**:
-    *   *Interface & Idioma*: Necessidade de seletor PT/EN para evitar hesitações na autenticação.
-    *   *Pacing do Áudio (TTS)*: Ajuste de cadência de voz a 0.5s para prevenir sobreposição de frases.
-    *   *Visibilidade à Distância*: Necessidade de ampliar a escala de texto do ecrã para distâncias de 2.5m a 4.1m.
-
-### Capítulo 4: Conclusão e Trabalho Futuro (~1 Página)
-*   **Conclusão**: Síntese dos objetivos atingidos (deteção de pose local a 30 FPS, feedback por áudio funcional, tabelas de classificação).
-*   **Trabalho Futuro**: Sugestões de melhoria (ex: suporte a tripés, ajuste dinâmico de volume de áudio, feedback vibratório).
+A Estrutura Linear caracteriza-se por uma narrativa contínua, coerência global e uma extensão máxima estrita de **40 páginas** (excluindo capa, índices e anexos). Abaixo encontra-se a distribuição otimizada das páginas por capítulo para acomodar as necessidades específicas do projeto Fitness Tracker.
 
 ---
 
-## 📑 PARTE 2 — Evidências e Rastreabilidade (Máx 10 Páginas)
+## Estrutura Otimizada (Extensão Total: ~35 a 40 Páginas)
 
-### Capítulo 5: Engenharia de Prompts e Rastreabilidade de IA (~3 Páginas)
-*   **Conjunto de Prompts Utilizado**: Resumo e seleção dos prompts críticos de `prompt_set.TXT` que foram usados para gerar as partes complexas do software (ex: renderização do Compose Canvas, máquina de estados do tracker de pose e transações Firestore).
-*   **Processo de Pair-Programming**: Descrição de como o grupo refinou as sugestões de código da IA para garantir segurança de tipos e tratamento de nulos no ecossistema Android.
+### Capítulo 1: Introdução (~3 Páginas)
+*   **Contexto e Motivação:** A crescente adoção da prática de exercício físico no domicílio e a democratização da Inteligência Artificial associada ao paradigma de *Edge Computing* (processamento distribuído em dispositivos móveis).
+*   **Formulação do Problema:** A inerente dificuldade na manutenção da postura biomecânica correta e na contabilização rigorosa de repetições na ausência de supervisão profissional.
+*   **Objetivos e Contributos:** Conceção e desenvolvimento de uma aplicação móvel nativa (Android) capaz de extrair o mapeamento tridimensional da pose humana em tempo real, fornecendo correção postural, contagem autónoma de repetições e mecânicas de gamificação. Dever-se-á referenciar o motor de avaliação, a máquina de estados implementada e o sistema de sintetização de voz (TTS).
+*   **Estrutura do Documento:** Síntese da organização temática dos capítulos subsequentes.
 
-### Capítulo 6: Implementação de Código Crítico (~4 Páginas)
-*   **Máquina de Estados de Repetição**: Mostrar trechos de código do `RepPhaseTracker.kt` demonstrando a lógica de transição entre estados (`AT_TOP` -> `DESCENDING` -> `DESCENDED` -> `ASCENDING` -> `AT_TOP`).
-*   **Pontuação Postural e Ritmo**: Exposição do código em `FormEvaluator.kt` que calcula deduções matemáticas de ROM e cadência de descida/subida.
-*   **Transação Firestore**: Exposição do trecho de código em `MainActivity.kt` que atualiza atomicamente os agregados de Kcal, XP, Volume e Cadência na base de dados.
+### Capítulo 2: Trabalho Relacionado (~5 Páginas)
+*   **Sensores Inerciais (IMUs) vs. Visão por Computador:** Estudo comparativo das abordagens clássicas e contemporâneas no rastreio da atividade física.
+*   **Frameworks de Estimativa de Pose:** Análise crítica das arquiteturas *OpenPose*, *YOLO-pose* e *MediaPipe BlazePose*. 
+*   **Privacidade e Edge Computing:** Fundamentação da escolha do *MediaPipe* justificada pela viabilidade do processamento inferencial local (*Edge AI*), assegurando baixa latência e a retenção de dados sensíveis no dispositivo do utilizador em detrimento de soluções assentes em servidores remotos.
+*   **Aplicações Similares na Literatura:** Revisão bibliográfica de soluções análogas orientadas à deteção e avaliação motora.
 
-### Capítulo 7: Evidências Visuais e de Execução (~3 Páginas)
-*   **Interface Gráfica**: Capturas de ecrã do dashboard de estatísticas, gráfico Canvas neon e o pop-up de detalhe do treino.
-*   **Competição (Leaderboards)**: Capturas de ecrã da aba de leaderboards populada em tempo real a partir de dados agregados de vários utilizadores.
-*   **Testes de Compilação**: Logs de sucesso da compilação Gradle no terminal, provando a qualidade estática do código Kotlin.
+### Capítulo 3: Modelo Proposto (~8 Páginas)
+*   **Requisitos do Sistema:** Elicitação dos requisitos funcionais e não-funcionais, com especial enfoque na autonomia do utilizador.
+*   **Fundamentos e Cinesiologia:** Definição formal dos eixos articulares e da respetiva modelação matemática (álgebra vetorial e aplicação da função \(\arccos\)).
+*   **Amplitudes de Movimento (ROM):** Formalização da teoria biomecânica determinante para o sucesso da execução motora (baseada nos postulados de Norkin e White) nos exercícios: *Squats*, *Push-ups*, *Lunges* e *Plank*.
+*   **Métrica de Avaliação (Form Scoring):** Conceptualização teórica da avaliação do desempenho, estipulando os critérios matemáticos de penalização perante desvios angulares, limites isométricos e dissonância cadencial.
+
+### Capítulo 4: Implementação do Modelo (~12 Páginas)
+*   **Arquitetura Android:** Adoção do padrão de desenho MVVM (*Model-View-ViewModel*), injeção de dependências e a interface de comunicação da biblioteca *CameraX* com o módulo *PoseLandmarker* do *MediaPipe*.
+*   **A Máquina de Estados:** Representação e descrição lógica do autómato finito responsável pela validação das fases do exercício (\texttt{AT\_TOP} $\to$ \texttt{DESCENDING} $\to$ \texttt{ASCENDING} $\to$ \texttt{AT\_TOP}). 
+*   **A Mecânica de Oclusão (O caso Lunge):** Evidência da estratégia algorítmica adotada (rastreio do joelho em posição frontal) para mitigar a latência e falsos negativos decorrentes da oclusão visual.
+*   **Feedback Corretivo Nativo (TTS):** Metodologia de atuação do sistema *Text-To-Speech* em tempo real, com ênfase na implementação do mecanismo de *debounce* (atraso intencional de 500ms) para suprimir a sobreposição acústica.
+*   **Gamificação e Arquitetura Firestore:** Descrição da camada analítica e respetiva gestão assíncrona de dados via transações.
+
+### Capítulo 5: Validação e Testes Práticos (~8 Páginas)
+*   **Ambientes de Teste de Performance:** Validação experimental da *pipeline* de IA, contrapondo o comportamento em arquiteturas ARM (físicas) face a constrangimentos emulados (x86).
+*   **Testes de Usabilidade (SUS):** 
+    *   Análise quantitativa do formulário *System Usability Scale* segregada por estratos de literacia tecnológica.
+    *   Ações Corretivas Implementadas: Localização integral da interface para a língua Portuguesa (focada no Grupo A) e redimensionamento tipográfico/vetorial do ecrã para visibilidade à distância ótima de enquadramento (2-6 metros).
+*   **Integração IA e Relatório (Metodologia):** Clarificação metodológica da inclusão do ficheiro `prompt_set.txt` e uso da anotação `#my_code` para certificação da autoria algorítmica.
+
+### Capítulo 6: Conclusões e Trabalho Futuro (~2 Páginas)
+*   **Síntese Final:** Reflexão sobre a proficiência dos dispositivos móveis contemporâneos enquanto ferramentas biométricas viáveis e a consolidação do modelo de *Edge Computing*.
+*   **Trabalho Futuro:** Prospetiva de expansões funcionais (e.g., sistemas multijogador síncronos, interconectividade com *smartwatches* e rastreio volumétrico da rotação da pélvis para refinação da análise lombar).
+
+---
+
+## Dicas para Redação Linear
+- Certifique-se de que cada capítulo termina com uma breve "ponte" de transição para o capítulo seguinte, garantindo a "coerência global" exigida pela estrutura.
+- Todo o código crítico deve ser colocado em caixas "Listing" formatadas ou referenciado (com a respetiva etiqueta `#my_code` num anexo).
