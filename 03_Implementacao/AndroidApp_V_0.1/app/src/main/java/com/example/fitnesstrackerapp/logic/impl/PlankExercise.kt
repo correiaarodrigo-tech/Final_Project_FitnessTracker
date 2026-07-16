@@ -7,7 +7,7 @@ import com.example.fitnesstrackerapp.logic.RepMetrics
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 
 /**
- * Ideal is a straight line from shoulder to hip to knee (180 degrees).
+ * Ideal matches the hold-detection window's center (170 degrees).
  * The score drops the more the body sags or pikes away from that.
  */
 class PlankExercise : Exercise {
@@ -22,9 +22,9 @@ class PlankExercise : Exercise {
     override val repHistory = mutableListOf<RepMetrics>()
 
     companion object {
-        private const val IDEAL_ANGLE_DEG = 180.0
-        // Degrees of sag/pike allowed before the score hits 0.
-        private const val MAX_DEVIATION_FOR_ZERO_SCORE = 25.0
+        private const val IDEAL_ANGLE_DEG = 170.0
+        // Matches the hold window's half-width, so score hits 0 exactly at its edges.
+        private const val MAX_DEVIATION_FOR_ZERO_SCORE = 15.0
         private const val HOLD_WINDOW_MIN = 155.0
         private const val HOLD_WINDOW_MAX = 185.0
     }
