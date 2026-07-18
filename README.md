@@ -39,7 +39,7 @@ https://github.com/user-attachments/assets/02eea182-ff08-405c-acd8-cbe90ddb5083
 
 ---
 
-## ⚙️ Instalação e Utilização
+##  Instalação e Utilização
 
 ### Pré-requisitos
 *   **Hardware:** *Smartphone* Android com câmara funcional (mínimo recomendado para inferência em tempo real: processador Snapdragon série 700 ou equivalente).
