@@ -10,7 +10,8 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 ### Modified
 *   **Correções de Código**: Resolução de um pequeno bug de scope `@Composable` no cálculo de `strings` na `DashboardActivity`.
 *   **Uniformização do Idioma**: A app e documentação foram totalmente traduzidas/uniformizadas para a língua nativa Portuguesa. Todas as *hardcoded strings* em 8 atividades UI foram extraídas para `strings.xml` e `strings-pt.xml`, preservando os termos técnicos em Inglês.
-*   **Relatório Final**: Continuação da redação do relatório de entrega.
+*   **Reestruturação do Repositório**: Ficheiros de anotações e pesquisas soltos na raiz (como `Notes.md` e `project_research_background.md`) foram processados, traduzidos para formato académico e movidos para `01_Analise/` (`Fundamentacao_Teorica.md` e `Biomecanica_Exercicios.md`), de forma a cumprir rigorosamente as normas de entrega do projeto.
+*   **Relatório Final**: Início imediato da planificação e redação em massa do relatório final de entrega (escrito logo a seguir a esta operação).
 
 ## [2026-07-16] Hotfixes de Usabilidade & Localização Global da App (Melhorias Pós-Teste)
 
