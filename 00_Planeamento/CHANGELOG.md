@@ -10,7 +10,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 ### Modified
 *   **Correções de Código**: Resolução de um pequeno bug de scope `@Composable` no cálculo de `strings` na `DashboardActivity`.
 *   **Uniformização do Idioma**: A app e documentação foram totalmente traduzidas/uniformizadas para a língua nativa Portuguesa. Todas as *hardcoded strings* em 8 atividades UI foram extraídas para `strings.xml` e `strings-pt.xml`, preservando os termos técnicos em Inglês.
-*   **Relatório Final**: Início imediato da planificação e redação em massa do relatório final de entrega (escrito logo a seguir a esta operação).
+*   **Relatório Final**: Continuação da redação do relatório de entrega.
 
 ## [2026-07-16] Hotfixes de Usabilidade & Localização Global da App (Melhorias Pós-Teste)
 
@@ -19,9 +19,9 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 *   **Localização Global da App (`res/values-pt/strings.xml`)**: Traduzida toda a UI para Português (pt-PT) para eliminar a barreira linguística em utilizadores de baixa literacia do Grupo A, mantendo termos específicos de fitness (Squats, Lunges, XP, Level) em Inglês.
 
 ### Modified
-*   **Aumento de Visibilidade HUD (`OverlayView.kt`)**: Redesign dos parâmetros de escala do overlay (contador de repetições 150f, espessura de linha 18f) para garantir legibilidade ideal a 2-6 metros de distância. (Trabalha no Milestone 3)
-*   **Arquitetura de Rastreamento Lunge (`LungeExercise.kt`)**: Remodelação do rastreio para seguir o joelho frontal em vez do traseiro, corrigindo permanentemente os falsos negativos causados pela oclusão mecânica da perna em perfil. (Trabalha no Milestone 2)
-*   **TTS Debounce (`TTSHelper.kt`)**: Confirmada a implementação de um debounce de 500ms para avisos de áudio de modo a evitar sobreposição de vozes em repetições consecutivas rápidas. (Trabalha no Milestone 3)
+*   **Aumento de Visibilidade HUD (`OverlayView.kt`)**: Redesign dos parâmetros de escala do overlay (contador de repetições 150f, espessura de linha 18f) para garantir legibilidade ideal a 2-6 metros de distância. ( Milestone 3)
+*   **Arquitetura de Rastreamento Lunge (`LungeExercise.kt`)**: Remodelação do rastreio para seguir o joelho frontal em vez do traseiro, corrigindo permanentemente os falsos negativos causados pela oclusão mecânica da perna em perfil. ( Milestone 2)
+*   **TTS Debounce (`TTSHelper.kt`)**: Confirmada a implementação de um debounce de 500ms para avisos de áudio de modo a evitar sobreposição de vozes em repetições consecutivas rápidas. (Milestone 3)
 
 ## [2026-07-12] Testes de Usabilidade & Registo de Resultados
 
@@ -32,7 +32,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 ### Modified
 *   **Guia de Teste de Utilizador (`Guião  Testes Utilizadores.md`)**: Revisão do fluxo de perguntas, correção da sequência de numeração e clarificação de tarefas para melhor consistência de teste.
 
-## [2026-07-08] Form Scoring Contínuo & Rep-Count Threshold (Melhora Milestone 3)
+## [2026-07-08] Form Scoring Contínuo & Rep-Count Threshold ( Milestone 3)
 
 ### Added
 *   **Rep-Count Threshold (`ExerciseConfig.kt`)**: Adicionado o `countThresholdDeg`, uma profundidade mais indulgente do que o `idealMinAngleDeg`. Uma repetição agora conta assim que atravessa este limite flexível, em vez de ser ignorada se não chegar à profundidade ideal.
@@ -48,7 +48,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 ## [2026-07-05] Refinamentos de Usabilidade & Custom Plan Creator (Preparação para Testes)
 
 ### Added
-*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Adicionado um ecrã construtor de planos em Compose. Força inserções de passos de descanso ($\ge 30$ segundos) entre todos os exercícios. Valida limites de escala: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps por perna) e Descanso (30-120s). Guarda na Firebase Firestore e passa dinamicamente. (Trabalha no Milestone 1 e 4)
+*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Adicionado um ecrã construtor de planos em Compose. Força inserções de passos de descanso ($\ge 30$ segundos) entre todos os exercícios. Valida limites de escala: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps por perna) e Descanso (30-120s). Guarda na Firebase Firestore e passa dinamicamente. ( Milestone 1 e 4)
 *   **Disclaimer & Calibration Popup (`StartPlanActivity.kt`)**: Adicionado um AlertDialog com isenção de responsabilidade antes de o plano iniciar. Aconselha calibração de câmara de 2 a 6 metros com corpo todo no frame e fornece breves descrições das metas de forma.
 *   **Prefixo de Perna Ativa para Lunges (`LungeExercise.kt`)**: Rastrea automaticamente a perna frontal ativa (LEFT ou RIGHT) com base no mapeamento de coordenadas, precedendo-a nos cues do utilizador.
 *   **Ícone da Aplicação Estilizado**: Adicionado um ícone de halteres branco inclinado a 45 graus sobre fundo técnico escuro com grelhas, reduzido a 65% para caber em todos os device mask shapes (círculo, lágrima, squircle).
@@ -62,7 +62,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
     *   Removido botão "Clear History" da UI para proteger a eliminação acidental de dados.
     *   Lote de seed modificado para anexar treinos à lista existente em vez de os substituir.
 
-## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards (Trabalha no Milestone 1 e 4)
+## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards ( Milestone 1 e 4)
 
 ### Added
 *   **Write-Time Client Aggregation Fields (`UserProfile.kt`)**: Adicionados campos de stats para manter o desempenho diretamente no document do utilizador:
@@ -92,7 +92,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 
 ---
 
-## [2026-06-16] Cues de Orientação de Áudio Text-To-Speech (Trabalha no Milestone 3)
+## [2026-06-16] Cues de Orientação de Áudio Text-To-Speech ( Milestone 3)
 
 ### Added
 *   **Coaching Assistant (`TTSHelper.kt`)**: Implementado o manager nativo `TextToSpeech` no Android. Rate-limited para prevenir overlapping de voz (cooldown de 4 segundos), mas com override imdediato para conclusões de reps ou contagens decrescentes.
@@ -108,7 +108,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 
 ---
 
-## [2026-06-15] Integração Workout Plan & Statistics Dashboard (Trabalha no Milestone 4)
+## [2026-06-15] Integração Workout Plan & Statistics Dashboard ( Milestone 4)
 
 ### Added
 *   **Ecrã Workout Plan Detail (`StartPlanActivity.kt`)**: Apresenta a visão geral de treino. Mostra badges da duração estimada, MET e consumo de Kcal.
@@ -128,7 +128,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 
 ---
 
-## [2026-06-10] Auth, Navegação e Base de Dados (Trabalha no Milestone 1)
+## [2026-06-10] Auth, Navegação e Base de Dados ( Milestone 1)
 
 ### Added
 *   **Status de Amigos Online/Offline & Two-way Confirmation Requests**:
