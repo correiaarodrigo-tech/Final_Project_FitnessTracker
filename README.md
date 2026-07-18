@@ -19,23 +19,6 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 - Pip installer
 - Bibliotecas referenciadas no ficheiro 'requirements.txt'
 
-
-## Objetivos Semanais (14-20 Junho)
-
-- Planeamento de otimizações e métricas sobre lógica negócio (resolução imagem maior ou menor, angulos de exercicio maior ou menor... )
-- [x] Realização de testes / estudo MediaPipe. Entender a Lógica de Negócio. Colocar em papel. (Fundamentar o projeto: ' O que é um exercício?' 'Como identificar um exercício?' 'Como o MediaPipe Analisa uma Imagem?'... etc)
-- [ ] Desenhar plano de implementação Ollama no projeto.
-- [x] Pensar / Desenhar Estrutura de Dados para Utilizadores / Exercícios.
-- [x] Reestruturar e organizar Github. Melhorar documentação via Gifs ilustrativos do desenvolvimento entre outros, documentação de procedimentos ou falhas.
-- Dica ao construir os slides: 1 min por folha, fazer video da demo em vez de live.
-- Outra dica: perguntar a Joana / Jaison problemas identificados com processamento imagem, desafios, soluções... (Projetos idênticos)
-
-## Para pensar...
-
-- modelar classificadores e avalidores mais precisos / eficazes?
-- estatisticas e feedback melhorado -> timers,contagens, representacao visual do utilizador?
-- aprimorar mais exercicios e series? Parametros? Eficácia??
-
 ## Figma
 
 Link - https://www.figma.com/design/wSXHzneXyKGZCTNtxxvbXm/Projeto-Final---FitnessTracking?node-id=0-1&t=3xgmSqZSZ6habhqy-1
