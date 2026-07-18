@@ -92,9 +92,40 @@ Anotações brutas registadas em tempo real pelo observador durante a execução
 
 ---
 
-## 3. Matriz de Respostas ao Questionário Completo (SUS + Métricas Descritivas)
+## 3. Matriz de Respostas ao Questionário Completo (Métricas e Gráficos)
 
-Os dados estatísticos e as métricas de resposta quantitativas (gráficos de distribuição de escala e scores finais) foram processados e agregados externamente. A visualização gráfica completa das respostas individuais e das médias consolidadas pode ser consultada diretamente através do dashboard gerado pela ferramenta de recolha de dados (Google Forms).
+Em vez de recorrer a capturas de ecrã externas, os dados brutos recolhidos via *Google Forms* foram processados e estão renderizados abaixo através da biblioteca gráfica nativa do repositório (Mermaid.js).
+
+### 3.1. Classificação SUS (System Usability Scale) por Participante
+
+O questionário aplicou as 10 perguntas padrão do modelo SUS (escala Likert de 1 a 5). A fórmula foi aplicada para converter as respostas de cada participante num *Score* final de 0 a 100.
+*Nota: A média global da aplicação fixou-se nos **66.42**, um valor muito próximo da média global da indústria de software (68), demonstrando viabilidade do protótipo, mas expondo a necessidade de melhorias de acessibilidade.*
+
+```mermaid
+xychart-beta
+    title "Score SUS Individual (0-100)"
+    x-axis ["Leandra (A)", "António (A)", "Mónica (B)", "Carlos (B)", "Mafalda (B)", "Tomás (C)", "Tiago (C)"]
+    y-axis "Score Final" 0 --> 100
+    bar [65, 37.5, 42.5, 72.5, 77.5, 90, 80]
+```
+
+### 3.2. Métricas Específicas do Sistema (Média de Respostas 1 a 5)
+
+Adicionalmente às perguntas standard do SUS, foram medidas 4 dimensões específicas da usabilidade geométrica da aplicação e clareza da interface.
+
+```mermaid
+xychart-beta
+    title "Métricas de Avaliação Específica (Escala 1 a 5)"
+    x-axis ["Calibração Clara e Rápida", "Feedback Tempo-Real Perceptível", "Confiança no Motor (Tracking)", "Ecrã de Resultados Útil"]
+    y-axis "Classificação Média" 0 --> 5
+    bar [3.71, 3.0, 3.57, 4.33]
+```
+
+### 3.3. Destaques Qualitativos (Síntese)
+As respostas livres da componente qualitativa evidenciaram 3 grandes tendências que influenciaram as correções no código:
+1. **Atropelamento do Áudio:** *"A voz fala muito rápido e confunde"*, *"A voz do telemóvel atropela-se muito"*.
+2. **Barreira Linguística:** *"A aplicação tem partes em inglês e baralhou-me"*, *"Precisa de ter opção traduzida para português"*.
+3. **Eficiência vs Ocasião:** *"o tracking tem um ligeiro delay mas é sólido"*, *"Gostei das cores e estilo da app"*.
 
 ---
 
