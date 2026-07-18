@@ -6,13 +6,13 @@ Uma aplicação móvel Android nativa projetada para atuar como um assistente de
 
 ---
 
-## 👥 Autores
+##  Autores
 - Rodrigo Correia (N.º 45155)
 - David Delgado (N.º 51598)
 
 ---
 
-## 📱 Apresentação (Funcionalidades em Vídeo)
+##  Apresentação (Funcionalidades em Vídeo)
 
 Abaixo seguem os vídeos de demonstração da aplicação:
 
@@ -39,7 +39,7 @@ https://github.com/user-attachments/assets/02eea182-ff08-405c-acd8-cbe90ddb5083
 
 ---
 
-## ⚙️ Instalação e Utilização
+##  Instalação e Utilização
 
 ### Pré-requisitos
 *   **Hardware:** *Smartphone* Android com câmara funcional (mínimo recomendado para inferência em tempo real: processador Snapdragon série 700 ou equivalente).
@@ -55,7 +55,7 @@ https://github.com/user-attachments/assets/02eea182-ff08-405c-acd8-cbe90ddb5083
 
 ---
 
-## 🚀 Trabalho Futuro
+##  Trabalho Futuro
 
 Como prova de conceito escalável, a arquitetura deste projeto foi desenhada para facilitar integrações avançadas que não fizeram parte da entrega MVP atual. (Nota: O trabalho futuro encontra-se dependente de um novo estudo de lançamento com novos requisitos funcionais e análise funcional, nos exatos mesmos moldes do projeto atual).
 

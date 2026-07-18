@@ -4,7 +4,7 @@ Este roadmap detalha a arquitetura do sistema, o design da base de dados e os mo
 
 ---
 
-## 🏗️ Arquitetura do Sistema (MVVM)
+##  Arquitetura do Sistema (MVVM)
 
 A aplicação utiliza uma arquitetura Android limpa e moderna que segue o padrão **MVVM (Model-View-ViewModel)**, construída inteiramente com **Jetpack Compose**. 
 
@@ -20,9 +20,9 @@ graph TD
 
 ---
 
-## 🎯 Marcos de Implementação (Milestones)
+##  Marcos de Implementação (Milestones)
 
-### 📍 Milestone 1: Autenticação de Utilizadores & Cloud Database (Firebase) ✅
+###  Milestone 1: Autenticação de Utilizadores & Cloud Database (Firebase) ✅
 O Firebase integra as contas de utilizador, personalização de perfil e persistência de dados na cloud em tempo real.
 
 #### 1. Configuração de Firebase Authentication ✅
@@ -148,7 +148,7 @@ sequenceDiagram
 
 ---
 
-### 📍 Milestone 2: Expansão da Biblioteca de Exercícios ✅
+###  Milestone 2: Expansão da Biblioteca de Exercícios ✅
 Exercícios suportados e a sua lógica geométrica usando 2D MediaPipe landmarks:
 
 #### 1. Bicep Curl (Braço Único / Alternado) ✅
@@ -177,7 +177,7 @@ Exercícios suportados e a sua lógica geométrica usando 2D MediaPipe landmarks
 
 ---
 
-### 📍 Milestone 3: AI-Driven Scoring & Feedback de Áudio ✅
+###  Milestone 3: AI-Driven Scoring & Feedback de Áudio ✅
 Este módulo analisa a qualidade do movimento em tempo real, fornecendo orientação visual e auditiva.
 
 #### 1. Métrica de Form Scoring ✅
@@ -192,7 +192,7 @@ Utiliza o `TextToSpeech` nativo do Android em Português (`pt-PT`) com um deboun
 
 ---
 
-### 📍 Milestone 4: Gamificação & Analytics ✅
+###  Milestone 4: Gamificação & Analytics ✅
 
 A gamificação da experiência de fitness ajuda os utilizadores a manterem a consistência.
 
