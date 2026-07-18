@@ -2,7 +2,7 @@
 
 Este log rastreia as modificações, melhorias e implementações de funcionalidades da aplicação Fitness Tracker.
 
-## [2026-07-18] Pequenas Correções, Localização da UI & Escrita de Relatório
+## [2026-07-18] Pequenas Correções, Localização da UI & Escrita de Relatório (Refinamentos Gerais)
 
 ### Added
 *   **Seletor de Idioma (`LandingActivity`)**: Adicionado um botão local no `LandingActivity` (`AppCompatDelegate`) para que novos utilizadores possam ler a Pipeline de registo no idioma preferido de imediato, sem afetar o `UserProfile`.
@@ -12,16 +12,16 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 *   **Uniformização do Idioma**: A app e documentação foram totalmente traduzidas/uniformizadas para a língua nativa Portuguesa. Todas as *hardcoded strings* em 8 atividades UI foram extraídas para `strings.xml` e `strings-pt.xml`, preservando os termos técnicos em Inglês.
 *   **Relatório Final**: Início imediato da planificação e redação em massa do relatório final de entrega (escrito logo a seguir a esta operação).
 
-## [2026-07-16] Hotfixes de Usabilidade & Localização Global da App
+## [2026-07-16] Hotfixes de Usabilidade & Localização Global da App (Melhorias Pós-Teste)
 
 ### Added
 *   **In-App Language Toggle (`UserProfile.kt`, `RegisterActivity`, `EditProfileActivity`)**: Resposta direta ao feedback dos testes de usabilidade do grupo de baixa literacia! Adicionado um seletor manual de idioma (Sistema/Inglês/Português) no registo de conta e edição de perfil (`AppCompatDelegate` via Compose). Implementada migração lazy de dados NoSQL para que utilizadores existentes adotem o idioma do Sistema nativamente sem scripts de base de dados forçados.
 *   **Localização Global da App (`res/values-pt/strings.xml`)**: Traduzida toda a UI para Português (pt-PT) para eliminar a barreira linguística em utilizadores de baixa literacia do Grupo A, mantendo termos específicos de fitness (Squats, Lunges, XP, Level) em Inglês.
 
 ### Modified
-*   **Aumento de Visibilidade HUD (`OverlayView.kt`)**: Redesign dos parâmetros de escala do overlay (contador de repetições 150f, espessura de linha 18f) para garantir legibilidade ideal a 2-6 metros de distância.
-*   **Arquitetura de Rastreamento Lunge (`LungeExercise.kt`)**: Remodelação do rastreio para seguir o joelho frontal em vez do traseiro, corrigindo permanentemente os falsos negativos causados pela oclusão mecânica da perna em perfil.
-*   **TTS Debounce (`TTSHelper.kt`)**: Confirmada a implementação de um debounce de 500ms para avisos de áudio de modo a evitar sobreposição de vozes em repetições consecutivas rápidas.
+*   **Aumento de Visibilidade HUD (`OverlayView.kt`)**: Redesign dos parâmetros de escala do overlay (contador de repetições 150f, espessura de linha 18f) para garantir legibilidade ideal a 2-6 metros de distância. (Trabalha no Milestone 3)
+*   **Arquitetura de Rastreamento Lunge (`LungeExercise.kt`)**: Remodelação do rastreio para seguir o joelho frontal em vez do traseiro, corrigindo permanentemente os falsos negativos causados pela oclusão mecânica da perna em perfil. (Trabalha no Milestone 2)
+*   **TTS Debounce (`TTSHelper.kt`)**: Confirmada a implementação de um debounce de 500ms para avisos de áudio de modo a evitar sobreposição de vozes em repetições consecutivas rápidas. (Trabalha no Milestone 3)
 
 ## [2026-07-12] Testes de Usabilidade & Registo de Resultados
 
@@ -32,7 +32,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 ### Modified
 *   **Guia de Teste de Utilizador (`Guião  Testes Utilizadores.md`)**: Revisão do fluxo de perguntas, correção da sequência de numeração e clarificação de tarefas para melhor consistência de teste.
 
-## [2026-07-08] Form Scoring Contínuo & Rep-Count Threshold
+## [2026-07-08] Form Scoring Contínuo & Rep-Count Threshold (Melhora Milestone 3)
 
 ### Added
 *   **Rep-Count Threshold (`ExerciseConfig.kt`)**: Adicionado o `countThresholdDeg`, uma profundidade mais indulgente do que o `idealMinAngleDeg`. Uma repetição agora conta assim que atravessa este limite flexível, em vez de ser ignorada se não chegar à profundidade ideal.
@@ -48,7 +48,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 ## [2026-07-05] Refinamentos de Usabilidade & Custom Plan Creator (Preparação para Testes)
 
 ### Added
-*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Adicionado um ecrã construtor de planos em Compose. Força inserções de passos de descanso ($\ge 30$ segundos) entre todos os exercícios. Valida limites de escala: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps por perna) e Descanso (30-120s). Guarda na Firebase Firestore e passa dinamicamente.
+*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Adicionado um ecrã construtor de planos em Compose. Força inserções de passos de descanso ($\ge 30$ segundos) entre todos os exercícios. Valida limites de escala: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps por perna) e Descanso (30-120s). Guarda na Firebase Firestore e passa dinamicamente. (Trabalha no Milestone 1 e 4)
 *   **Disclaimer & Calibration Popup (`StartPlanActivity.kt`)**: Adicionado um AlertDialog com isenção de responsabilidade antes de o plano iniciar. Aconselha calibração de câmara de 2 a 6 metros com corpo todo no frame e fornece breves descrições das metas de forma.
 *   **Prefixo de Perna Ativa para Lunges (`LungeExercise.kt`)**: Rastrea automaticamente a perna frontal ativa (LEFT ou RIGHT) com base no mapeamento de coordenadas, precedendo-a nos cues do utilizador.
 *   **Ícone da Aplicação Estilizado**: Adicionado um ícone de halteres branco inclinado a 45 graus sobre fundo técnico escuro com grelhas, reduzido a 65% para caber em todos os device mask shapes (círculo, lágrima, squircle).
@@ -62,7 +62,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
     *   Removido botão "Clear History" da UI para proteger a eliminação acidental de dados.
     *   Lote de seed modificado para anexar treinos à lista existente em vez de os substituir.
 
-## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards
+## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards (Trabalha no Milestone 1 e 4)
 
 ### Added
 *   **Write-Time Client Aggregation Fields (`UserProfile.kt`)**: Adicionados campos de stats para manter o desempenho diretamente no document do utilizador:
@@ -92,7 +92,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 
 ---
 
-## [2026-06-16] Milestone 3 Refinements: Audio Guidance Cues (Text-To-Speech)
+## [2026-06-16] Cues de Orientação de Áudio Text-To-Speech (Trabalha no Milestone 3)
 
 ### Added
 *   **Coaching Assistant (`TTSHelper.kt`)**: Implementado o manager nativo `TextToSpeech` no Android. Rate-limited para prevenir overlapping de voz (cooldown de 4 segundos), mas com override imdediato para conclusões de reps ou contagens decrescentes.
@@ -108,7 +108,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 
 ---
 
-## [2026-06-15] Milestone 4: Integração Workout Plan & Statistics Dashboard
+## [2026-06-15] Integração Workout Plan & Statistics Dashboard (Trabalha no Milestone 4)
 
 ### Added
 *   **Ecrã Workout Plan Detail (`StartPlanActivity.kt`)**: Apresenta a visão geral de treino. Mostra badges da duração estimada, MET e consumo de Kcal.
@@ -128,7 +128,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 
 ---
 
-## [2026-06-10] Milestone 1 Layout Fixes: Tablet Centering & Title Re-alignment
+## [2026-06-10] Auth, Navegação e Base de Dados (Trabalha no Milestone 1)
 
 ### Added
 *   **Status de Amigos Online/Offline & Two-way Confirmation Requests**:
@@ -137,21 +137,50 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
     *   **Pending Requests UI Section**: Tabela de requests reais no `DashboardActivity.kt` com botões "Accept" e "Decline".
     *   **Transactional Accept Flow**: "Accept" lança Transação atómica que atualiza ambas as friendsLists e elimina o documento de request.
     *   **Real-time Snapshot Syncing**: Refatoração do `DashboardActivity.kt` e `EditProfileActivity.kt` para usar Snapshot Listeners (`addSnapshotListener` no Compose `DisposableEffect`).
-*   **Tablet Layout & Centering Constraints**: Limitada largura do ecrã para evitar estiramento horizontal exagerado nos tablets (`Modifier.widthIn(max = 480.dp)`).
-*   **Locked Portrait Mode**: `AndroidManifest.xml` bloqueado em portrait mode.
-
----
-
-## [2026-06-10] Milestone 1 Refinements: UI/UX & Data Formatting
-
-### Added
 *   **Forgot Password Dialog**: Dialog stateful integrado em `LandingActivity.kt`.
 *   **Sign Out Action**: Botão vermelho em `DashboardActivity.kt`.
 *   **First Name Parser**: O dashboard mostra unicamente o primeiro nome (e.g. "Welcome Back, Rodrigo").
 *   **Loader Activity**: Criada `LoaderActivity.kt` com animado neon spinner.
+*   **Tablet Layout & Centering Constraints**: Limitada largura do ecrã para evitar estiramento horizontal exagerado nos tablets (`Modifier.widthIn(max = 480.dp)`).
+*   **Locked Portrait Mode**: `AndroidManifest.xml` bloqueado em portrait mode.
 
 ### Modified
 *   **Prevent Screen Locking**: Mantém o ecrã ativo na app via `FLAG_KEEP_SCREEN_ON`.
 *   **Human-Readable Firestore Dates**: O sistema agora usa e analisa objetos reais `Timestamp` do Firestore em vez do long timestamp para melhor compatibilidade.
 *   **User Numeric ID**: Códigos aleatórios de 5 dígitos na criação da conta (e.g. `#12345`).
 *   **Transitions via Loader**: Fluxo da `LandingActivity` e `DashboardActivity` para o treino usa o Ecrã de `LoaderActivity`.
+
+---
+
+## Histórico Inicial do Projeto (Fundamentos e Análise)
+
+### [2026-06-09]
+*   Planeamento da estrutura de navegação.
+*   Implementação Navegação entre as Activities da aplicação (exploração do fluxo de ecrãs)
+*   Definição e configuração de temas visuais para a interface
+*   Planeamento de métodos autenticação de utilizadores e Integração na App.
+
+### [2026-05-18]
+*   Preparação da apresentação para o FEIM 2026.
+*   Avaliação do Ponto de Situação do projeto e Redefinição de Prioridades.
+*   Pausa curta no Projeto para fechar outras unidades curriculares.
+
+### [2026-05-07]
+*   Desenho dos layouts da aplicação no Figma.
+*   Coletânea de documentos (Google Scholar) para criação de métricas / estudo do problema / lógica do negócio.
+*   Identificação de use case para Ollama: Criação de VM na cloud para integração via API sobre as features construídas no projeto (ex: Feedback via ollama do regime de treinos e resultados).
+*   Enquadramento com Orientador de Projeto sobre casos críticos a resolver até ao FEIM.
+
+### [2026-04-25]
+*   Adaptação do código python para um projeto Android, dando origem ao esqueleto de desenvolvimento do produto final.
+*   Testes realizados e avaliação do estado atual de desenvolvimento. Planeamento em conjunto com o orientador.
+
+### [2026-04-19]
+*   Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas à app ficam inseridas no ambiente Android que facilita a ponte com o front-end da aplicação final.
+
+### [2026-03-24]
+*   Realização dos casos de utilização e requisitos funcionais e atributos do sistema. Documentos disponíveis na drive.
+
+### [2026-03-17]
+*   Criação do repositório.
+*   Criadas pastas e classes para iniciar o desenvolvimento de um simples projeto piloto em Python. Desenvolvimento de uma estrutura base para planeamento da aplicação.
