@@ -1,6 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">FitnessTrackerApp</string>
-    <!-- Landing / Login -->
+    
     <string name="login_title">Iniciar Sessão</string>
     <string name="email_label">Endereço de Email</string>
     <string name="password_label">Palavra-passe</string>
@@ -13,14 +14,14 @@
     <string name="btn_send">Enviar</string>
     <string name="btn_close">Fechar</string>
 
-    <!-- Register -->
+    
     <string name="register_title">Criar Conta</string>
     <string name="name_label">Nome Completo</string>
     <string name="btn_register">REGISTAR</string>
     <string name="have_account">Já tem uma conta? </string>
     <string name="sign_in_link">Iniciar sessão</string>
 
-    <!-- Dashboard & Generic -->
+    
     <string name="dashboard_title">Painel do Atleta</string>
     <string name="welcome_back">Bem-vindo de volta, %1$s</string>
     <string name="create_plan">Criar Plano</string>
@@ -32,7 +33,7 @@
     <string name="btn_save">GUARDAR</string>
     <string name="btn_back">Voltar</string>
 
-    <!-- Social -->
+    
     <string name="friends_list">Lista de Amigos</string>
     <string name="add_friend_code">Adicionar Amigo por Código (ex: #12345)</string>
     <string name="pending_requests">Pedidos Pendentes</string>
@@ -40,7 +41,7 @@
     <string name="btn_decline">Recusar</string>
     <string name="challenge_sent">Desafio enviado a %1$s!</string>
 
-    <!-- Stats & Results -->
+    
     <string name="workout_summary">Resumo do Treino</string>
     <string name="calories_burned">Calorias Queimadas</string>
     <string name="avg_form">Forma Média</string>
@@ -49,7 +50,7 @@
     <string name="avg_concentric">Fase concêntrica média (subida)</string>
     <string name="avg_eccentric">Fase excêntrica média (descida)</string>
 
-    <!-- HUD / Cues -->
+    
     <string name="hud_get_ready">Prepara-te!</string>
     <string name="hud_go">VAI!</string>
     <string name="hud_hold_still">Mantém a posição...</string>
@@ -57,4 +58,66 @@
     <string name="hud_get_position">Coloca-te em posição</string>
     <string name="hud_rest">Faz uma pausa.</string>
     <string name="hud_rest_finish">Pausa terminada! Prepara-te.</string>
-</resources>
+<string name="plan_name_label">Nome do Plano</string>
+    <string name="btn_add_to_workout">Adicionar ao Treino</string>
+    <string name="add_exercises_hint">Adicione exercícios para montar o plano.</string>
+    <string name="toast_rest_added">Descanso de 30s inserido automaticamente!</string>
+    <string name="toast_missing_plan_name">Por favor, defina um nome para o plano!</string>
+    <string name="toast_missing_exercise">Adicione pelo menos um exercício ao plano!</string>
+    <string name="toast_missing_rest">Erro: Insira um período de descanso entre os exercícios!</string>
+    <string name="toast_plan_saved">Plano guardado com sucesso!</string>
+    <string name="toast_save_error">Erro ao guardar plano: %1$s</string>
+    <string name="full_name_label">Nome Completo</string>
+    <string name="weight_label">Peso (kg)</string>
+    <string name="height_label">Altura (cm)</string>
+    <string name="add_friend_hint">Adicionar Amigo por Código (ex: #12345)</string>
+    <string name="btn_add">Adicionar</string>
+    <string name="btn_challenge">Desafio</string>
+    <string name="btn_stats">Status</string>
+    <string name="plan_squats_count">Squats: %1$d séries</string>
+    <string name="plan_pushups_count">Push-ups: %1$d séries</string>
+    <string name="plan_lunges_count">Lunges: %1$d séries</string>
+    <string name="btn_start_uppercase">COMEÇAR</string>
+    <string name="btn_cancel_uppercase">CANCELAR</string>
+    <string name="btn_done">Concluir</string>
+    <string name="form_per_rep">Forma por repetição</string>
+    <string name="no_leaderboard_records">Nenhum registo de classificação encontrado.</string>
+    <string name="seed_mock_data">Gerar Dados Falsos</string>
+    <string name="hud_form_score">Form  %1$d/100</string>
+    <string name="hud_audio_warning">Nota: Será usado guia de áudio (opcional mas recomendado)</string>
+    <string name="app_subtitle">Treina onde quiseres!</string>
+    <string name="language_preference">Idioma Preferido</string>
+    <string name="athlete_prefix">Atleta %1$s</string>
+    <string name="athlete_dashboard_title">Painel do Atleta</string>
+    <string name="sign_out_btn">Terminar Sessão</string>
+    <string name="select_routine">Selecione e siga uma rotina</string>
+    <string name="active_badge">Ativo</string>
+    <string name="track_metrics">Acompanhe métricas e consistência</string>
+    <string name="analytics_badge">Analítica</string>
+    <string name="demo_workout">Treino de Demonstração</string>
+    <string name="multi_exercise">Rotina multi-exercício com IA</string>
+    <string name="beta_live">Beta Live</string>
+    <string name="demo_pushups">Demonstração de Flexões</string>
+    <string name="ai_pushup">Contador de flexões com IA</string>
+    <string name="push_up">Push-Up</string>
+    <string name="track_reps_elbow">Acompanhe reps, ritmo e cotovelo</string>
+    <string name="test_badge">Teste</string>
+    <string name="squat">Squat</string>
+    <string name="track_reps_knee">Acompanhe reps, ritmo e joelho</string>
+    <string name="lunge">Lunge</string>
+    <string name="lunge_desc">Pernas alternadas, joelho de trás</string>
+    <string name="plank">Plank</string>
+    <string name="plank_desc">Tempo de retenção e costas</string>
+    <string name="test_exercises">Exercícios de Teste</string>
+    <string name="practice_single">Pratique um único exercício ao vivo</string>
+    <string name="friends_status">Estado dos Amigos</string>
+    <string name="pending_requests_count">Pedidos Pendentes (%1$d)</string>
+    <string name="unknown_athlete">Atleta Desconhecido</string>
+    <string name="code_display">Código: %1$s</string>
+    <string name="no_friends_yet">Nenhum amigo adicionado. Vá a Editar Perfil!</string>
+    <string name="status_online">Online</string>
+    <string name="status_mins_ago">Ativo há %1$dm</string>
+    <string name="status_hours_ago">Ativo há %1$dh</string>
+    <string name="status_days_ago">Ativo há %1$dd</string>
+    <string name="status_old">Ativo há &gt;72h</string>
+    </resources>

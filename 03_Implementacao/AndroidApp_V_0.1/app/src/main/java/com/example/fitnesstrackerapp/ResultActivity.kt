@@ -185,7 +185,7 @@ private fun ResultScreen(
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan)
             ) {
-                Text("Done", color = Color(0xFF0C0F14), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.btn_done), color = Color(0xFF0C0F14), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
             Spacer(Modifier.height(32.dp))
@@ -253,7 +253,7 @@ private fun RepScoreChart(scores: List<Int>) {
         border = BorderStroke(1.dp, BorderMuted)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Form per rep", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.form_per_rep), color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(14.dp))
             Row(
                 modifier = Modifier

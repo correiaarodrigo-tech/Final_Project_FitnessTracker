@@ -261,7 +261,7 @@ fun RegisterScreen(
                     OutlinedTextField(
                         value = weightStr,
                         onValueChange = { weightStr = it },
-                        label = { Text("Weight (kg)", color = TextSecondary) },
+                        label = { Text(stringResource(R.string.weight_label), color = TextSecondary) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Color.White,
@@ -279,7 +279,7 @@ fun RegisterScreen(
                     OutlinedTextField(
                         value = heightStr,
                         onValueChange = { heightStr = it },
-                        label = { Text("Height (cm)", color = TextSecondary) },
+                        label = { Text(stringResource(R.string.height_label), color = TextSecondary) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Color.White,
@@ -315,7 +315,7 @@ fun RegisterScreen(
                                 onClick = { selectedLanguage = code },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isSelected) PrimaryCyan else ComponentBg,
+                                    containerColor = if (isSelected) PrimaryCyan else Color.Transparent,
                                     contentColor = if (isSelected) Color(0xFF0C0F14) else Color.White
                                 ),
                                 shape = RoundedCornerShape(12.dp)

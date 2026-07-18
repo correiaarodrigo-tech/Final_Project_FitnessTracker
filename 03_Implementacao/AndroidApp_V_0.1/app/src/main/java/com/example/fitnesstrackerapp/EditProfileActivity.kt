@@ -223,7 +223,7 @@ fun EditProfileScreen(
                             OutlinedTextField(
                                 value = name,
                                 onValueChange = { name = it },
-                                label = { Text("Full Name", color = TextSecondary) },
+                                label = { Text(stringResource(R.string.full_name_label), color = TextSecondary) },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedTextColor = Color.White,
                                     unfocusedTextColor = Color.White,
@@ -279,7 +279,7 @@ fun EditProfileScreen(
                                 OutlinedTextField(
                                     value = weightStr,
                                     onValueChange = { weightStr = it },
-                                    label = { Text("Weight (kg)", color = TextSecondary) },
+                                    label = { Text(stringResource(R.string.weight_label), color = TextSecondary) },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedTextColor = Color.White,
@@ -297,7 +297,7 @@ fun EditProfileScreen(
                                 OutlinedTextField(
                                     value = heightStr,
                                     onValueChange = { heightStr = it },
-                                    label = { Text("Height (cm)", color = TextSecondary) },
+                                    label = { Text(stringResource(R.string.height_label), color = TextSecondary) },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedTextColor = Color.White,
@@ -332,7 +332,7 @@ fun EditProfileScreen(
                                         onClick = { selectedLanguage = code },
                                         modifier = Modifier.weight(1f),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = if (isSelected) PrimaryCyan else ComponentBg,
+                                            containerColor = if (isSelected) PrimaryCyan else Color.Transparent,
                                             contentColor = if (isSelected) Color(0xFF0C0F14) else Color.White
                                         ),
                                         shape = RoundedCornerShape(12.dp)
@@ -421,7 +421,7 @@ fun EditProfileScreen(
                                 OutlinedTextField(
                                     value = friendUidInput,
                                     onValueChange = { friendUidInput = it },
-                                    label = { Text("Add Friend by Code (e.g. #12345)", color = TextSecondary) },
+                                    label = { Text(stringResource(R.string.add_friend_hint), color = TextSecondary) },
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedTextColor = Color.White,
                                         unfocusedTextColor = Color.White,
@@ -523,7 +523,7 @@ fun EditProfileScreen(
                                     colors = ButtonDefaults.buttonColors(containerColor = SecondaryPurple),
                                     enabled = !isSaving
                                 ) {
-                                    Text("Add", color = Color.White)
+                                    Text(stringResource(R.string.btn_add), color = Color.White)
                                 }
                             }
 

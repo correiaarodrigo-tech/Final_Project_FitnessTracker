@@ -136,7 +136,7 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
             OutlinedTextField(
                 value = planName,
                 onValueChange = { planName = it },
-                label = { Text("Nome do Plano", color = TextSecondary) },
+                label = { Text(stringResource(R.string.plan_name_label), color = TextSecondary) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.White,
@@ -250,7 +250,7 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
                                 if (lastType != "REST") {
                                     // Auto-insert a 30s rest step in between exercises to enforce rest constraints
                                     steps.add(mapOf("type" to "REST", "value" to 30))
-                                    Toast.makeText(context, "Descanso de 30s inserido automaticamente!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.toast_rest_added), Toast.LENGTH_SHORT).show()
                                 }
                             }
                             
@@ -260,7 +260,7 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text("Adicionar ao Treino", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_add_to_workout), color = Color.Black, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -302,7 +302,7 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Adicione exercícios para montar o plano.", color = TextSecondary, fontSize = 13.sp)
+                    Text(stringResource(R.string.add_exercises_hint), color = TextSecondary, fontSize = 13.sp)
                 }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -363,12 +363,12 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
             Button(
                 onClick = {
                     if (planName.isBlank()) {
-                        Toast.makeText(context, "Por favor, defina um nome para o plano!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.toast_missing_plan_name), Toast.LENGTH_SHORT).show()
                         return@Button
                     }
                     val exercisesOnly = steps.filter { it["type"] != "REST" }
                     if (exercisesOnly.isEmpty()) {
-                        Toast.makeText(context, "Adicione pelo menos um exercício ao plano!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.toast_missing_exercise), Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 
@@ -377,7 +377,7 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
                         val first = steps[i]["type"] as String
                         val second = steps[i + 1]["type"] as String
                         if (first != "REST" && second != "REST") {
-                            Toast.makeText(context, "Erro: Insira um período de descanso entre os exercícios!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, context.getString(R.string.toast_missing_rest), Toast.LENGTH_LONG).show()
                             return@Button
                         }
                     }
@@ -404,11 +404,11 @@ fun CreatePlanScreen(onBack: () -> Unit, onSaved: (String, String) -> Unit) {
 
                         db.collection("users").document(uid).collection("custom_plans").add(planData)
                             .addOnSuccessListener {
-                                Toast.makeText(context, "Plano guardado com sucesso!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.toast_plan_saved), Toast.LENGTH_SHORT).show()
                                 onSaved(planName, stepsJsonStr)
                             }
                             .addOnFailureListener { e ->
-                                Toast.makeText(context, "Erro ao guardar plano: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.toast_save_error, e.localizedMessage), Toast.LENGTH_SHORT).show()
                             }
                     } else {
                         // Offline bypass for testing

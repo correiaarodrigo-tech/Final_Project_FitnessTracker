@@ -99,25 +99,26 @@ class LungeExercise : Exercise {
         val legPrefix = if (currentForwardLeg == "RIGHT") "Perna Direita: " else "Perna Esquerda: "
 
         if (cycle != null) {
-            // Softened requirement: if they don't alternate, we still count it but we warn them.
             repetitions++
+            val (score, notes) = evaluator.evaluate(cycle)
+            val legSpecificNotes = notes.map { "$legPrefix$it" }
+            
+            repHistory.add(
+                RepMetrics(
+                    repNumber = repetitions,
+                    eccentricDurationMs = cycle.eccentricDurationMs,
+                    concentricDurationMs = cycle.concentricDurationMs,
+                    minAngleDeg = cycle.minAngleDeg,
+                    maxAngleDeg = cycle.maxAngleDeg,
+                    formScore = score,
+                    feedback = legSpecificNotes
+                )
+            )
+            
             if (currentForwardLeg != lastForwardLeg) {
                 lastForwardLeg = currentForwardLeg
-            }
-                val (score, notes) = evaluator.evaluate(cycle)
-                val legSpecificNotes = notes.map { "$legPrefix$it" }
-                repHistory.add(
-                    RepMetrics(
-                        repNumber = repetitions,
-                        eccentricDurationMs = cycle.eccentricDurationMs,
-                        concentricDurationMs = cycle.concentricDurationMs,
-                        minAngleDeg = cycle.minAngleDeg,
-                        maxAngleDeg = cycle.maxAngleDeg,
-                        formScore = score,
-                        feedback = legSpecificNotes
-                    )
-                )
-                feedback = "Rep $repetitions • $score/100 — $legPrefix${notes.first()}"
+                val note = if (notes.isNotEmpty()) notes.first() else "Bom Lunge!"
+                feedback = "Rep $repetitions • $score/100 — $legPrefix$note"
             } else {
                 feedback = "Rep $repetitions contada, mas tenta alternar!"
             }

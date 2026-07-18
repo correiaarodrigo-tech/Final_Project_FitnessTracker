@@ -1,6 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">FitnessTrackerApp</string>
-    <!-- Landing / Login -->
+    
     <string name="login_title">Sign In</string>
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
@@ -13,14 +14,14 @@
     <string name="btn_send">Send</string>
     <string name="btn_close">Close</string>
 
-    <!-- Register -->
+    
     <string name="register_title">Create Account</string>
     <string name="name_label">Full Name</string>
     <string name="btn_register">REGISTER</string>
     <string name="have_account">Already have an account? </string>
     <string name="sign_in_link">Sign in</string>
 
-    <!-- Dashboard & Generic -->
+    
     <string name="dashboard_title">Athlete Dashboard</string>
     <string name="welcome_back">Welcome Back, %1$s</string>
     <string name="create_plan">Create Plan</string>
@@ -32,7 +33,7 @@
     <string name="btn_save">SAVE CHANGES</string>
     <string name="btn_back">Back</string>
 
-    <!-- Social -->
+    
     <string name="friends_list">Friends List</string>
     <string name="add_friend_code">Add Friend by Code (e.g. #12345)</string>
     <string name="pending_requests">Pending Requests</string>
@@ -40,7 +41,7 @@
     <string name="btn_decline">Decline</string>
     <string name="challenge_sent">Challenge issued to %1$s!</string>
 
-    <!-- Stats & Results -->
+    
     <string name="workout_summary">Workout Summary</string>
     <string name="calories_burned">Calories Burned</string>
     <string name="avg_form">Average Form</string>
@@ -49,7 +50,7 @@
     <string name="avg_concentric">Average concentric (lifting)</string>
     <string name="avg_eccentric">Average eccentric (lowering)</string>
 
-    <!-- HUD / Cues -->
+    
     <string name="hud_get_ready">Get ready!</string>
     <string name="hud_go">GO!</string>
     <string name="hud_hold_still">Hold still...</string>
@@ -57,4 +58,66 @@
     <string name="hud_get_position">Get into position</string>
     <string name="hud_rest">Take a rest break.</string>
     <string name="hud_rest_finish">Rest finished! Get ready.</string>
-</resources>
+<string name="plan_name_label">Plan Name</string>
+    <string name="btn_add_to_workout">Add to Workout</string>
+    <string name="add_exercises_hint">Add exercises to build your plan.</string>
+    <string name="toast_rest_added">30s rest automatically inserted!</string>
+    <string name="toast_missing_plan_name">Please define a name for the plan!</string>
+    <string name="toast_missing_exercise">Add at least one exercise to the plan!</string>
+    <string name="toast_missing_rest">Error: Insert a rest period between exercises!</string>
+    <string name="toast_plan_saved">Plan saved successfully!</string>
+    <string name="toast_save_error">Error saving plan: %1$s</string>
+    <string name="full_name_label">Full Name</string>
+    <string name="weight_label">Weight (kg)</string>
+    <string name="height_label">Height (cm)</string>
+    <string name="add_friend_hint">Add Friend by Code (e.g. #12345)</string>
+    <string name="btn_add">Add</string>
+    <string name="btn_challenge">Challenge</string>
+    <string name="btn_stats">Stats</string>
+    <string name="plan_squats_count">Squats: %1$d sets</string>
+    <string name="plan_pushups_count">Push-ups: %1$d sets</string>
+    <string name="plan_lunges_count">Lunges: %1$d sets</string>
+    <string name="btn_start_uppercase">START</string>
+    <string name="btn_cancel_uppercase">CANCEL</string>
+    <string name="btn_done">Done</string>
+    <string name="form_per_rep">Form per rep</string>
+    <string name="no_leaderboard_records">No leaderboard records found.</string>
+    <string name="seed_mock_data">Seed Mock Data</string>
+    <string name="hud_form_score">Form  %1$d/100</string>
+    <string name="hud_audio_warning">Note: Audio guidance will be used and is advised (optional)</string>
+    <string name="app_subtitle">Train anywhere you want!</string>
+    <string name="language_preference">Preferred Language</string>
+    <string name="athlete_prefix">Athlete %1$s</string>
+    <string name="athlete_dashboard_title">Athlete Dashboard</string>
+    <string name="sign_out_btn">Sign Out</string>
+    <string name="select_routine">Select and follow a routine</string>
+    <string name="active_badge">Active</string>
+    <string name="track_metrics">Track metrics and consistency over time</string>
+    <string name="analytics_badge">Analytics</string>
+    <string name="demo_workout">Demo Workout</string>
+    <string name="multi_exercise">Multi-exercise AI pose-tracking routine</string>
+    <string name="beta_live">Beta Live</string>
+    <string name="demo_pushups">Demo Pushups</string>
+    <string name="ai_pushup">AI push-up repetition counter demo</string>
+    <string name="push_up">Push-Up</string>
+    <string name="track_reps_elbow">Track reps, tempo &amp; elbow depth</string>
+    <string name="test_badge">Test</string>
+    <string name="squat">Squat</string>
+    <string name="track_reps_knee">Track reps, tempo &amp; knee depth</string>
+    <string name="lunge">Lunge</string>
+    <string name="lunge_desc">Alternating legs, back-knee depth</string>
+    <string name="plank">Plank</string>
+    <string name="plank_desc">Hold timing &amp; back alignment</string>
+    <string name="test_exercises">Test Exercises</string>
+    <string name="practice_single">Practice a single exercise with live form evaluation</string>
+    <string name="friends_status">Friends Status</string>
+    <string name="pending_requests_count">Pending Requests (%1$d)</string>
+    <string name="unknown_athlete">Unknown Athlete</string>
+    <string name="code_display">Code: %1$s</string>
+    <string name="no_friends_yet">No friends added yet. Go to Edit Profile to add friends by their code!</string>
+    <string name="status_online">Online</string>
+    <string name="status_mins_ago">Active %1$dm ago</string>
+    <string name="status_hours_ago">Active %1$dh ago</string>
+    <string name="status_days_ago">Active %1$dd ago</string>
+    <string name="status_old">Active &gt;72h ago</string>
+    </resources>

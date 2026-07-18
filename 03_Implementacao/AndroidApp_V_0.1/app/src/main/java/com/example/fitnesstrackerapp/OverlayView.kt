@@ -299,7 +299,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             roundedPanel(canvas, panelRect, scoreColor(lastRepScore))
 
             scorePaint.color = scoreColor(lastRepScore)
-            canvas.drawText("Form  $lastRepScore/100", panelLeft + 28f, panelTop + 56f, scorePaint)
+            canvas.drawText(context.getString(R.string.hud_form_score, lastRepScore), panelLeft + 28f, panelTop + 56f, scorePaint)
 
             var y = panelTop + 56f + 50f
             lines.forEach { line ->
@@ -356,7 +356,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 11f, 11f, progressFillPaint
             )
         }
-        canvas.drawText("Note: Audio guidance will be used and is advised (optional)", cx, topY + cardH + 54f, audioAdvisedPaint)
+        canvas.drawText(context.getString(R.string.hud_audio_warning), cx, topY + cardH + 54f, audioAdvisedPaint)
     }
 
     // ---- COUNTDOWN phase ----
@@ -371,7 +371,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         canvas.drawText(countdownText, cx, baseline, centerBigPaint)
 
         if (!isGo) {
-            canvas.drawText("Get ready", cx, cy + 200f, centerSubPaint)
+            canvas.drawText(context.getString(R.string.hud_get_ready), cx, cy + 200f, centerSubPaint)
         }
     }
 }

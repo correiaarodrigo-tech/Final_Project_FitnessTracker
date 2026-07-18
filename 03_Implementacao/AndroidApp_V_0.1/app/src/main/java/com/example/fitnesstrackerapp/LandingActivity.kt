@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -83,6 +84,10 @@ fun LandingScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showResetDialog by remember { mutableStateOf(false) }
+    
+    // Local language state (reads current app locale on load)
+    val currentLocales = AppCompatDelegate.getApplicationLocales()
+    var selectedLanguage by remember { mutableStateOf(if (currentLocales.isEmpty) "SYSTEM" else currentLocales[0]!!.language) }
 
     if (showResetDialog) {
         var resetEmail by remember { mutableStateOf("") }
@@ -216,14 +221,51 @@ fun LandingScreen(
             )
             
             Text(
-                text = "Train anywhere you want!",
+                text = stringResource(R.string.app_subtitle),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextSecondary,
                 letterSpacing = 2.sp,
-                modifier = Modifier.padding(top = 16.dp, bottom = 40.dp),
+                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
                 textAlign = TextAlign.Center
             )
+
+            // Language Selector Row (Local only)
+            Text(
+                text = stringResource(R.string.language_preference),
+                fontSize = 12.sp,
+                color = TextSecondary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf("SYSTEM" to "System", "en" to "EN", "pt" to "PT").forEach { (code, label) ->
+                    val isSelected = selectedLanguage == code
+                    Button(
+                        onClick = { 
+                            selectedLanguage = code 
+                            if (code != "SYSTEM") {
+                                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(code))
+                            } else {
+                                AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isSelected) PrimaryCyan else Color.Transparent,
+                            contentColor = if (isSelected) Color(0xFF0C0F14) else Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        border = if (!isSelected) BorderStroke(1.dp, BorderMuted) else null
+                    ) {
+                        Text(label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                    }
+                }
+            }
 
         // Login Box
         Card(

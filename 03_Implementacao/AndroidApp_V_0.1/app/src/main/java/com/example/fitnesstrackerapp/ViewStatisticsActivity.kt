@@ -311,7 +311,7 @@ fun StatisticsScreen(onBack: () -> Unit) {
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, PrimaryCyan.copy(alpha = 0.4f))
                 ) {
-                    Text("Seed Mock Data", color = PrimaryCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.seed_mock_data), color = PrimaryCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))
@@ -778,7 +778,7 @@ fun LeaderboardView(db: FirebaseFirestore) {
                 modifier = Modifier.fillMaxWidth().height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No leaderboard records found.", color = TextSecondary, fontSize = 13.sp)
+                Text(stringResource(R.string.no_leaderboard_records), color = TextSecondary, fontSize = 13.sp)
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -1017,7 +1017,7 @@ fun WorkoutDetailDialog(workout: WorkoutLog, onDismiss: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryCyan),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Done", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(stringResource(R.string.btn_done), color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }

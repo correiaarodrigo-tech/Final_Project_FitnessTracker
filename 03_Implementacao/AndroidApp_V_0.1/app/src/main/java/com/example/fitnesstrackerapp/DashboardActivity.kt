@@ -204,30 +204,30 @@ fun DashboardScreen(
             targetActivity = CreatePlanActivity::class.java
         ),
         DashboardItem(
-            title = "Start a Plan",
-            subtitle = "Select and follow a routine",
-            badge = "Active",
+            title = stringResource(R.string.start_plan),
+            subtitle = stringResource(R.string.select_routine),
+            badge = stringResource(R.string.active_badge),
             accentColor = AccentGreen,
             targetActivity = StartPlanActivity::class.java
         ),
         DashboardItem(
-            title = "View Statistics",
-            subtitle = "Track metrics and consistency over time",
-            badge = "Analytics",
+            title = stringResource(R.string.view_stats),
+            subtitle = stringResource(R.string.track_metrics),
+            badge = stringResource(R.string.analytics_badge),
             accentColor = PrimaryCyan,
             targetActivity = ViewStatisticsActivity::class.java
         ),
         DashboardItem(
-            title = "Demo Workout",
-            subtitle = "Multi-exercise AI pose-tracking routine",
-            badge = "Beta Live",
+            title = stringResource(R.string.demo_workout),
+            subtitle = stringResource(R.string.multi_exercise),
+            badge = stringResource(R.string.beta_live),
             accentColor = AccentGreen,
             targetActivity = MainActivity::class.java
         ),
         DashboardItem(
-            title = "Demo Pushups",
-            subtitle = "AI push-up repetition counter demo",
-            badge = "Beta Live",
+            title = stringResource(R.string.demo_pushups),
+            subtitle = stringResource(R.string.ai_pushup),
+            badge = stringResource(R.string.beta_live),
             accentColor = SecondaryPurple,
             targetActivity = DemoPushUpActivity::class.java
         )
@@ -236,33 +236,33 @@ fun DashboardScreen(
     // Single-exercise free practice screens (live form evaluation).
     val exerciseItems = listOf(
         DashboardItem(
-            title = "Push-Up",
-            subtitle = "Track reps, tempo & elbow depth",
-            badge = "Test",
+            title = stringResource(R.string.push_up),
+            subtitle = stringResource(R.string.track_reps_elbow),
+            badge = stringResource(R.string.test_badge),
             accentColor = PrimaryCyan,
             targetActivity = ExerciseTestActivity::class.java,
             exerciseType = ExerciseType.PUSHUP
         ),
         DashboardItem(
-            title = "Squat",
-            subtitle = "Track reps, tempo & knee depth",
-            badge = "Test",
+            title = stringResource(R.string.squat),
+            subtitle = stringResource(R.string.track_reps_knee),
+            badge = stringResource(R.string.test_badge),
             accentColor = AccentGreen,
             targetActivity = ExerciseTestActivity::class.java,
             exerciseType = ExerciseType.SQUAT
         ),
         DashboardItem(
-            title = "Lunge",
-            subtitle = "Alternating legs, back-knee depth",
-            badge = "Test",
+            title = stringResource(R.string.lunge),
+            subtitle = stringResource(R.string.lunge_desc),
+            badge = stringResource(R.string.test_badge),
             accentColor = SecondaryPurple,
             targetActivity = ExerciseTestActivity::class.java,
             exerciseType = ExerciseType.LUNGE
         ),
         DashboardItem(
-            title = "Plank",
-            subtitle = "Hold timing & back alignment",
-            badge = "Test",
+            title = stringResource(R.string.plank),
+            subtitle = stringResource(R.string.plank_desc),
+            badge = stringResource(R.string.test_badge),
             accentColor = PrimaryCyan,
             targetActivity = ExerciseTestActivity::class.java,
             exerciseType = ExerciseType.PLANK
@@ -302,14 +302,14 @@ fun DashboardScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (userCode.isNotEmpty()) "Athlete $userCode" else "Athlete Dashboard",
+                    text = if (userCode.isNotEmpty()) stringResource(R.string.athlete_prefix, userCode) else stringResource(R.string.athlete_dashboard_title),
                     fontSize = 28.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = "Sign Out",
+                    text = stringResource(R.string.sign_out_btn),
                     color = Color.Red,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -355,14 +355,14 @@ fun DashboardScreen(
 
             // Test Exercises Section
             Text(
-                text = "Test Exercises",
+                text = stringResource(R.string.test_exercises),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text = "Practice a single exercise with live form evaluation",
+                text = stringResource(R.string.practice_single),
                 fontSize = 13.sp,
                 color = TextSecondary,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -399,7 +399,7 @@ fun DashboardScreen(
             
             // Friends List Header
             Text(
-                text = "Friends Status",
+                text = stringResource(R.string.friends_status),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -409,7 +409,7 @@ fun DashboardScreen(
             // 1. Pending Requests Sub-Section
             if (pendingRequests.isNotEmpty()) {
                 Text(
-                    text = "Pending Requests (${pendingRequests.size})",
+                    text = stringResource(R.string.pending_requests_count, pendingRequests.size),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = SecondaryPurple,
@@ -420,7 +420,7 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     pendingRequests.forEach { request ->
-                        val senderName = request["senderName"] as? String ?: "Unknown Athlete"
+                        val senderName = request["senderName"] as? String ?: stringResource(R.string.unknown_athlete)
                         val senderCode = request["senderCode"] as? String ?: ""
                         val requestId = request["requestId"] as? String ?: ""
                         
@@ -443,7 +443,7 @@ fun DashboardScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Code: $senderCode",
+                                        text = stringResource(R.string.code_display, senderCode),
                                         color = TextSecondary,
                                         fontSize = 12.sp
                                     )
@@ -482,7 +482,7 @@ fun DashboardScreen(
                                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
-                                        Text("Accept", color = Color(0xFF0C0F14), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text(stringResource(R.string.btn_accept), color = Color(0xFF0C0F14), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                     }
                                     
                                     Button(
@@ -498,7 +498,7 @@ fun DashboardScreen(
                                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
-                                        Text("Decline", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text(stringResource(R.string.btn_decline), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
@@ -519,7 +519,7 @@ fun DashboardScreen(
                 }
             } else if (friendsCodes.isEmpty()) {
                 Text(
-                    text = "No friends added yet. Go to Edit Profile to add friends by their code!",
+                    text = stringResource(R.string.no_friends_yet),
                     color = TextSecondary,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -623,29 +623,29 @@ fun FriendListItem(
     onChallenge: () -> Unit,
     onViewStats: () -> Unit
 ) {
-    val statusText = remember(friend) {
+    val statusText = run {
         val lastActiveMs = friend.getLastActiveLong()
         val now = System.currentTimeMillis()
         val diff = now - lastActiveMs
         when {
-            diff < 5 * 60 * 1000 -> "Online"
+            diff < 5 * 60 * 1000 -> stringResource(R.string.status_online)
             diff < 60 * 60 * 1000 -> {
                 val mins = diff / (60 * 1000)
-                "Active ${mins}m ago"
+                stringResource(R.string.status_mins_ago, mins.toInt())
             }
             diff < 24 * 60 * 60 * 1000 -> {
                 val hours = diff / (60 * 60 * 1000)
-                "Active ${hours}h ago"
+                stringResource(R.string.status_hours_ago, hours.toInt())
             }
             diff < 72 * 60 * 60 * 1000 -> {
                 val days = diff / (24 * 60 * 60 * 1000)
-                "Active ${days}d ago"
+                stringResource(R.string.status_days_ago, days.toInt())
             }
-            else -> "Active >72h ago"
+            else -> stringResource(R.string.status_old)
         }
     }
     
-    val isOnline = statusText == "Online"
+    val isOnline = statusText == stringResource(R.string.status_online)
 
     Card(
         modifier = Modifier
@@ -696,7 +696,7 @@ fun FriendListItem(
                     colors = ButtonDefaults.textButtonColors(contentColor = PrimaryCyan),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text("Challenge", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_challenge), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
                 
                 // Stats Button
@@ -705,7 +705,7 @@ fun FriendListItem(
                     colors = ButtonDefaults.textButtonColors(contentColor = SecondaryPurple),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text("Stats", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_stats), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

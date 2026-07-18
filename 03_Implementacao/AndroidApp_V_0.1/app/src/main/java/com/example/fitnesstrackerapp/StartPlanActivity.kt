@@ -328,9 +328,9 @@ fun PlanOverviewScreen(
                         color = TextSecondary,
                         fontSize = 13.sp
                     )
-                    if (squatsCount > 0) Text("• Agachamentos: $squatsCount séries", color = Color.White, fontSize = 13.sp)
-                    if (pushupsCount > 0) Text("• Flexões: $pushupsCount séries", color = Color.White, fontSize = 13.sp)
-                    if (lungesCount > 0) Text("• Afundos: $lungesCount séries", color = Color.White, fontSize = 13.sp)
+                    if (squatsCount > 0) Text("  ${stringResource(R.string.plan_squats_count, squatsCount)}", color = Color.White, fontSize = 13.sp)
+                    if (pushupsCount > 0) Text("  ${stringResource(R.string.plan_pushups_count, pushupsCount)}", color = Color.White, fontSize = 13.sp)
+                    if (lungesCount > 0) Text("  ${stringResource(R.string.plan_lunges_count, lungesCount)}", color = Color.White, fontSize = 13.sp)
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -350,12 +350,12 @@ fun PlanOverviewScreen(
                         onStartWorkout()
                     }
                 ) {
-                    Text("COMEÇAR", color = PrimaryCyan, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_start_uppercase), color = PrimaryCyan, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDisclaimer = false }) {
-                    Text("CANCELAR", color = Color.Gray)
+                    Text(stringResource(R.string.btn_cancel_uppercase), color = Color.Gray)
                 }
             },
             containerColor = DarkSurface,
