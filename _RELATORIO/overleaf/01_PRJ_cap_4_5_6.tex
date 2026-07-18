@@ -16,7 +16,7 @@ Neste capítulo, descrevemos a arquitetura e detalhes técnicos de concretizaç�
 \label{sec:arquiteturaMobile}
 %%________________________________________________________________________
 
-A aplicação segue a arquitetura **MVVM (Model-View-ViewModel)** com fluxos assíncronos de dados. O pipeline de processamento de imagem da câmara assenta na seguinte estrutura:
+A aplicação segue a arquitetura \textbf{MVVM (Model-View-ViewModel)}, escolhida por separar claramente a lógica de negócio (avaliação de forma, máquina de estados) da camada de interface, facilitando a testabilidade e alinhando-se com a gestão de estado reativa e declarativa do Jetpack Compose. O Compose foi adotado para toda a interface por reduzir o código repetitivo face ao sistema tradicional de \textit{Views} em XML e por permitir desenhar os gráficos de progresso do painel analítico (Secção \ref{sec:testesAnalitica}) diretamente em Canvas, sem depender de bibliotecas de gráficos de terceiros. A captura de imagem recorre à biblioteca CameraX em vez da Camera2 API de baixo nível, por abstrair variações de hardware entre fabricantes e reduzir a complexidade de gestão do ciclo de vida da câmara. O pipeline de processamento de imagem da câmara assenta na seguinte estrutura:
 \begin{enumerate}
     \item \textbf{Captura de Imagem (CameraX):} Configura a câmara frontal do dispositivo móvel para obter frames no formato RGBA\_8888 de forma contínua e assíncrona;
     \item \textbf{Pré-processamento:} Roda o bitmap da frame de acordo com a rotação física do dispositivo e aplica um efeito de espelho (\textit{mirror}) para que a experiência do utilizador seja intuitiva;
@@ -24,19 +24,27 @@ A aplicação segue a arquitetura **MVVM (Model-View-ViewModel)** com fluxos ass
     \item \textbf{Lógica de Negócio Local:} Após a inferência, a lista de 33 coordenadas normalized 3D é canalizada para a classe Kotlin correspondente ao exercício ativo.
 \end{enumerate}
 
+O MediaPipe Pose Landmarker segue a arquitetura leve de duas fases descrita por Bazarevsky et al. \cite{Bazarevsky_BlazePose_2020}: um detetor de corpo inteiro localiza a região de interesse do utilizador apenas na primeira frame (ou sempre que o rastreio é perdido), e um modelo de rastreio estima os 33 landmarks a partir dessa região em cada frame seguinte, evitando repetir a deteção completa do corpo em todas as frames e reduzindo o custo computacional.
+
+Este projeto utiliza especificamente a variante \texttt{pose\_landmarker\_lite}, a mais leve das três disponibilizadas pela Google (Lite, Full, Heavy), que os próprios autores do BlazePose reportam atingir até 31 frames por segundo num Google Pixel 2 \cite{Bazarevsky_BlazePose_2020}, favorecendo a fluidez em tempo real face à precisão adicional das variantes mais pesadas. Não é imposta nenhuma resolução ou frame rate fixos: o \texttt{ImageAnalysis} do CameraX é configurado com a estratégia \texttt{STRATEGY\_KEEP\_ONLY\_LATEST}, que descarta frames antigas em fila e analisa sempre a mais recente, deixando a cadência efetiva de inferência adaptar-se automaticamente à capacidade de cada dispositivo, com as frames entregues ao MediaPipe no formato \texttt{RGBA\_8888} através da câmara frontal (\texttt{CameraSelector.DEFAULT\_FRONT\_CAMERA}).
+
 
 %%________________________________________________________________________
 \section{Módulos de Código Principais}
 \label{sec:modulosCodigo}
 %%________________________________________________________________________
 
-O processamento cinemático e as interações de treino apoiam-se nas seguintes classes implementadas:
+O processamento cinemático e as interações de treino apoiam-se num conjunto de classes Kotlin que concretizam diretamente o modelo apresentado no Capítulo \ref{ch:modeloProposto}:
 \begin{itemize}
-    \item \textbf{\texttt{RepPhaseTracker}:} Mede a duração em milissegundos das fases descendente (excêntrica) e ascendente (concêntrica) e regista a amplitude de movimento mínima da articulação central durante a repetição;
-    \item \textbf{\texttt{FormEvaluator}:} Implementa as penalizações de score descritas no Capítulo \ref{ch:modeloProposto} e devolve strings estruturadas de correção física;
+    \item \textbf{\texttt{AngleCalculator}:} Implementa a fórmula geométrica $\theta = \arccos\left(\vec{BA} \cdot \vec{BC} / (|\vec{BA}||\vec{BC}|)\right)$ apresentada na Secção \ref{sec:abordagem}, calculada a partir das coordenadas $x,y$ de três landmarks;
+    \item \textbf{\texttt{ExerciseConfig}:} Estrutura de dados que armazena, por exercício, os limiares definidos na Secção \ref{sec:fundamentos} (limiar ideal, limiar de contagem, limiar de extensão) e os intervalos de cadência ideal usados na Secção \ref{sec:abordagem};
+    \item \textbf{\texttt{RepPhaseTracker}:} Implementa a máquina de estados \texttt{AT\_TOP}/\texttt{DESCENDING}/\texttt{ASCENDING} da Figura \ref{fig:stateMachine}, medindo a duração em milissegundos das fases descendente (excêntrica) e ascendente (concêntrica) e registando a amplitude de movimento mínima da articulação central durante a repetição;
+    \item \textbf{\texttt{FormEvaluator}:} Implementa as penalizações de score descritas na Secção \ref{sec:abordagem} e devolve strings estruturadas de correção física;
     \item \textbf{\texttt{TTSHelper}:} Wrapper do motor de síntese de voz nativo do Android. Implementa um limite temporal de repetição (cooldown) para evitar saturação acústica do atleta, com exceção da conclusão de repetições e números de contagens, que são pronunciados de imediato;
     \item \textbf{\texttt{OverlayView}:} Vista customizada que desenha o esqueleto corporal do utilizador e elementos informativos (HUD) em neon, incluindo avisos de calibração ("Note: Audio guidance will be used...").
 \end{itemize}
+
+Cada um dos quatro exercícios (Agachamento, Flexão de Braços, Lunge e Prancha) é implementado numa classe própria (\texttt{SquatExercise}, \texttt{PushUpExercise}, \texttt{LungeExercise} e \texttt{PlankExercise}, respetivamente), todas a implementar uma interface comum \texttt{Exercise}. Os três primeiros combinam \texttt{RepPhaseTracker} e \texttt{FormEvaluator} exatamente como descrito acima; a Prancha, por avaliar uma postura estática e não uma repetição (Secção \ref{sec:abordagem}), não usa nenhuma das duas classes, implementando antes a sua própria lógica de acumulação de tempo sob tensão e desvio médio do ângulo.
 
 
 %%________________________________________________________________________
@@ -47,7 +55,7 @@ O processamento cinemático e as interações de treino apoiam-se nas seguintes 
 Quando o utilizador conclui um treino, a aplicação calcula as calorias queimadas e executa uma escrita remota no Cloud Firestore:
 \begin{itemize}
     \item Grava os dados do treino na coleção \texttt{/users/\{userId\}/workouts};
-    \item Executa uma **Transação do Firestore** para atualizar de forma segura os campos \texttt{xpPoints} e \texttt{level} no perfil principal do utilizador. Desta forma, previne-se inconsistência de dados em escritas concorrentes.
+    \item Executa uma \textbf{Transação do Firestore} para atualizar de forma segura os campos \texttt{xpPoints} e \texttt{level} no perfil principal do utilizador. Desta forma, previne-se inconsistência de dados em escritas concorrentes.
 \end{itemize}
 
 

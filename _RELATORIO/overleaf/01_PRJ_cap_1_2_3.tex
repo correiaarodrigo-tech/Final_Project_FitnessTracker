@@ -63,7 +63,7 @@ O sistema foi modelado para dar suporte a atletas autónomos, identificando-se o
     \begin{enumerate}
         \item Captar poses corporais da câmara frontal em tempo real;
         \item Detetar início da atividade quando o utilizador se encontra parado na pose inicial (calibração);
-        \item Contar repetições e fases do exercício (UP/DOWN/REST);
+        \item Contar repetições e fases do exercício (UP/DOWN/REST), ou o tempo sob tensão nos exercícios isométricos;
         \item Gerar feedback áudio e visual corretivo e motivacional imediato;
         \item Sincronizar dados de treino do atleta com uma base de dados remota;
         \item Apresentar um histórico interativo e gráficos semanais de progresso;
@@ -83,7 +83,7 @@ O sistema foi modelado para dar suporte a atletas autónomos, identificando-se o
 \label{sec:fundamentos}
 %%________________________________________________________________________
 
-Para validar a execução de cada exercício e garantir o rigor científico do sistema de avaliação, apoiamo-nos na obra de referência de Norkin e White \cite{Norkin_White_2016}, que documenta a amplitude de movimento articular e a amplitude necessária para atividades funcionais concretas. Cada exercício é avaliado por dois limiares distintos: um limiar ideal, que reflete a execução tecnicamente correta, e um limiar de contagem, mais permissivo, que define a partir de que ângulo a repetição é sequer registada (a lógica de deteção que usa estes dois valores é detalhada na Secção \ref{sec:abordagem}).
+Para validar a execução de cada exercício e garantir o rigor científico do sistema de avaliação, apoiamo-nos na obra de referência de Norkin e White \cite{Norkin_White_2016}, que documenta a amplitude de movimento articular e a amplitude necessária para atividades funcionais concretas. Cada exercício de repetição (Agachamento, Flexão de Braços e Lunge) é avaliado por três limiares distintos: um limiar de extensão (UP), que marca a posição de topo do movimento e completa a repetição; um limiar ideal, que reflete a execução tecnicamente correta; e um limiar de contagem, mais permissivo, que define a partir de que ângulo a repetição é sequer registada (a lógica de deteção que usa estes três valores é detalhada na Secção \ref{sec:abordagem}). A Prancha Isométrica segue uma lógica diferente, sem esta distinção de limiares, também detalhada na Secção \ref{sec:abordagem}.
 
 Os ângulos são sempre calculados a partir de três landmarks corporais fornecidos pelo modelo MediaPipe Pose \cite{Bazarevsky_BlazePose_2020}, identificados por um índice fixo de 0 a 32, ilustrado na Figura \ref{fig:landmarks}. Por convenção, os índices pares correspondem ao lado direito do utilizador e os ímpares ao lado esquerdo; como o utilizador está de frente para a câmara, o seu lado direito aparece do lado esquerdo da imagem.
 
@@ -118,7 +118,7 @@ Definem-se os seguintes valores por exercício:
             \item Limiar Ideal (Flexão): $\theta \le 87^\circ$.
         \end{itemize}
 
-    \item \textbf{Prancha Isométrica (Plank):} Avalia a estabilização estática do core. O alinhamento dos landmarks do Ombro (12), Anca (24) e Tornozelo (28) deve manter-se próximo de $\theta \approx 170^\circ$, ao longo do tempo total sob tensão.
+    \item \textbf{Prancha Isométrica (Plank):} Avalia a estabilização estática do core. O alinhamento dos landmarks do Ombro (12), Anca (24) e Tornozelo (28) deve manter-se dentro de uma janela de deteção entre $155^\circ$ e $185^\circ$, com valor ideal em $\theta \approx 170^\circ$, ao longo do tempo total sob tensão.
 \end{enumerate}
 
 %%________________________________________________________________________
@@ -164,7 +164,7 @@ O ângulo $\theta$ usado em todos os exercícios é calculado a partir de três 
 \]
 Esta é a fórmula geométrica aplicada a todos os ângulos definidos na Secção \ref{sec:fundamentos}.
 
-A lógica de deteção assenta numa máquina de estados finita de três estados, \texttt{AT\_TOP}, \texttt{DESCENDING} e \texttt{ASCENDING}, que processa este ângulo a cada frame, ilustrada na Figura \ref{fig:stateMachine}. A partir de \texttt{AT\_TOP}, o sistema entra em \texttt{DESCENDING} assim que o ângulo desce abaixo do início da fase excêntrica. Em \texttt{DESCENDING} há duas transições possíveis: se o ângulo atingir o limiar de contagem, a fase excêntrica termina e o sistema avança para \texttt{ASCENDING}; se o ângulo regressar ao topo sem atingir esse limiar, a tentativa é descartada e o sistema volta a \texttt{AT\_TOP} sem contar repetição. Em \texttt{ASCENDING}, ao atingir o limiar de extensão, a repetição é contabilizada.
+A lógica de deteção assenta numa máquina de estados finita de três estados, \texttt{AT\_TOP}, \texttt{DESCENDING} e \texttt{ASCENDING}, que processa este ângulo a cada frame, ilustrada na Figura \ref{fig:stateMachine}. A partir de \texttt{AT\_TOP}, o sistema entra em \texttt{DESCENDING} assim que o ângulo desce abaixo do início da fase excêntrica, definido como o limiar de extensão menos uma tolerância de $15^\circ$ (no Agachamento, por exemplo, $160^\circ - 15^\circ = 145^\circ$), de forma a só iniciar a fase excêntrica quando o movimento de descida é inequívoco. Em \texttt{DESCENDING} há duas transições possíveis: se o ângulo atingir o limiar de contagem, a fase excêntrica termina e o sistema avança para \texttt{ASCENDING}; se o ângulo regressar ao topo sem atingir esse limiar, a tentativa é descartada e o sistema volta a \texttt{AT\_TOP} sem contar repetição. Em \texttt{ASCENDING}, ao atingir o limiar de extensão, a repetição é contabilizada.
 
 \begin{figure}[h]
    \centering
@@ -193,6 +193,8 @@ A qualidade de cada repetição parte de 100 pontos, dos quais se subtraem penal
     \item \textbf{Cadência Excêntrica (até 30 pontos):} A duração ideal da fase excêntrica varia por exercício: entre 2.0 e 4.0 segundos no Agachamento, e entre 1.5 e 3.0 segundos na Flexão de Braços e no Lunge. Descer demasiado depressa deduz 30 pontos; descer demasiado devagar deduz 10 pontos;
     \item \textbf{Cadência Concêntrica (até 15 pontos):} A subida deve durar entre 0.5 e 2.0 segundos, igual em todos os exercícios. Subir demasiado depressa deduz 15 pontos; subir demasiado devagar deduz 10 pontos.
 \end{itemize}
+
+A cadência excêntrica pesa o dobro da concêntrica (30 contra 15 pontos) porque o controlo da fase excêntrica tem uma influência documentada maior sobre a qualidade da execução: durante a descida, o músculo trabalha sob alongamento em vez de encurtamento, e perder o controlo da velocidade transfere parte da carga para estruturas passivas (tendões, ligamentos) em vez de esta ser absorvida ativamente pelo músculo. Wilk, Zajac e Tufano \cite{Wilk_MovementTempo_2021}, numa revisão sobre o efeito da cadência de movimento no treino de força, documentam que a duração da fase excêntrica tem uma influência mais consistente sobre os ganhos de força e hipertrofia do que a duração da fase concêntrica, o que motiva a maior penalização por perda de controlo nessa fase.
 
 O mecanismo descrito acima, a máquina de estados e as três categorias de dedução, aplica-se aos três exercícios contados por repetição (Agachamento, Flexão de Braços e Lunge). A Prancha Isométrica, por não ter fases concêntrica e excêntrica distintas, é avaliada de forma diferente: em vez de percorrer os três estados, o sistema verifica continuamente se o ângulo do tronco se mantém dentro da janela de deteção ($155^\circ$ a $185^\circ$, Secção \ref{sec:fundamentos}); enquanto isso se mantiver verdadeiro, o tempo de prancha acumula-se e o score resulta do desvio médio do ângulo em relação ao valor ideal ($170^\circ$) ao longo de todo o segmento contínuo, e não de penalizações separadas por fase.
 
