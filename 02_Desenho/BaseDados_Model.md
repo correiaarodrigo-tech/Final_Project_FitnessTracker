@@ -4,7 +4,7 @@ Este documento resume a organização dos dados no Cloud Firestore para a aplica
 
 ---
 
-## 📊 Estrutura e Hierarquia da Base de Dados
+##  Estrutura e Hierarquia da Base de Dados
 
 O Cloud Firestore utiliza uma estrutura NoSQL hierárquica baseada em Coleções (pastas) e Documentos (ficheiros JSON). As coleções `workouts` (histórico de treinos) e `custom_plans` (planos criados pelo utilizador) são subcoleções aninhadas sob o documento do respetivo utilizador. Isto isola os dados de cada atleta por razões de desempenho e privacidade.
 
@@ -53,7 +53,7 @@ graph TD
 
 ---
 
-## ⚙️ Estratégia de Agregação na Escrita (Write-Time Aggregation)
+##  Estratégia de Agregação na Escrita (Write-Time Aggregation)
 
 Para manter a renderização de **Tabelas de Classificação (Leaderboards)** e dos **Gráficos de Progresso** rápidos ($O(1)$) e de baixo tráfego de rede, a aplicação atualiza atomicamente os agregados e o XP no documento do utilizador no exato momento em que um treino é submetido.
 
@@ -76,7 +76,7 @@ sequenceDiagram
 
 ---
 
-## 🛠️ Instruções para Limpeza Manual de Dados (Ambiente de Testes)
+##  Instruções para Limpeza Manual de Dados (Ambiente de Testes)
 
 Durante os ensaios de usabilidade com os utilizadores, para limpar dados antigos mantendo apenas os treinos efetuados no dia de hoje:
 1. Aceda à consola do **Firebase Console** e clique em **Firestore Database**.
