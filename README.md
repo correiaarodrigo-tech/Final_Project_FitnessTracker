@@ -16,25 +16,25 @@ Uma aplicação móvel Android nativa projetada para atuar como um assistente de
 
 Abaixo seguem os vídeos de demonstração da aplicação:
 
-**Autenticação e Login:**
+### Autenticação e Login
 https://github.com/user-attachments/assets/9a9a8690-698d-446a-a72c-90059b276c34
 
-**Dashboard e Hub do Utilizador:**
+### Dashboard e Hub do Utilizador
 https://github.com/user-attachments/assets/677ec16e-456a-4229-849b-2f0a062bdfdf
 
-**Dados do Utilizador e Edição de Perfil:**
+### Dados do Utilizador e Edição de Perfil
 https://github.com/user-attachments/assets/226ddb1f-8874-43c8-9075-0b979594e4b8
 
-**Estatísticas do Utilizador (Leaderboards & Histórico):**
+### Estatísticas do Utilizador (Leaderboards & Histórico)
 https://github.com/user-attachments/assets/bd1314a2-cb20-4b94-8589-b98f078e5fce
 
-**Calibração da Câmara e Ajuste de Distância:**
+### Calibração da Câmara e Ajuste de Distância
 https://github.com/user-attachments/assets/a69d4c37-c23b-4934-8f15-7ea7e88a25d4
 
-**Exercício de Agachamento (Squat) em Tempo Real (Feedback Visio-Acústico):**
+### Exercício de Agachamento (Squat) em Tempo Real (Feedback Visio-Acústico)
 https://github.com/user-attachments/assets/42a02141-1ec1-4bf3-98a5-5dfbe93effd3
 
-**Resultados do Exercício e Transação de Kcal/XP:**
+### Resultados do Exercício e Transação de Kcal/XP
 https://github.com/user-attachments/assets/02eea182-ff08-405c-acd8-cbe90ddb5083
 
 ---
