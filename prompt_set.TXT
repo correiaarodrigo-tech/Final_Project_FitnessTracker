@@ -27,3 +27,14 @@ PROMPT 4: Gráfico Dinâmico Jetpack Compose Canvas (ViewStatisticsActivity)
 ------------------------------------------------------------------------
 "Escreve um ecrã de estatísticas em Jetpack Compose que carregue o histórico de treinos do Firestore. Desenha um gráfico de barras usando Canvas (sem bibliotecas externas) para mostrar o número total de repetições nos últimos 7 dias. Cada barra deve ser desenhada com cantos arredondados, gradiente vertical neon (ciano para roxo) e ter uma animação de escala que cresce de 0 a 1 quando o ecrã carrega. Mostra também os nomes abreviados dos dias da semana (ex: Seg, Ter) e o número de repetições acima de cada barra."
 ========================================================================
+
+------------------------------------------------------------------------
+PROMPT 5: Lógica de Write-Time Aggregation via Transações Firestore
+------------------------------------------------------------------------
+"Escreve uma lógica para gravar um treino no Firestore (`/users/{uid}/workouts`) que utilize o modelo 'Write-Time Aggregation'. Numa única transação atómica, deves inserir o documento do novo treino e depois atualizar os acumuladores globais e semanais (totalKcal, totalReps, totalWorkouts) diretamente no documento do utilizador. Se a data atual não pertencer à mesma semana do campo 'lastWeeklyReset', deves primeiro zerar os acumuladores semanais antes de somar os novos valores."
+
+------------------------------------------------------------------------
+PROMPT 6: Localização Nativa e Alteração Dinâmica de Idioma (Compose)
+------------------------------------------------------------------------
+"Extrai todas as *hardcoded strings* do ecrã de Dashboard em Jetpack Compose para ficheiros nativos `res/values/strings.xml` e `res/values-pt/strings.xml`. De seguida, implementa um botão de seleção de idioma no ecrã inicial (`LandingActivity`) que utilize `AppCompatDelegate.setApplicationLocales` para mudar o idioma da app de imediato sem recarregar e sem um 'flash' preto, garantindo a configuração de `configChanges='locale|layoutDirection'` no Manifest."
+========================================================================

@@ -1,209 +1,157 @@
 # Changelog: AI Fitness Tracker App Development
 
-This log tracks the modifications, enhancements, and feature implementations of the Fitness Tracker application.
+Este log rastreia as modificações, melhorias e implementações de funcionalidades da aplicação Fitness Tracker.
 
-## [2026-07-16] Usability Hotfixes, Localization & Language Toggle
-
-### Added
-*   **In-App Language Toggle (`UserProfile.kt`, `RegisterActivity`, `EditProfileActivity`)**: Based entirely on feedback from the low-literacy usability test groups, we introduced a forced language toggle (System/English/Portuguese) during registration and in the profile editor. This leverages a lazy NoSQL migration, allowing existing users to seamlessly default to the System language without any database scripts.
-*   **App-wide Localization (`res/values-pt/strings.xml`)**: Full Portuguese translation of the UI, solving the high barrier of entry for Group A (low tech literacy) observed during usability testing. Kept core fitness terms (Squats, Lunges, XP) in English.
-
-### Modified
-*   **HUD Scaling & Visibility (`OverlayView.kt`)**: Drastically scaled up the on-screen typography (rep counter increased to 150f) and doubled the thickness of the MediaPipe skeleton tracking lines to guarantee visibility from 2 to 6 meters away.
-*   **Lunge Tracking Fix (`LungeExercise.kt`)**: Refactored the tracking logic to monitor the *forward* knee instead of the back knee. This permanently eliminates the false negatives caused by physical occlusion of the rear leg during side-profile execution. Thresholds were also made more lenient.
-*   **TTS Debounce (`TTSHelper.kt`)**: Confirmed implementation of a 500ms delay debounce for audio feedback cues to prevent voice overlap during rapid consecutive repetitions.
-
-## [2026-07-12] Usability Tests & Results Logging
+## [2026-07-18] Pequenas Correções, Localização da UI & Escrita de Relatório
 
 ### Added
-*   **Usability Evaluation Logs (`resultados_testes_usuabilidade.md`)**: Registered metrics and raw logs for 7 real usability test sessions. Structured the participants into 3 distinct tech-literacy groups (low, medium, advanced) and compiled critical UX/computer vision findings.
-*   **Consent Signatures Placeholder (`Assinaturas_decl_consentimento/`)**: Added a dedicated subfolder and placeholder file for archiving participant digital signatures/consent verification.
+*   **Seletor de Idioma (`LandingActivity`)**: Adicionado um botão local no `LandingActivity` (`AppCompatDelegate`) para que novos utilizadores possam ler a Pipeline de registo no idioma preferido de imediato, sem afetar o `UserProfile`.
 
 ### Modified
-*   **User Test Guide (`Guião  Testes Utilizadores.md`)**: Revised question flow, corrected numbering sequence, and clarified tasks for improved testing consistency.
+*   **Correções de Código**: Resolução de um pequeno bug de scope `@Composable` no cálculo de `strings` na `DashboardActivity`.
+*   **Uniformização do Idioma**: A app e documentação foram totalmente traduzidas/uniformizadas para a língua nativa Portuguesa. Todas as *hardcoded strings* em 8 atividades UI foram extraídas para `strings.xml` e `strings-pt.xml`, preservando os termos técnicos em Inglês.
+*   **Relatório Final**: Início imediato da planificação e redação em massa do relatório final de entrega (escrito logo a seguir a esta operação).
 
-## [2026-07-08] Continuous Form Scoring & Rep-Count Threshold
+## [2026-07-16] Hotfixes de Usabilidade & Localização Global da App
 
 ### Added
-*   **Rep-Count Threshold (`ExerciseConfig.kt`)**: Added `countThresholdDeg`, a more lenient depth than the scoring target `idealMinAngleDeg`. A rep now counts once this looser threshold is crossed, instead of being silently discarded if it doesn't reach the ideal depth.
-*   **Plank Form Scoring (`PlankExercise.kt`)**: Plank now has a real form score for the first time. Alignment is scored continuously against a straight 180° shoulder-hip-knee line, dropping the more the body sags or pikes away from it. Each held segment (from entering to leaving the plank position) is recorded to `repHistory` with its own score, matching how the other exercises log completed reps.
+*   **In-App Language Toggle (`UserProfile.kt`, `RegisterActivity`, `EditProfileActivity`)**: Resposta direta ao feedback dos testes de usabilidade do grupo de baixa literacia! Adicionado um seletor manual de idioma (Sistema/Inglês/Português) no registo de conta e edição de perfil (`AppCompatDelegate` via Compose). Implementada migração lazy de dados NoSQL para que utilizadores existentes adotem o idioma do Sistema nativamente sem scripts de base de dados forçados.
+*   **Localização Global da App (`res/values-pt/strings.xml`)**: Traduzida toda a UI para Português (pt-PT) para eliminar a barreira linguística em utilizadores de baixa literacia do Grupo A, mantendo termos específicos de fitness (Squats, Lunges, XP, Level) em Inglês.
 
 ### Modified
-*   **Continuous Depth Penalty (`FormEvaluator.kt`)**: Replaced the fixed-tolerance / fixed-penalty depth check with a continuous linear scale: 0 penalty at the ideal depth, scaling up to -40 exactly at the count threshold. The further past the ideal the user stops, the worse the score.
-*   **Rep-Counting Logic (`RepPhaseTracker.kt`)**: The bottom-of-movement threshold used to decide when a rep counts now reads from `countThresholdDeg` instead of `idealMinAngleDeg`, decoupling "did this count as a rep" from "how good was it."
-*   **Exercise Configs (`SquatExercise.kt`, `PushUpExercise.kt`, `LungeExercise.kt`)**: Added `countThresholdDeg` values - 90° for Squat and Push-up, 107° for Lunge - so shallow attempts still count as reps but score lower, instead of vanishing from the rep count entirely.
+*   **Aumento de Visibilidade HUD (`OverlayView.kt`)**: Redesign dos parâmetros de escala do overlay (contador de repetições 150f, espessura de linha 18f) para garantir legibilidade ideal a 2-6 metros de distância.
+*   **Arquitetura de Rastreamento Lunge (`LungeExercise.kt`)**: Remodelação do rastreio para seguir o joelho frontal em vez do traseiro, corrigindo permanentemente os falsos negativos causados pela oclusão mecânica da perna em perfil.
+*   **TTS Debounce (`TTSHelper.kt`)**: Confirmada a implementação de um debounce de 500ms para avisos de áudio de modo a evitar sobreposição de vozes em repetições consecutivas rápidas.
+
+## [2026-07-12] Testes de Usabilidade & Registo de Resultados
+
+### Added
+*   **Logs de Avaliação de Usabilidade (`resultados_testes_usuabilidade.md`)**: Registadas métricas e raw logs para 7 sessões de testes de usabilidade reais. Os participantes foram divididos em 3 grupos distintos de literacia tecnológica (baixa, média, avançada) e compilados dados críticos sobre a UX/visão computacional.
+*   **Pasta para Assinaturas de Consentimento (`Assinaturas_decl_consentimento/`)**: Adicionada sub-pasta e ficheiro de placeholder para arquivar assinaturas digitais/verificações de consentimento dos participantes.
+
+### Modified
+*   **Guia de Teste de Utilizador (`Guião  Testes Utilizadores.md`)**: Revisão do fluxo de perguntas, correção da sequência de numeração e clarificação de tarefas para melhor consistência de teste.
+
+## [2026-07-08] Form Scoring Contínuo & Rep-Count Threshold
+
+### Added
+*   **Rep-Count Threshold (`ExerciseConfig.kt`)**: Adicionado o `countThresholdDeg`, uma profundidade mais indulgente do que o `idealMinAngleDeg`. Uma repetição agora conta assim que atravessa este limite flexível, em vez de ser ignorada se não chegar à profundidade ideal.
+*   **Scoring de Alinhamento na Plank (`PlankExercise.kt`)**: A Plank agora tem um form score real. O alinhamento é pontuado continuamente contra uma linha reta de 180° entre ombro-anca-joelho, caindo de valor quanto mais o corpo ceder ou subir. Cada segmento mantido é gravado no `repHistory` com a sua pontuação.
+
+### Modified
+*   **Penalização de Profundidade Contínua (`FormEvaluator.kt`)**: Substituída a verificação de tolerância fixa por uma escala linear contínua: 0 penalidade na profundidade ideal, escalando para -40 exatamente no count threshold.
+*   **Lógica de Contagem de Reps (`RepPhaseTracker.kt`)**: O limite inferior do movimento usado para decidir quando uma rep conta agora lê do `countThresholdDeg` em vez de `idealMinAngleDeg`, separando "isto contou como uma rep" de "quão boa foi a rep".
+*   **Configurações de Exercícios (`SquatExercise.kt`, `PushUpExercise.kt`, `LungeExercise.kt`)**: Adicionados valores de `countThresholdDeg` - 90° para Squat e Push-up, 107° para Lunge - de forma a que tentativas superficiais contem como repetições mas com menor score.
 
 ---
 
-## [2026-07-05] Usability Refinements & Custom Plan Creator (Usability Prep)
+## [2026-07-05] Refinamentos de Usabilidade & Custom Plan Creator (Preparação para Testes)
 
 ### Added
-*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Added a fully functional Plan Builder screen. Enforces rest step insertions ($\ge 30$ seconds) in between all exercises. Validates range bounds: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps per leg), and Rest (30-120s). Saves to Firebase Firestore and passes dynamically.
-*   **Disclaimer & Calibration Popup (`StartPlanActivity.kt`)**: Added an AlertDialog disclaimer before plan launches. Advises a camera calibration distance of 2 to 6 meters with full body in frame, and provides brief descriptions of form targets.
-*   **Active Leg Prefix for Lunges (`LungeExercise.kt`)**: Automatically tracks active leading leg (LEFT or RIGHT) based on coordinate mapping, prepending it to user cues.
-*   **Stylized App Icon**: Added a generic white dumbbell icon rotated 45 degrees over a technical dark background with grid lines, scaled down to 65% to fit all device mask shapes (circle, teardrop, squircle).
+*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Adicionado um ecrã construtor de planos em Compose. Força inserções de passos de descanso ($\ge 30$ segundos) entre todos os exercícios. Valida limites de escala: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps por perna) e Descanso (30-120s). Guarda na Firebase Firestore e passa dinamicamente.
+*   **Disclaimer & Calibration Popup (`StartPlanActivity.kt`)**: Adicionado um AlertDialog com isenção de responsabilidade antes de o plano iniciar. Aconselha calibração de câmara de 2 a 6 metros com corpo todo no frame e fornece breves descrições das metas de forma.
+*   **Prefixo de Perna Ativa para Lunges (`LungeExercise.kt`)**: Rastrea automaticamente a perna frontal ativa (LEFT ou RIGHT) com base no mapeamento de coordenadas, precedendo-a nos cues do utilizador.
+*   **Ícone da Aplicação Estilizado**: Adicionado um ícone de halteres branco inclinado a 45 graus sobre fundo técnico escuro com grelhas, reduzido a 65% para caber em todos os device mask shapes (círculo, lágrima, squircle).
 
 ### Modified
-*   **Overlay HUD Size Scaling (`OverlayView.kt`)**: Scaled up font sizes significantly (Title to $65\text{f}$, Big Reps count to $110\text{f}$, and Cues to $64\text{f}$) for visibility from 5 meters away.
-*   **TTS Voice Debounce (`TTSHelper.kt`)**: Implemented a 500ms post-delayed debounce for postural cues using Android Handler to prevent stuttering. Queue flush immediately sounds rep counts. Changed engine speech locale to Portuguese.
-*   **Brief Cues (`FormEvaluator.kt` & Exercises)**: Translated and shortened form cues to snapping Portuguese alerts (e.g. `"Desce!"`, `"Sobe!"`, `"Excelente!"`).
-*   **Leaderboard Wrap Protection (`ViewStatisticsActivity.kt`)**: Re-arranged row items to stack name and stats score vertically, protecting the UI against long names.
-*   **Mock Seeding Protection (`ViewStatisticsActivity.kt`)**:
-    *   Removed "Clear History" button from the regular UI to protect user data from deletion.
-    *   Modified seeding batch to append to the existing list instead of overwriting.
+*   **Overlay HUD Size Scaling (`OverlayView.kt`)**: Aumento drástico do tamanho das fontes (Title para $65\text{f}$, Big Reps count para $110\text{f}$ e Cues para $64\text{f}$) para visibilidade a 5 metros.
+*   **TTS Voice Debounce (`TTSHelper.kt`)**: Implementado debounce post-delayed de 500ms para alertas posturais usando o Android Handler para evitar encavalitamentos. Flush da fila anuncia repetições de imediato. Idioma do motor alterado para Português.
+*   **Brief Cues (`FormEvaluator.kt` & Exercises)**: Cues curtos traduzidos e otimizados para Português (e.g. `"Desce!"`, `"Sobe!"`, `"Excelente!"`).
+*   **Proteção Leaderboard Wrap (`ViewStatisticsActivity.kt`)**: Reorganização dos items nas linhas empilhando o nome e as estatísticas na vertical para proteger a UI de nomes muito grandes.
+*   **Proteção de Mock Seeding (`ViewStatisticsActivity.kt`)**:
+    *   Removido botão "Clear History" da UI para proteger a eliminação acidental de dados.
+    *   Lote de seed modificado para anexar treinos à lista existente em vez de os substituir.
 
 ## [2026-07-04] NoSQL Write-Time Aggregation & Leaderboards
 
 ### Added
-*   **Write-Time Client Aggregation Fields (`UserProfile.kt`)**: Added stats fields to track user performance directly on their user document:
+*   **Write-Time Client Aggregation Fields (`UserProfile.kt`)**: Adicionados campos de stats para manter o desempenho diretamente no document do utilizador:
     *   `totalKcal`, `totalReps`, `totalWorkouts`, `overallCadenceStability` (lifetime).
     *   `weeklyKcal`, `weeklyCadenceStability`, `weeklyWorkouts` (weekly reset).
     *   `lastWeeklyReset` (weekly reset marker).
-*   **Leaderboards View (`ViewStatisticsActivity.kt`)**: Added a global leaderboards tab to show the top 10 users ranked by XP, Kcal, or Cadence Stability, retrieving pre-aggregated user documents directly.
-*   **Workout Detail Dialog (`ViewStatisticsActivity.kt`)**: Clickable cards in the history list now open a popup showing full biomechanical analysis: Volume (Reps $\times$ Weight), Cadence Score, Concentric/Eccentric tempos, and Standard Deviation.
+*   **Leaderboards View (`ViewStatisticsActivity.kt`)**: Adicionada a tab de leaderboards globais mostrando os 10 melhores utilizadores classificados por XP, Kcal ou Cadence Stability.
+*   **Workout Detail Dialog (`ViewStatisticsActivity.kt`)**: Clickable cards no histórico abrem agora um popup com análise biomecânica completa: Volume (Reps $\times$ Weight), Cadence Score, Concentric/Eccentric tempos, e Standard Deviation.
 
 ### Modified
-*   **Transactional Stats Write (`MainActivity.kt`)**: Expanded the workout submit transaction. It now calculates cadence standard deviation, translates it to a score out of 100, and atomically aggregates overall and weekly totals, handling auto-reset on a calendar-week boundary:
-
-```mermaid
-sequenceDiagram
-    participant App as Aplicação Android (Kotlin)
-    participant DB as Cloud Firestore (NoSQL)
-    App->>DB: Iniciar Transação Atómica
-    App->>DB: Escrever registo detalhado de treino em /workouts/
-    App->>DB: Ler documento de perfil /users/{uid}/
-    App->>DB: Validar data de Reset Semanal (último reset vs agora)
-    alt Se for semana diferente
-        App->>App: Resetar acumuladores semanais (weeklyKcal, weeklyWorkouts, weeklyCadence)
-    end
-    App->>App: Calcular novos acumuladores Lifetime e Semanais
-    App->>DB: Atualizar campos agregados e XP no documento do utilizador
-    DB-->>App: Transação Concluída com Sucesso
-    App->>App: Atualizar Compose UI (Dashboard & Ladders) instantaneamente
-```
+*   **Transactional Stats Write (`MainActivity.kt`)**: Expandida a transaction de conclusão de treino. Calcula agora a deviation standard da cadence, traduz para um score de 0 a 100, e atomicamente agrega resultados no lifetime e weekly, lidando com auto-reset baseado numa fronteira de semana do calendário.
 
 ---
 
-## [2026-07-01] Delivery Restructuring & LaTeX Drafting
+## [2026-07-01] Reestruturação de Entrega & Rascunho LaTeX
 
 ### Added
-*   **Root Folder Structure (ISEL Guidelines)**: Created standard project delivery folders at the root: `00_Planeamento`, `01_Analise`, `02_Desenho`, `03_Implementacao`, `04_Teste`, and `_RELATORIO`.
-*   **Root Index Ficheiros**:
-    *   `_README.TXT`: Description of the repository, authors (Rodrigo Correia #45155, David Delgado #51598) and directory layout.
-    *   `prompt_set.TXT`: Structured log of AI prompts used to design core controllers.
-*   **Relatório Draft (`_RELATORIO/overleaf/`)**: Created and fully drafted the LaTeX template inside `_RELATORIO/overleaf` (configured abstract, metadata, and Chapters 1 to 6).
+*   **Estrutura de Pastas Raiz (Guias ISEL)**: Criadas pastas standard de projeto: `00_Planeamento`, `01_Analise`, `02_Desenho`, `03_Implementacao`, `04_Teste`, e `_RELATORIO`.
+*   **Índices Ficheiros Raiz**:
+    *   `_README.TXT`: Descrição do repositório, autores (Rodrigo Correia #45155, David Delgado #51598) e layout.
+    *   `prompt_set.TXT`: Log estruturado das AI prompts usadas no core.
+*   **Relatório Draft (`_RELATORIO/overleaf/`)**: Criado e rasconhado todo o template LaTeX na pasta `_RELATORIO/overleaf` (abstract, metadata e Chapters 1 a 6).
 
 ### Modified
-*   **Project Relocation**: Moved `AndroidApp_V_0.1/` and `POC_Python/` into `03_Implementacao/` folder.
-*   **Gitignore Paths**: Configured `.gitignore` to exclude `documentos fornecidos projeto/` and `_RELATORIO/overleaf/` to prevent committing templates.
-*   **Build Validation**: Confirmed that moving `AndroidApp_V_0.1` to the subdirectory compiles successfully using `./gradlew.bat compileDebugKotlin`.
+*   **Realocação do Projeto**: Movido `AndroidApp_V_0.1/` e `POC_Python/` para dentro de `03_Implementacao/`.
+*   **Caminhos Gitignore**: Configurado `.gitignore` para ignorar `documentos fornecidos projeto/` e `_RELATORIO/overleaf/` prevenindo commits indesejados.
 
 ---
 
 ## [2026-06-16] Milestone 3 Refinements: Audio Guidance Cues (Text-To-Speech)
 
 ### Added
-*   **Text-To-Speech Coaching Assistant (`TTSHelper.kt`)**: Implemented a native Android `TextToSpeech` manager. It is configured to run rate-limited verbal instructions to prevent voice overlapping (4-second cooldown), while supporting an immediate override for rep completions and countdown progress.
-*   **Calibration Screen Audio Warning (`OverlayView.kt`)**: Added a clear notification text *"Note: Audio guidance will be used and is advised (optional)"* at the bottom of the start position card. This informs athletes that audio coaching is active without making it mandatory.
+*   **Coaching Assistant (`TTSHelper.kt`)**: Implementado o manager nativo `TextToSpeech` no Android. Rate-limited para prevenir overlapping de voz (cooldown de 4 segundos), mas com override imdediato para conclusões de reps ou contagens decrescentes.
+*   **Aviso na UI de Calibração (`OverlayView.kt`)**: Adicionado texto de notificação avisando do uso de orientação audível.
 
 ### Modified
 *   **Guided Workout Plan Audio Cues (`MainActivity.kt`)**:
-    *   Instructs TTS to announce the start of each workout step (e.g. *"Start Squat exercise. Target is 10 reps."*) or resting breaks.
-    *   Announces each completed repetition immediately with its score and form coaching notes (e.g. *"Rep 3. Score 88. Go deeper."*).
-    *   Announces real-time exercise execution hints (e.g., *"Sit back, go deeper..."*, *"Rest finished! Get ready."*).
+    *   O TTS anuncia o início de cada passo do treino ou pausas de descanso.
+    *   Anuncia cada repetição completada com o seu Score e Form Coaching notes (e.g. *"Rep 3. Score 88. Desce mais."*).
+    *   Avisos em real-time sobre postura.
 *   **Single Exercise Testing Audio Feedback (`ExerciseTestActivity.kt`)**:
-    *   Announces the startup countdown verbally (e.g., *"Get ready! 5, 4, 3, 2, 1, Go!"*).
-    *   Announces completed repetitions and scores for reps-based exercises, and hold status prompts for time-based exercises (e.g. Plank).
+    *   Conta audivelmente a preparação (e.g., *"Get ready! 5, 4, 3, 2, 1, Go!"*).
 
 ---
 
-## [2026-06-15] Milestone 4: Workout Plan Integration & Statistics Dashboard
+## [2026-06-15] Milestone 4: Integração Workout Plan & Statistics Dashboard
 
 ### Added
-*   **Workout Plan Detail Screen (`StartPlanActivity.kt`)**: Replaced the static placeholder with a fully styled training overview. Shows badges for estimated duration (~1.5 mins), MET (6.0), and average calorie burn (~15 kcal), as well as a list of workout steps: 10 Squats, 15s Rest, and 10 Lunges. Includes a premium gradient "START WORKOUT" button that initiates the camera workout.
-*   **Activity Statistics Screen (`ViewStatisticsActivity.kt`)**: Implemented the full Jetpack Compose dashboard for user activity:
-    *   **Live Firestore Query**: Queries `/users/{uid}/workouts` ordered by date descending to fetch historical data.
-    *   **Custom Canvas Bar Chart**: Draws a custom 7-day progress bar chart in Compose `Canvas` showing repetitions completed per day. Includes vertical neon sweep gradients and animated scaling on screen load.
-    *   **Biometric Stats Cards**: Dynamically aggregates total workouts completed, active time (formatted in minutes or hours/minutes), total calories burned, and average form score.
-    *   **Activity Log**: Shows a chronological list of recent workouts, detailing the name, reps, exact date/time, duration, average form score, and calories burned.
-    *   **Developer Actions**: Added a "Clear History" button to wipe the user's workouts sub-collection and a "Seed Mock Data" button to auto-generate 5 past workouts for robust visual testing.
+*   **Ecrã Workout Plan Detail (`StartPlanActivity.kt`)**: Apresenta a visão geral de treino. Mostra badges da duração estimada, MET e consumo de Kcal.
+*   **Ecrã Activity Statistics (`ViewStatisticsActivity.kt`)**: Implementado o dashboard completo em Jetpack Compose:
+    *   **Live Firestore Query**: Traz a info do `/users/{uid}/workouts` ordenada.
+    *   **Custom Canvas Bar Chart**: Desenha barras gráficas sobre progresso diário em `Canvas`. Inclui animação e neon sweep gradients.
+    *   **Biometric Stats Cards**: Agrega total de workouts e tempo ativo.
+    *   **Developer Actions**: Adicionado botão para limpar o histórico e semear Mock Data (5 treinos aleatórios).
 
 ### Modified
-*   **Guided Workout Plan Loop (`MainActivity.kt` & `WorkoutManager.kt`)**: Exposed training steps list in `WorkoutManager` and updated `MainActivity` to run the Squat-Rest-Lunge sequence.
+*   **Guided Workout Plan Loop (`MainActivity.kt` & `WorkoutManager.kt`)**: Expostos steps de treino no `WorkoutManager` para a sequência Squat-Rest-Lunge.
 *   **Workout Persistence & Scoring (`MainActivity.kt`)**:
-    *   Calculates active duration and MET-based calories: `MET (6.0) * 3.5 * weight / 200 * (duration / 60)`. Weight is queried dynamically from user profile (defaulting to 70.0 kg).
-    *   Stores the workout log in the Firestore sub-collection `/users/{uid}/workouts`.
-    *   Updates the user's Profile (`xpPoints` and `level`) in a Firestore Transaction, awarding `(reps * 10) + (avgScore / 2)` XP.
-    *   Launches `ResultActivity` passing the aggregated metrics.
+    *   Calcula Kcal MET: `MET (6.0) * 3.5 * weight / 200 * (duration / 60)`.
+    *   Guarda treino na sub-collection `/users/{uid}/workouts`.
+    *   Update `xpPoints` e `level` em Firestore Transaction: `(reps * 10) + (avgScore / 2)` XP.
+    *   Lança `ResultActivity` passando métricas agregadas.
 
 ---
 
 ## [2026-06-10] Milestone 1 Layout Fixes: Tablet Centering & Title Re-alignment
 
 ### Added
-*   **Friends Online/Offline Status & Two-way Confirmation Requests**:
-    *   Added `lastActive` timestamp tracking to the user profile model [UserProfile.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/logic/UserProfile.kt) with safe millisecond translation and fallback to `modifiedAt` if the field is missing.
-    *   Configured [RegisterActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/RegisterActivity.kt) and [EditProfileActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/EditProfileActivity.kt) to initialize/update `lastActive` upon creation or saving.
-    *   **Two-Way Friend Request Confirmation Flow**: Implemented a friend request collection `friend_requests` in Firestore. Adding a friend in `EditProfileActivity.kt` now writes a pending friend request document rather than instantly adding them.
-    *   **Pending Requests UI Section**: Added a real-time pending friend requests sub-section in [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt). Users see incoming requests with "Accept" and "Decline" actions.
-    *   **Transactional Accept Flow**: Clicking "Accept" triggers a safe Firestore Transaction that atomically:
-        1. Appends the sender's code to the receiver's `friendsList`.
-        2. Appends the receiver's code to the sender's `friendsList`.
-        3. Deletes the pending request document.
-    *   **Real-time Snapshot Syncing**: Refactored `DashboardActivity.kt` and `EditProfileActivity.kt` to use reactive Firestore snapshot listeners (`addSnapshotListener` inside Compose `DisposableEffect`). This ensures that changes to the user's profile, friends lists, online statuses, and pending requests are pushed instantly to the user interface in real-time.
-    *   **Friend Name Mapping in Editor**: Implemented a side-effect query inside `EditProfileActivity.kt` to resolve and cache names corresponding to the 5-digit codes in the user's friends list, displaying them as `Name (Code)` (e.g. `Tomás Correia (#15439)`) in the active list.
-    *   Configured [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt) to automatically update the current user's `lastActive` timestamp in Firestore when the dashboard opens.
-    *   Implemented a query in `DashboardActivity.kt` that fetches the profile and active status of all added friends, displaying them dynamically at the bottom of the main hub under a new "Friends Status" section.
-    *   Friends are listed with their name, code, a green online dot if active within 5 minutes, or a relative offline timestamp (e.g. "Active 2h ago", "Active >72h ago") if not. Added interactive placeholder text buttons for "Challenge" and "Stats" actions.
-    *   Realigned the dashboard layout to a scrollable `Column` container, replacing the previous full-screen `LazyVerticalGrid` with a 3x2 chunked `Row` structure to enable scrolling down to check the friends status.
-*   **Tablet Layout & Centering Constraints**: Wrapped all Compose activity screens (`LandingScreen`, `RegisterScreen`, `DashboardScreen`, `EditProfileScreen`, `PlaceholderScreen`, `LoaderScreen`) in parent `Box` containers with `Modifier.widthIn(max = 480.dp)` or `540.dp` to prevent horizontal stretching on wider screens (tablets) and keep elements elegantly centered.
-*   **Locked Portrait Mode**: Updated [AndroidManifest.xml](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/AndroidManifest.xml) to explicitly add `android:screenOrientation="portrait"` to all 10 activities, preventing accidental landscape rotation that conflicts with camera-based body pose tracking.
-
-*   **Landing Activity Branding Spacing & Font Scaling**: Refactored the branding section of `LandingScreen` in [LandingActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/LandingActivity.kt):
-    *   Split the "FITNESS TRACKER" branding text into two separate, explicit Compose `Text` views ("FITNESS" and "TRACKER") separated by a `6.dp` vertical `Spacer` to completely resolve vertical overlapping caused by text wrapping.
-    *   Increased the branding font size from `38.sp` to `44.sp` for a more premium visual layout.
-    *   Increased vertical spacing between the title branding and the subtitle ("Train anywhere you want!") to `16.dp` to prevent visual clutter.
-    *   Added a `Spacer` at the top of the scrollable column to push the text block slightly downwards while keeping the entire view balanced and centered.
+*   **Status de Amigos Online/Offline & Two-way Confirmation Requests**:
+    *   `lastActive` timestamp tracking no modelo `UserProfile`.
+    *   **Two-Way Friend Request Confirmation Flow**: Pedidos pendentes na sub-collection `friend_requests`. Adicionar amigos cria requests em vez de adicionar instantaneamente.
+    *   **Pending Requests UI Section**: Tabela de requests reais no `DashboardActivity.kt` com botões "Accept" e "Decline".
+    *   **Transactional Accept Flow**: "Accept" lança Transação atómica que atualiza ambas as friendsLists e elimina o documento de request.
+    *   **Real-time Snapshot Syncing**: Refatoração do `DashboardActivity.kt` e `EditProfileActivity.kt` para usar Snapshot Listeners (`addSnapshotListener` no Compose `DisposableEffect`).
+*   **Tablet Layout & Centering Constraints**: Limitada largura do ecrã para evitar estiramento horizontal exagerado nos tablets (`Modifier.widthIn(max = 480.dp)`).
+*   **Locked Portrait Mode**: `AndroidManifest.xml` bloqueado em portrait mode.
 
 ---
 
 ## [2026-06-10] Milestone 1 Refinements: UI/UX & Data Formatting
 
 ### Added
-*   **Forgot Password Dialog**: Integrated a stateful "Forgot Password?" dialog inside [LandingActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/LandingActivity.kt) to send reset verification emails using `FirebaseAuth.getInstance().sendPasswordResetEmail`.
-*   **Sign Out Action**: Added a red "Sign Out" text button in [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt) that clears the session using `FirebaseAuth.getInstance().signOut()` and routes back to the landing page.
-*   **First Name Parser**: Implemented a parser in the dashboard header that extracts and displays only the user's first name for a cleaner and more personal greeting (e.g. "Welcome Back, Rodrigo").
-*   **Loader Activity**: Created [LoaderActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/LoaderActivity.kt) which displays an animated, rotating neon sweep gradient spinner in the Antigravity color theme (cyan/purple) with a 1.5-second delay to ensure smooth transitions between major states.
-*   **Shared Component File**: Created [PlaceholderScreen.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/PlaceholderScreen.kt) to share the "Coming Soon" screen design across the mock activities.
+*   **Forgot Password Dialog**: Dialog stateful integrado em `LandingActivity.kt`.
+*   **Sign Out Action**: Botão vermelho em `DashboardActivity.kt`.
+*   **First Name Parser**: O dashboard mostra unicamente o primeiro nome (e.g. "Welcome Back, Rodrigo").
+*   **Loader Activity**: Criada `LoaderActivity.kt` com animado neon spinner.
 
 ### Modified
-*   **Prevent Screen Locking**: Added `WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON` to all activities (`LandingActivity`, `RegisterActivity`, `DashboardActivity`, `EditProfileActivity`, `CreatePlanActivity`, `StartPlanActivity`, `ViewStatisticsActivity`, and `LoaderActivity`) to prevent the screen from going to sleep while the app is active.
-*   **Human-Readable Firestore Dates**: Refactored [UserProfile.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/logic/UserProfile.kt) to use native Firestore `Timestamp` objects instead of raw `Long` millisecond values. Added safe-resolution methods to parse both legacy `Long` records and new `Timestamp` objects to prevent crashes.
-*   **User Numeric ID**:
-    *   Updated [RegisterActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/RegisterActivity.kt) to generate a random 5-digit numerical ID (e.g. `#12345`) upon account creation.
-    *   Updated [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt) to fetch and display the user's name and 5-digit ID in the main greeting header.
-*   **Friends List Search by Code**: Updated [EditProfileActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/EditProfileActivity.kt) to query the Firestore `/users` collection when adding a friend by their 5-digit code, verifying their existence before adding them to the user's friends list.
-*   **Transitions via Loader**:
-    *   Configured [LandingActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/LandingActivity.kt) to route through `LoaderActivity` to the dashboard upon login.
-    *   Configured [DashboardActivity.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/DashboardActivity.kt) to route through `LoaderActivity` when launching `MainActivity` (Demo Workout) or `DemoPushUpActivity` (Demo Pushups).
-*   [AndroidManifest.xml](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/AndroidManifest.xml): Registered `LoaderActivity` in the application manifest.
-
----
-
-## [2026-06-10] Milestone 1: User Authentication & Cloud Database (Firebase)
-
-### Added
-*   **Firebase SDK Integration**: Added Google Services plugin and Firebase BOM to the Gradle build configuration files.
-*   **User Data Model**: Created initial `UserProfile.kt` with fields for biometric data, gamification info, and social connections.
-*   **Register Activity**: Created `RegisterActivity.kt` with a Compose registration form.
-
----
-
-## [2026-06-10] Navigation & Jetpack Compose Base Setup
-
-### Added
-*   **Compose Support**: Integrated Jetpack Compose in the build scripts using Compose BOM `2024.10.00` and the Jetpack Compose compiler.
-*   **Theme**: Created a custom dark-mode theme [Theme.kt](file:///c:/Users/rodri/OneDrive/Documentos/GitHub/Final_Project_FitnessTracker/AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp/ui/theme/Theme.kt) matching the Antigravity color palette.
-*   **Landing Page Mockup**: Created initial `LandingActivity` with static buttons and form fields.
-*   **Dashboard Hub**: Created `DashboardActivity.kt` to act as the primary navigation hub.
-*   **Placeholders**: Created temporary activities for Edit Profile, Create Plan, Start Plan, and View Statistics.
+*   **Prevent Screen Locking**: Mantém o ecrã ativo na app via `FLAG_KEEP_SCREEN_ON`.
+*   **Human-Readable Firestore Dates**: O sistema agora usa e analisa objetos reais `Timestamp` do Firestore em vez do long timestamp para melhor compatibilidade.
+*   **User Numeric ID**: Códigos aleatórios de 5 dígitos na criação da conta (e.g. `#12345`).
+*   **Transitions via Loader**: Fluxo da `LandingActivity` e `DashboardActivity` para o treino usa o Ecrã de `LoaderActivity`.

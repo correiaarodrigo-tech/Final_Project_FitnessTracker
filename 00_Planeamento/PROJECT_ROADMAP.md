@@ -1,12 +1,12 @@
-# Project Roadmap: AI Fitness Tracker App (MVP)
+# Roadmap do Projeto: Aplicação AI Fitness Tracker (MVP)
 
-This roadmap details the system architecture, database design, and algorithmic models of the gamified, AI-driven fitness tracker.
+Este roadmap detalha a arquitetura do sistema, o design da base de dados e os modelos algorítmicos do Fitness Tracker gamificado e impulsionado por AI.
 
 ---
 
-## 🏗️ System Architecture (MVVM)
+## 🏗️ Arquitetura do Sistema (MVVM)
 
-The application utilizes a clean, modern Android architecture following **MVVM (Model-View-ViewModel)** built entirely with **Jetpack Compose**. 
+A aplicação utiliza uma arquitetura Android limpa e moderna que segue o padrão **MVVM (Model-View-ViewModel)**, construída inteiramente com **Jetpack Compose**. 
 
 ```mermaid
 graph TD
@@ -20,20 +20,20 @@ graph TD
 
 ---
 
-## 🎯 Implementation Milestones
+## 🎯 Marcos de Implementação (Milestones)
 
-### 📍 Milestone 1: User Authentication & Cloud Database (Firebase) ✅
-Firebase integrates user accounts, profile personalization, and real-time cloud data persistence.
+### 📍 Milestone 1: Autenticação de Utilizadores & Cloud Database (Firebase) ✅
+O Firebase integra as contas de utilizador, personalização de perfil e persistência de dados na cloud em tempo real.
 
-#### 1. Firebase Authentication Setup ✅
-*   **Providers**: Enable **Email/Password** and **Google Sign-In** in the Firebase Console.
-*   **User Flow**:
-    1.  **Landing Screen**: Features text inputs for Email & Password. 
-    2.  **Login Action**: Triggers `FirebaseAuth.signInWithEmailAndPassword`. Upon success, navigates to the `DashboardActivity`.
-    3.  **Registration**: Directs users to a new `RegisterActivity` to register.
+#### 1. Configuração de Firebase Authentication ✅
+*   **Providers**: Ativar **Email/Password** e **Google Sign-In** na Consola Firebase.
+*   **Fluxo do Utilizador**:
+    1.  **Landing Screen**: Apresenta campos de texto para Email e Password. 
+    2.  **Ação de Login**: Despoleta `FirebaseAuth.signInWithEmailAndPassword`. Em caso de sucesso, navega para a `DashboardActivity`.
+    3.  **Registo**: Encaminha os utilizadores para uma nova `RegisterActivity` para efetuar o registo.
 
-#### 2. Cloud Firestore Schema ✅
-User profiles, custom plans, and workout history are synced under a `/users` root collection:
+#### 2. Esquema Cloud Firestore ✅
+Os perfis de utilizador, planos personalizados e histórico de treinos são sincronizados numa coleção principal `/users`:
 
 ##### `/users/{userId}` (User Profile Document)
 ```json
@@ -83,113 +83,118 @@ User profiles, custom plans, and workout history are synced under a `/users` roo
 
 ---
 
-### 📍 Milestone 2: Expanding the Exercise Library ✅
-Supported exercises and their geometric logic using 2D MediaPipe landmarks:
+### 📍 Milestone 2: Expansão da Biblioteca de Exercícios ✅
+Exercícios suportados e a sua lógica geométrica usando 2D MediaPipe landmarks:
 
-#### 1. Bicep Curl (Single Arm / Alternating) ✅
-*   **Key Landmarks**: Shoulder (11/12), Elbow (13/14), Wrist (15/16).
-*   **Angle Monitored**: Inner elbow joint angle $\theta$.
-*   **Detection Logic**:
-    *   **Starting Position (DOWN)**: Arm fully extended ($\theta \ge 160^\circ$).
-    *   **Finishing Position (UP)**: Arm fully flexed ($\theta \le 45^\circ$).
+#### 1. Bicep Curl (Braço Único / Alternado) ✅
+*   **Landmarks Principais**: Ombro (11/12), Cotovelo (13/14), Pulso (15/16).
+*   **Ângulo Monitorizado**: Ângulo interno da articulação do cotovelo $\theta$.
+*   **Lógica de Deteção**:
+    *   **Posição Inicial (DOWN)**: Braço totalmente estendido ($\theta \ge 160^\circ$).
+    *   **Posição Final (UP)**: Braço totalmente fletido ($\theta \le 45^\circ$).
 
 #### 2. Jumping Jacks ✅
-*   **Key Landmarks**: Left/Right Ankles (27/28), Left/Right Shoulders (11/12), Left/Right Wrists (15/16).
-*   **Detection Logic**:
-    *   **State OUT (UP)**: Ankle distance is wider than shoulder width ($D_{ankles} > 1.5 \times D_{shoulders}$) **AND** hands are raised above shoulder level.
-    *   **State IN (DOWN)**: Feet are closed ($D_{ankles} \approx D_{shoulders}$) **AND** hands are down below hips.
+*   **Landmarks Principais**: Tornozelos Esquerdo/Direito (27/28), Ombros Esquerdo/Direito (11/12), Pulsos Esquerdo/Direito (15/16).
+*   **Lógica de Deteção**:
+    *   **Estado OUT (UP)**: A distância entre tornozelos é maior que a largura dos ombros ($D_{ankles} > 1.5 \times D_{shoulders}$) **E** as mãos estão levantadas acima do nível dos ombros.
+    *   **Estado IN (DOWN)**: Os pés estão juntos ($D_{ankles} \approx D_{shoulders}$) **E** as mãos estão em baixo abaixo da anca.
 
 #### 3. Overhead Shoulder Press ✅
-*   **Key Landmarks**: Shoulder (11/12), Elbow (13/14), Wrist (15/16).
-*   **Detection Logic**:
-    *   **Starting Position (DOWN)**: Elbows bent, hands at shoulder height ($\theta \le 90^\circ$).
-    *   **Finishing Position (UP)**: Arms extended straight overhead ($\theta \ge 165^\circ$).
+*   **Landmarks Principais**: Ombro (11/12), Cotovelo (13/14), Pulso (15/16).
+*   **Lógica de Deteção**:
+    *   **Posição Inicial (DOWN)**: Cotovelos dobrados, mãos à altura dos ombros ($\theta \le 90^\circ$).
+    *   **Posição Final (UP)**: Braços estendidos retos acima da cabeça ($\theta \ge 165^\circ$).
 
 #### 4. Mountain Climbers ✅
-*   **Key Landmarks**: Shoulder (11/12), Hip (23/24), Knee (25/26), Ankle (27/28).
-*   **Detection Logic**:
-    *   User holds a stable plank position. Alternating knee flexion angle $\le 70^\circ$ registers a repetition.
+*   **Landmarks Principais**: Ombro (11/12), Anca (23/24), Joelho (25/26), Tornozelo (27/28).
+*   **Lógica de Deteção**:
+    *   O utilizador mantém uma posição estável de Plank. Um ângulo alternado de flexão do joelho $\le 70^\circ$ regista uma repetição.
 
 ---
 
-### 📍 Milestone 3: AI-Driven Scoring & Audio Feedback ✅
-This module analyzes movement quality in real-time, providing both visual and auditory guidance.
+### 📍 Milestone 3: AI-Driven Scoring & Feedback de Áudio ✅
+Este módulo analisa a qualidade do movimento em tempo real, fornecendo orientação visual e auditiva.
 
-#### 1. Form Scoring Metric ✅
-A weighted score from 0 to 100 is computed for each repetition:
-*   **Range of Motion (ROM)** (up to −40 pts): Checks if the joint reaches the target flex/extension angles.
-*   **Eccentric tempo** (up to −30 pts): Penalizes lowering too fast (no control) or too slow.
-*   **Concentric tempo** (up to −25 pts): Penalizes using momentum on the lift.
+#### 1. Métrica de Form Scoring ✅
+Um score ponderado de 0 a 100 é calculado para cada repetição:
+*   **Range of Motion (ROM)** (até −40 pts): Verifica se a articulação atinge os ângulos alvo de flexão/extensão.
+*   **Tempo Excêntrico** (até −30 pts): Penaliza uma descida demasiado rápida (sem controlo) ou demasiado lenta.
+*   **Tempo Concêntrico** (até −25 pts): Penaliza o uso de balanço no levantamento.
 
 #### 2. Text-to-Speech (TTS) Engine ✅
-Uses Android's native `TextToSpeech` in Portuguese (`pt-PT`) with a 0.5-second debounce to announce cues:
-*   *Form Corrections*: "Desce mais!", "Sobe com controlo!", "Mais lento a descer!"
+Utiliza o `TextToSpeech` nativo do Android em Português (`pt-PT`) com um debounce de 0.5 segundos para anunciar instruções:
+*   *Correções de Postura*: "Desce mais!", "Sobe com controlo!", "Mais lento a descer!"
 
 ---
 
-### 📍 Milestone 4: Gamification & Analytics ✅
+### 📍 Milestone 4: Gamificação & Analytics ✅
 
-Gamifying the fitness experience helps users maintain consistency.
+A gamificação da experiência de fitness ajuda os utilizadores a manterem a consistência.
 
-#### 1. Kcal/Energy Expenditure Formula ✅
-Calculated using the Metabolic Equivalent of Task (MET) formula:
+#### 1. Fórmula de Kcal / Gasto Energético ✅
+Calculado usando a fórmula Metabolic Equivalent of Task (MET):
 $$\text{Kcal Burned} = \text{MET} \times 3.5 \times \frac{\text{Weight (kg)}}{200} \times \text{Duration (minutes)}$$
 
-*   *Vigorous exercises (Push-up, Squat, Lunge)*: **8.0 MET** (Mini Plan uses average **6.0 MET**)
-*   *Moderate/Core exercises (Plank)*: **4.0 MET**
-*   *Rest / Break*: **1.3 MET**
+*   *Exercícios Vigorosos (Push-up, Squat, Lunge)*: **8.0 MET** (O Mini Plan utiliza uma média de **6.0 MET**)
+*   *Exercícios Moderados/Core (Plank)*: **4.0 MET**
+*   *Descanso / Pausa*: **1.3 MET**
 
-#### 2. Progress Charts ✅
-Draws weekly workout histories directly onto a custom Jetpack Compose `Canvas` bar chart.
+#### 2. Gráficos de Progresso ✅
+Desenha os históricos semanais de treinos diretamente num gráfico de barras customizado em Jetpack Compose `Canvas`.
 
 ---
 
-## ✅ Development Log
+## ✅ Diário de Desenvolvimento (Development Log)
 
-### 2026-07-16 — Usability Hotfixes & App-wide Localization
-*   **In-App Language Toggle**: Direct response to user feedback from the usability tests! Added a manual `preferredLanguage` toggle to Account Registration and Profile Editing (`AppCompatDelegate` via Compose). Implemented lazy NoSQL data class migration so existing users seamlessly default to System language without database refactoring.
-*   **App-wide Localization (`strings.xml`)**: Translated the entire UI to Portuguese (pt-PT) to eliminate the language barrier for low-literacy users, maintaining specific fitness terms (Squats, Lunges, XP, Level) in English.
-*   **Lunge Tracking Architecture (`LungeExercise.kt`)**: Remodeled tracking to follow the forward knee, permanently fixing occlusion false negatives.
-*   **HUD Visiblity Boost (`OverlayView.kt`)**: Redesigned overlay scaling parameters (150f rep counter, 18f stroke width) for optimal 2-6 meter readability.
-*   **Documentation Alignment**: Updated the `RELATORIO_GUIDE.md` to map out the official 40-page Linear Structure with 6 chapters.
+### 2026-07-18 — Pequenas Correções, Localização da UI & Escrita de Relatório
+*   **Correções de Código**: Resolução de um pequeno bug de scope `@Composable` no cálculo de `strings` na `DashboardActivity`.
+*   **Uniformização do Idioma**: A app e documentação foram totalmente traduzidas/uniformizadas para a língua nativa Portuguesa. Adicionado um botão local no `LandingActivity` (`AppCompatDelegate`) para que novos utilizadores possam ler a Pipeline de registo no idioma preferido de imediato.
+*   **Relatório Final**: Início imediato da planificação e redação em massa do relatório final de entrega (escrito logo a seguir a esta operação).
 
-### 2026-07-12 — Usability Tests & Results Logging
-*   **Usability Evaluation Logs (`resultados_testes_usuabilidade.md`)**: Documented results from 7 usability test sessions across 3 smartphone literacy groups (low, medium, advanced).
-*   **User Test Guide (`Guião  Testes Utilizadores.md`)**: Corrected numbering and revised question flow for clarity.
+### 2026-07-16 — Hotfixes de Usabilidade & Localização Global da App
+*   **In-App Language Toggle**: Resposta direta ao feedback dos testes de usabilidade! Adicionado um seletor manual `preferredLanguage` no registo de conta e edição de perfil (`AppCompatDelegate` via Compose). Implementada migração lazy de dados NoSQL para que utilizadores existentes adotem o idioma do Sistema nativamente sem scripts de base de dados forçados.
+*   **Localização Global da App (`strings.xml`)**: Traduzida toda a UI para Português (pt-PT) para eliminar a barreira linguística em utilizadores de baixa literacia do Grupo A, mantendo termos específicos de fitness (Squats, Lunges, XP, Level) em Inglês.
+*   **Arquitetura de Rastreamento Lunge (`LungeExercise.kt`)**: Remodelação do rastreio para seguir o joelho frontal, corrigindo permanentemente os falsos negativos causados pela oclusão mecânica.
+*   **Aumento de Visibilidade HUD (`OverlayView.kt`)**: Redesign dos parâmetros de escala do overlay (contador de repetições 150f, espessura de linha 18f) para garantir legibilidade ideal a 2-6 metros.
+*   **Alinhamento de Documentação**: Atualização do `RELATORIO_GUIDE.md` para mapear a Estrutura Linear oficial de 40 páginas em 6 capítulos.
 
-### 2026-07-08 — Continuous Form Scoring & Rep-Count Threshold
-*   **Continuous Depth Penalty (`FormEvaluator.kt`)**: Implemented linear depth scoring between ideal depth and count threshold.
-*   **Lenient Rep Counting (`RepPhaseTracker.kt` & configs)**: Added count thresholds to count shallow reps with a penalty instead of throwing them away.
-*   **Plank Alignment Scoring (`PlankExercise.kt`)**: Added alignment scoring relative to 180° and segment hold history logs.
+### 2026-07-12 — Testes de Usabilidade & Registo de Resultados
+*   **Logs de Avaliação de Usabilidade (`resultados_testes_usuabilidade.md`)**: Documentação quantitativa das 7 sessões de testes com utilizadores abrangendo 3 grupos de literacia tecnológica (baixa, média, avançada).
+*   **Guia de Teste de Utilizador (`Guião  Testes Utilizadores.md`)**: Revisão do fluxo e numeração de perguntas para garantir maior consistência nas respostas.
 
-### 2026-07-05 — Usability Refinements & Custom Plan Creator
-*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Added Compose plan builder enforcing rest steps ($\ge 30$ seconds) in between exercises. Validates range bounds: Squat (5-25 reps), Push-Up (3-15 reps), Lunge (5-20 reps per leg), and Rest (30-120s).
-*   **Disclaimer Dialog (`StartPlanActivity.kt`)**: Added popup advising a phone calibration distance of 2 to 6 meters with full body in frame.
-*   **Active Leg Cues (`LungeExercise.kt`)**: Prepends active leg (`Perna Esquerda: ` / `Perna Direita: `) to lunge cues.
-*   **TTS Voice Debounce (`TTSHelper.kt`)**: Configured native Portuguese locale (`pt-PT`) and implemented a 0.5s debounce handler to prevent overlapping postural speech cues.
-*   **Overlay HUD Size (`OverlayView.kt`)**: Boosted the HUD text sizes (Reps number is now $110\text{f}$) for distance viewing.
-*   **Stylized App Icon**: Custom white dumbbell vector icon rotated 45 degrees over a black background with grid lines, scaled down to 65% size.
-*   **Database Model Documentation**: Created `02_Desenho/BaseDados_Model.md` detailing the Firestore database schema.
+### 2026-07-08 — Form Scoring Contínuo & Rep-Count Threshold
+*   **Penalização de Profundidade Contínua (`FormEvaluator.kt`)**: Implementado um scoring linear de profundidade em vez da barreira absoluta fixa de tolerância. A penalização aumenta quanto maior a distância em relação à marca ideal de 90º.
+*   **Contagem Indulgente de Repetições (`RepPhaseTracker.kt` & configs)**: Adicionados *count thresholds* (ex: 90° em vez de 70°) para contabilizar repetições superficiais em troca de penalizações no Score final em vez de as descartar.
+*   **Scoring de Alinhamento na Plank (`PlankExercise.kt`)**: Adicionado o scoring dinâmico de alinhamento em relação à linha vertebral de 180° e o registo histórico em `repHistory` de cada segmento temporal aguentado.
+
+### 2026-07-05 — Refinamentos de Usabilidade & Custom Plan Creator
+*   **Custom Plan Creator (`CreatePlanActivity.kt`)**: Adicionado um ecrã construtor de planos em Compose que impõe descansos obrigatórios ($\ge 30$ segundos) entre exercícios pesados. Aplica validação inteligente de reps e duração limite.
+*   **Disclaimer Dialog (`StartPlanActivity.kt`)**: Adicionado um AlertDialog avisando que a calibração da câmara a 2-6 metros é obrigatória para apanhar o corpo inteiro em frame.
+*   **Perna Ativa Cues (`LungeExercise.kt`)**: O sistema avisa auditivamente qual a perna ativa (`Perna Esquerda` ou `Perna Direita`) usando mapeamento 2D direto.
+*   **TTS Voice Debounce (`TTSHelper.kt`)**: Implementação engenhosa no Android Handler de um debounce de 0.5s após a indicação de áudio que assegura proteção contra stutters repetitivos. Locuções adaptadas a `pt-PT`.
+*   **Tamanho do HUD Overlay (`OverlayView.kt`)**: Boost estético nas fontes UI para visão clara a 5 metros e tradução de avisos estáticos do ecrã para Português nativo.
+*   **Ícone da Aplicação Estilizado**: Desenhado icon branding corporativo branco com vetor de halteres, rodado transversalmente 45 graus, acomodado ao padrão de padding Google.
+*   **Documentação do Modelo de Base de Dados**: Criado doc de infraestrutura `02_Desenho/BaseDados_Model.md` mapeando em plain text toda a cloud Firebase do MVP.
 
 ### 2026-07-04 — NoSQL Write-Time Aggregation & Leaderboards
-*   **Write-Time Client Aggregation (`MainActivity.kt`)**: Expanded completed workout transaction to calculate and save volume, cadence stability, and update lifetime/weekly aggregates atomically on a calendar-week boundary.
-*   **Workout Detail Dialog (`ViewStatisticsActivity.kt`)**: Upgraded history cards to open detailed stats: duration, kcal, average score, volume, stability, concentric/eccentric tempos, and standard deviations.
-*   **Competitive Ladders (`ViewStatisticsActivity.kt`)**: Integrated leaderboards displaying the top 10 users ranked by XP, Kcal, or Cadence Stability.
+*   **Write-Time Client Aggregation (`MainActivity.kt`)**: Integração radical no final do treino - ao gravar na /workouts/, o Android Kotlin calcula o Cadence Deviation, empurra para 0 a 100 de Score, e dispara uma Transaction Atómica do cliente que atualiza Lifetime/Weekly stats numa só passagem.
+*   **Workout Detail Dialog (`ViewStatisticsActivity.kt`)**: Janela expansível on-click em cards que abre estatísticas vitais - Duração Total, Kcal/MET, Cadence Score e métricas limítrofes do motor AI.
+*   **Ladders Competitivos (`ViewStatisticsActivity.kt`)**: Integração de Leaderboards globais do ginásio listando de cima abaixo os 10 "Atletas" mais ativos usando pontuações unificadas no profile (ex: Leaderboard XP, Leaderboard KCAL).
 
-### 2026-07-01 — Delivery Restructuring & LaTeX Drafting
-*   **Root Folder Structure**: Created standard project delivery folders: `00_Planeamento`, `01_Analise`, `02_Desenho`, `03_Implementacao`, `04_Teste`, and `_RELATORIO`.
-*   **Root Index**: Created `_README.TXT` (Root directory descriptions) and `prompt_set.TXT` (cataloging prompts used).
-*   **LaTeX Report**: Prepared all drafts of the LaTeX report in `_RELATORIO/overleaf/`.
+### 2026-07-01 — Reestruturação de Entrega & Rascunho LaTeX
+*   **Estrutura de Pastas Raiz**: Alinhamento standard da academia para as entregas ISEL, recriadas `00_Planeamento`, `01_Analise`, `02_Desenho`, `03_Implementacao`, `04_Teste`, e `_RELATORIO`.
+*   **Índices da Raiz**: Criado `_README.TXT` com nomeclatura/nº autores, e doc de prompts AI `prompt_set.TXT`.
+*   **Relatório LaTeX**: Bootstrapped todo o overleaf master template para os Capítulos de 1 a 6.
 
-### 2026-06-16 — Audio Guidance Cues (Text-To-Speech)
-*   **Coaching Assistant (`TTSHelper.kt`)**: Implemented native Android `TextToSpeech` integration.
-*   **Calibration UI Alert (`OverlayView.kt`)**: Added notice advising audio guidance during startup calibration.
+### 2026-06-16 — Cues de Orientação de Áudio (Text-To-Speech)
+*   **Coaching Assistant (`TTSHelper.kt`)**: Integração nativa de `TextToSpeech`.
+*   **Aviso na UI de Calibração (`OverlayView.kt`)**: Adicionada label informativa avisando que o sistema usará TTS no treino em curso.
 
-### 2026-06-15 — Workout Plan Integration & Statistics Dashboard
-*   **Guided Plan Execution (`StartPlanActivity.kt`)**: Guides the user through a Squat-Rest-Lunge mini plan.
-*   **Performance Statistics (`ViewStatisticsActivity.kt`)**: Animated statistics screen with custom Canvas chart.
-*   **Developer Diagnostics**: Added mock data seeding.
+### 2026-06-15 — Integração de Workout Plan & Statistics Dashboard
+*   **Execução de Plano Guiado (`StartPlanActivity.kt`)**: Layout customizado para pré-visualizar a cadência de treinos do mini-plano pre-made (Squat-Rest-Lunge).
+*   **Estatísticas de Desempenho (`ViewStatisticsActivity.kt`)**: Gráfico `Canvas` 7-day-history com barra neon-ciano.
+*   **Developer Diagnostics**: Adicionado "Seed Mock Data" (Injeção via UI de test logs) e remove-all protection contra acidentes.
 
 ### 2026-06-12 — Real-Time Exercise Evaluation Engine
-*   **`logic/RepPhaseTracker.kt`**: State machine (`AT_TOP → DESCENDING → ASCENDING`) timing eccentric/concentric phases.
-*   **`logic/FormEvaluator.kt`**: Produces 0–100 form scores plus cues.
+*   **`logic/RepPhaseTracker.kt`**: State machine para extração linear geométrica (`AT_TOP → DESCENDING → ASCENDING`).
+*   **`logic/FormEvaluator.kt`**: Threshold Engine estático para devolver scores form-perfect.

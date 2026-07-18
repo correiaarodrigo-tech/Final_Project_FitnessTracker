@@ -40,7 +40,7 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
 <details>
   <summary><b>19/04/2026</b></summary>
   
-- Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end do aplicativo final.
+- Após vários estudos e abordagens ao longo da semana, foi decidido que a melhor abordagem para o desenvolvimento do projeto será a implementação do motor em conjunto com a app em Kotlin. Deste modo, o desenvolvimento das funcionalidades destinadas a app ficam inseridas no ambiente Android que facilita a ponte com o front end da aplicação final.
 
 </details>
 
@@ -150,6 +150,14 @@ Estes requisitos dizem respeito ao código desenvolvido até ao momento para um 
    *  - **Localização Global (pt-PT) e Seletor de Idioma**: Com base direta no feedback dos utilizadores (especialmente o Grupo A com menor literacia), traduzimos integralmente a interface para Português. Adicionámos também um seletor manual de idioma (Sistema/Inglês/Português) na criação de conta e edição de perfil, facilitando o onboarding de novos utilizadores.
    *  - **Visibilidade à Distância**: Refatoração do HUD (escala e espessura) para visualização clara a 4-6 metros.
    *  - **Fix Oclusão Lunge**: Alteração do joelho rastreado para a perna frontal, eliminando falsos negativos no Lunge.
+</details>
+
+<details>
+  <summary><b>18/07/2026</b></summary>
+  
+- Pequenas correções de código no layout da aplicação (e.g., correção de scope `@Composable`).
+- Extração de texto para recursos nativos do Android e uniformização do idioma para Português em toda a aplicação e documentação do repositório.
+- Preparação e início da escrita da estrutura linear para o relatório final de entrega do projeto.
 </details>
 
 ## Objetivos Semanais (14-20 Junho)
