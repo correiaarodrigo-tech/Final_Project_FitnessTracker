@@ -2,7 +2,7 @@
 
 Este log rastreia as modificações, melhorias e implementações de funcionalidades da aplicação Fitness Tracker.
 
-## [2026-07-18] Pequenas Correções, Localização da UI & Escrita de Relatório (Refinamentos Gerais)
+## [2026-07-18] Pequenas Correções, Localização da UI & Escrita de Relatório
 
 ### Added
 *   **Seletor de Idioma (`LandingActivity`)**: Adicionado um botão local no `LandingActivity` (`AppCompatDelegate`) para que novos utilizadores possam ler a Pipeline de registo no idioma preferido de imediato, sem afetar o `UserProfile`.
@@ -84,7 +84,7 @@ Este log rastreia as modificações, melhorias e implementações de funcionalid
 *   **Índices Ficheiros Raiz**:
     *   `_README.TXT`: Descrição do repositório, autores (Rodrigo Correia #45155, David Delgado #51598) e layout.
     *   `prompt_set.TXT`: Log estruturado das AI prompts usadas no core.
-*   **Relatório Draft (`_RELATORIO/overleaf/`)**: Criado e rasconhado todo o template LaTeX na pasta `_RELATORIO/overleaf` (abstract, metadata e Chapters 1 a 6).
+*   **Relatório Draft (`_RELATORIO/overleaf/`)**: Criado draft de todo o template LaTeX na pasta `_RELATORIO/overleaf` (abstract, metadata e Chapters 1 a 6).
 
 ### Modified
 *   **Realocação do Projeto**: Movido `AndroidApp_V_0.1/` e `POC_Python/` para dentro de `03_Implementacao/`.
