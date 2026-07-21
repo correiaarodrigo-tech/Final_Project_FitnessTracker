@@ -1,40 +1,88 @@
 ========================================================================
 AI FITNESS TRACKER - CONJUNTO DE PROMPTS DE IA GENERATIVA
 ========================================================================
-Este ficheiro reúne e cataloga as prompts mais significativas submetidas ao assistente de IA para a modelação, desenvolvimento de lógica de negócio e refinação de interface da aplicação.
+Este ficheiro reúne e cataloga os prompts mais significativos submetidos a assistentes de IA generativa para a análise de requisitos, modelação, desenvolvimento de lógica de negócio e refinação de interface da aplicação. Cada prompt é "produto" do grupo (instrução/questão); o código ou conteúdo gerado em resposta é "produto" do modelo de IAg. A associação explícita ao(s) ficheiro(s) gerado(s) permite identificar a intervenção do grupo no processo.
 
 ------------------------------------------------------------------------
-PROMPT 1: Lógica de Deteção de Repetições e Ângulo Cinemático (Kotlin)
+PROMPT 1: Revisão Crítica dos Requisitos Funcionais (fase inicial)
+------------------------------------------------------------------------
+"Aqui está uma primeira lista de requisitos funcionais para uma app Android de fitness tracking baseada em pose estimation: (1) captar poses da câmara; (2) contar repetições; (3) dar feedback visual; (4) guardar histórico de treinos. Antes de avançar para a implementação, critica esta lista: falta algum requisito que normalmente se esperaria numa app deste tipo (ex: deteção de início de exercício, feedback sonoro, autenticação, funcionamento sem gestos manuais durante o treino)? Algum destes requisitos, tal como está escrito, é vago demais para ser testável mais tarde?"
+
+Ficheiro(s)/secção associado(s): Secção 3.1 "Requisitos" do relatório (Capítulo 3, Modelo Proposto).
+Nota: a resposta original sugeriu, entre outros, a deteção de posição inicial antes de começar a contar repetições e a prevenção de bloqueio do ecrã durante o treino. O grupo avaliou cada sugestão contra a viabilidade técnica conhecida (MediaPipe, CameraX) antes de a aceitar; nem todas as sugestões da IAg foram incorporadas tal como propostas (ex.: sugestões de funcionalidades fora do âmbito do semestre, como sincronização com wearables, foram descartadas por não serem exequíveis no tempo disponível). O requisito de deteção de posição inicial deu origem, mais tarde, à classe `StartPositionDetector`.
+
+------------------------------------------------------------------------
+PROMPT 2: Pesquisa de Parâmetros Biomecânicos (Goniometria)
+------------------------------------------------------------------------
+"Preciso de validar limiares angulares que defini empiricamente para um sistema de contagem de repetições por visão computacional: Agachamento (limiar de profundidade ~70°), Flexão de Braços (~70° no cotovelo), Lunge (~90° no joelho da frente). Existe literatura de referência em goniometria/biomecânica (medição da amplitude de movimento articular) que documente valores de flexão mínima necessários para atividades funcionais (andar, subir escadas, levantar de uma cadeira) para o joelho e o cotovelo? Preciso de fontes citáveis, não apenas valores aproximados, e de perceber se a convenção de medição do ângulo (a partir da posição anatómica neutra vs. ângulo interior entre três pontos) é a mesma que a minha."
+
+Ficheiro(s)/secção associado(s): Secção 3.2.1 "Calibração e Validação dos Limiares" do relatório; valores usados em `logic/ExerciseConfig.kt` e nas quatro classes `logic/impl/*Exercise.kt`.
+Nota: a pesquisa identificou a obra de referência Norkin & White, "Measurement of Joint Motion: A Guide to Goniometry" (5ª edição), e especificamente os valores de Rowe et al. citados nessa obra (110° de flexão mínima do joelho para atividades funcionais básicas). A conversão entre a convenção de ângulo da obra (desvio da posição neutra) e a convenção usada no sistema (ângulo interior) teve de ser feita manualmente pelo grupo antes de comparar os valores; a IAg não resolveu essa conversão sozinha nem confirmou a citação sem verificação direta da fonte.
+
+------------------------------------------------------------------------
+PROMPT 3: Pesquisa sobre o Peso Relativo da Fase Excêntrica vs. Concêntrica
+------------------------------------------------------------------------
+"Estou a definir uma fórmula de pontuação que penaliza a cadência de descida (fase excêntrica) e de subida (fase concêntrica) de um exercício de força, cada uma com um peso diferente na dedução total. Tenho a intuição de que a fase excêntrica deveria pesar mais do que a concêntrica, mas preciso de uma justificação biomecânica e não apenas de uma intuição. Existe investigação que compare a importância relativa do controlo da fase excêntrica vs. concêntrica no treino de força, nomeadamente sobre o seu impacto nos ganhos de força e hipertrofia? Preciso de uma fonte citável, não uma resposta genérica sobre 'a descida é sempre mais importante'."
+
+Ficheiro(s)/secção associado(s): Secção 3.3 "Abordagem de Avaliação de Forma" do relatório (parágrafo que justifica a dedução de 30 pontos na fase excêntrica contra 15 na concêntrica); `logic/FormEvaluator.kt`.
+Nota: a pesquisa identificou Wilk, Zajac e Tufano (2021), uma revisão sobre o efeito da cadência de movimento no treino de força, que documenta que a duração da fase excêntrica tem uma influência mais consistente sobre os ganhos de força e hipertrofia do que a duração da fase concêntrica. Esta fonte foi a que motivou diretamente a decisão de peso 2:1 (30 contra 15 pontos) já usada na fórmula, e não o inverso: a fórmula não foi copiada da fonte, foi ajustada depois de a fonte confirmar a intuição inicial do grupo.
+
+------------------------------------------------------------------------
+PROMPT 4: Evolução do Limiar do Lunge e Correção da Oclusão de Perna
+------------------------------------------------------------------------
+"O limiar ideal de flexão do joelho no Lunge está definido em 80°, mas ao testar o sistema, repetições que pareciam bem executadas a olho nu estão a ser recusadas ou mal pontuadas. Além disso, estou a monitorizar o ângulo do joelho da perna traseira, mas essa perna fica frequentemente ocluída (fora de vista ou sobreposta) pela perna da frente quando o utilizador está de perfil para a câmara, o que corrompe os ângulos calculados. Que estratégias existem para lidar com oclusão de landmarks em pose estimation baseada em câmara única (sem profundidade fiável), e faz sentido resolver isto trocando qual o joelho monitorizado, em vez de só ajustar o limiar?"
+
+Ficheiro(s)/secção associado(s): `logic/impl/LungeExercise.kt`; Secção 3.2.1 "Calibração e Validação dos Limiares" e Secção 5.4 "Testes de Usabilidade e Validação Prática" do relatório.
+Nota: a decisão final não seguiu uma resposta única da IAg, mas várias iterações documentadas: o limiar ideal começou em 80°, foi ajustado para 87° depois de observação visual mostrar que rejeitava repetições bem executadas, e só se fixou em 90° depois de o joelho monitorizado ser trocado do traseiro para o da frente (a mudança que resolveu a oclusão de facto), o que por sua vez obrigou a recalibrar também o limiar de contagem de 107° para 115°. A causa raiz (oclusão da perna traseira) só ficou clara depois dos testes de usabilidade da Secção 5.4, não na fase de implementação inicial; por isso este é também um exemplo de uma decisão revista depois de dados reais de utilizadores, não só de código escrito de início a acertar.
+
+------------------------------------------------------------------------
+PROMPT 5: Antecipação do Impacto da Troca do Joelho Monitorizado no Lunge
+------------------------------------------------------------------------
+"Vou trocar o joelho monitorizado no Lunge, do traseiro para o da frente, para resolver o problema de oclusão identificado nos testes. Antes de aplicar a mudança: que outras partes do sistema dependem do joelho antigo e vão ficar desatualizadas ou incoerentes com esta troca (limiares de calibração já documentados, texto do relatório que descreve a lógica, código de outras classes de exercício que partilham a mesma máquina de estados)? Que testes preciso de repetir depois da mudança para confirmar que não introduzi uma regressão nas outras contagens?"
+
+Ficheiro(s)/secção associado(s): `logic/impl/LungeExercise.kt`; Secção 3.2.1 "Calibração e Validação dos Limiares" e Secção 3.3 "Abordagem de Avaliação de Forma" do relatório.
+Nota: a resposta ajudou a confirmar que a troca não era uma alteração isolada de uma linha de código: obrigava a atualizar em simultâneo o valor do limiar de contagem (de 107° para 115°), a tabela de calibração do relatório e o parágrafo que explica a exceção do Lunge face aos outros exercícios, e a repetir os testes de usabilidade só para este exercício, já que a máquina de estados genérica (`RepPhaseTracker`) partilhada com Squat e Push-Up não foi afetada. Sem esta pergunta prévia, a mudança poderia ter ficado registada apenas no código, deixando o relatório desalinhado com o comportamento real do sistema.
+
+------------------------------------------------------------------------
+PROMPT 6: Lógica de Deteção de Repetições e Ângulo Cinemático (Kotlin)
 ------------------------------------------------------------------------
 "Escreve uma classe Kotlin para calcular o ângulo formado por três pontos (articulações) representados por NormalizedLandmark do MediaPipe. O cotovelo será o vértice para a flexão (ombro, cotovelo, pulso) e o joelho para o agachamento (anca, joelho, tornozelo). Adicionalmente, desenha uma máquina de estados sequencial para contar repetições, prevenindo falsos positivos de oscilações da câmara. O utilizador deve transitar do estado 'UP' para 'DOWN' (ao dobrar a articulação abaixo de 70º) e regressar a 'UP' (ao esticar acima de 150º) para completar uma repetição."
 
-------------------------------------------------------------------------
-PROMPT 2: Avaliação de Forma Física e Cadência (FormEvaluator)
-------------------------------------------------------------------------
-"Desenvolve um avaliador de forma em Kotlin que receba os dados de uma repetição concluída (duração da descida em ms, duração da subida em ms, e ângulo mínimo alcançado) e compare-os com um modelo ideal. O score deve ir de 0 a 100 baseando-se em:
-- Amplitude de Movimento (ROM): penaliza se não descer abaixo do limiar (ex: 70º)
-- Tempo Excêntrico (descida lenta e controlada, ideal 2-4 segundos)
-- Tempo Concêntrico (subida estável sem impulsos, ideal 0.8-2 segundos)
-Deves devolver um score numérico e uma lista de notas corretivas em Português como 'Desce mais devagar' ou 'Desce mais fundo'."
+Ficheiro(s) associado(s): `logic/AngleCalculator.kt`, `logic/RepPhaseTracker.kt`, `logic/impl/SquatExercise.kt`, `logic/impl/PushUpExercise.kt`.
 
 ------------------------------------------------------------------------
-PROMPT 3: Integração de Feedback por Voz (Text-to-Speech)
+PROMPT 7: Integração de Feedback por Voz (Text-to-Speech)
 ------------------------------------------------------------------------
 "Cria um helper TTS em Kotlin para Android que inicialize o TextToSpeech nativo. Precisamos de anunciar correções de postura e o número da repetição com o respetivo score. Para evitar ruído constante e falas sobrepostas, cria um sistema de rate-limiting (cooldown de 4 segundos) para as correções dinâmicas, mas que seja imediatamente ignorado (override) quando uma repetição é concluída para podermos ouvir de imediato ex: 'Repetição 3. Score 85. Desce mais'."
 
-------------------------------------------------------------------------
-PROMPT 4: Gráfico Dinâmico Jetpack Compose Canvas (ViewStatisticsActivity)
-------------------------------------------------------------------------
-"Escreve um ecrã de estatísticas em Jetpack Compose que carregue o histórico de treinos do Firestore. Desenha um gráfico de barras usando Canvas (sem bibliotecas externas) para mostrar o número total de repetições nos últimos 7 dias. Cada barra deve ser desenhada com cantos arredondados, gradiente vertical neon (ciano para roxo) e ter uma animação de escala que cresce de 0 a 1 quando o ecrã carrega. Mostra também os nomes abreviados dos dias da semana (ex: Seg, Ter) e o número de repetições acima de cada barra."
-========================================================================
+Ficheiro(s) associado(s): `logic/TTSHelper.kt`.
 
 ------------------------------------------------------------------------
-PROMPT 5: Lógica de Write-Time Aggregation via Transações Firestore
+PROMPT 8: Gráfico Dinâmico Jetpack Compose Canvas (ViewStatisticsActivity)
+------------------------------------------------------------------------
+"Escreve um ecrã de estatísticas em Jetpack Compose que carregue o histórico de treinos do Firestore. Desenha um gráfico de barras usando Canvas (sem bibliotecas externas) para mostrar o número total de repetições nos últimos 7 dias. Cada barra deve ser desenhada com cantos arredondados, gradiente vertical neon (ciano para roxo) e ter uma animação de escala que cresce de 0 a 1 quando o ecrã carrega. Mostra também os nomes abreviados dos dias da semana (ex: Seg, Ter) e o número de repetições acima de cada barra."
+
+Ficheiro(s) associado(s): `ViewStatisticsActivity.kt`.
+
+------------------------------------------------------------------------
+PROMPT 9: Lógica de Write-Time Aggregation via Transações Firestore
 ------------------------------------------------------------------------
 "Escreve uma lógica para gravar um treino no Firestore (`/users/{uid}/workouts`) que utilize o modelo 'Write-Time Aggregation'. Numa única transação atómica, deves inserir o documento do novo treino e depois atualizar os acumuladores globais e semanais (totalKcal, totalReps, totalWorkouts) diretamente no documento do utilizador. Se a data atual não pertencer à mesma semana do campo 'lastWeeklyReset', deves primeiro zerar os acumuladores semanais antes de somar os novos valores."
 
+Ficheiro(s) associado(s): `MainActivity.kt` (função `saveAndNavigate`).
+
 ------------------------------------------------------------------------
-PROMPT 6: Localização Nativa e Alteração Dinâmica de Idioma (Compose)
+PROMPT 10: Localização Nativa e Alteração Dinâmica de Idioma (Compose)
 ------------------------------------------------------------------------
 "Extrai todas as *hardcoded strings* do ecrã de Dashboard em Jetpack Compose para ficheiros nativos `res/values/strings.xml` e `res/values-pt/strings.xml`. De seguida, implementa um botão de seleção de idioma no ecrã inicial (`LandingActivity`) que utilize `AppCompatDelegate.setApplicationLocales` para mudar o idioma da app de imediato sem recarregar e sem um 'flash' preto, garantindo a configuração de `configChanges='locale|layoutDirection'` no Manifest."
+
+Ficheiro(s) associado(s): `LandingActivity.kt`, `RegisterActivity.kt`, `EditProfileActivity.kt`, `res/values/strings.xml`, `res/values-pt/strings.xml`, `AndroidManifest.xml`.
+
+------------------------------------------------------------------------
+PROMPT 11: Questionar as Fraquezas do Próprio Sistema antes das Conclusões
+------------------------------------------------------------------------
+"Antes de escrever as conclusões do relatório, quero listar honestamente as fraquezas conhecidas do sistema, não só os sucessos. O score SUS obtido foi 66.42, ligeiramente abaixo da média de referência da indústria (68), e o Lunge teve uma taxa de erro de contagem maior do que os outros três exercícios devido à oclusão de landmarks. Que dúvidas em aberto ou limitações não resolvidas é que isto levanta, que devo admitir explicitamente no capítulo de conclusões em vez de as esconder atrás de um resumo genérico de sucesso?"
+
+Ficheiro(s)/secção associado(s): Secção 5.4 "Testes de Usabilidade e Validação Prática" e Capítulo 6 "Conclusões e Trabalho Futuro" do relatório.
+Nota: esta reflexão motivou diretamente a reescrita do Capítulo 6: em vez de uma conclusão genérica de sucesso, o texto passou a admitir explicitamente que a fiabilidade do sistema não é uniforme entre exercícios, e o trabalho futuro passou a incluir a validação da própria correção aplicada ao Lunge, e não apenas funcionalidades novas por implementar.
 ========================================================================
