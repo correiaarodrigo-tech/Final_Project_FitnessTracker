@@ -99,7 +99,7 @@ Em vez de recorrer a capturas de ecrã externas, os dados brutos recolhidos via 
 ### 3.1. Classificação SUS (System Usability Scale) por Participante
 
 O questionário aplicou as 10 perguntas padrão do modelo SUS (escala Likert de 1 a 5). A fórmula foi aplicada para converter as respostas de cada participante num *Score* final de 0 a 100.
-*Nota: A média global da aplicação fixou-se nos **66.42**, um valor muito próximo da média global da indústria de software (68), demonstrando viabilidade do protótipo, mas expondo a necessidade de melhorias de acessibilidade.*
+*Nota: A média global da aplicação fixou-se nos **66.42** ($M=66.42, SD=19.62$), um valor muito próximo da média global da indústria de software (68), demonstrando viabilidade do protótipo, mas expondo a necessidade de melhorias de acessibilidade.*
 
 ```mermaid
 xychart-beta
