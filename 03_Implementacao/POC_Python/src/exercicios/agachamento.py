@@ -79,7 +79,7 @@ class Agachamento(ExercicioBase):
     @staticmethod
     def testar():
         """Testa o exercicio com webcam."""
-        print("🧪 Testando Agachamento... Pressiona 'q' para sair")
+        print("Testando Agachamento... Pressiona 'q' para sair")
         import cv2
         from analisador.pose_detector import PoseDetector
         

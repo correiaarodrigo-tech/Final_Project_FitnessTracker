@@ -58,11 +58,11 @@ class Serie:
         for ex in self.exercicios:
             ex.reset()
     
-    # === MÉTODO DE TESTE LOCAL ===
+    # Teste local
     @staticmethod
     def testar():
         """Testa a lógica de séries."""
-        print("🧪 Testando Serie (mock - sem câmara)")
+        print("Testando Serie (mock - sem câmara)")
         
         # Criar mocks de exercícios
         class MockExercicio:
@@ -83,22 +83,22 @@ class Serie:
         print(f"Pausa de {serie.pausa}s entre exercícios")
         
         while serie.exercicio_atual:
-            print(f"\n▶️ Exercício atual: {serie.exercicio_atual}")
-            
+            print(f"\nExercício atual: {serie.exercicio_atual}")
+
             # Simular fim do exercício
             input("Pressiona Enter quando terminares o exercício (mock)...")
-            
+
             if serie.avancar():
-                print("⏸️  Pausa...")
+                print("Pausa...")
                 while serie.em_pausa:
                     serie.atualizar_pausa()
                     print(f"   Tempo restante: {serie.tempo_restante_pausa:.1f}s")
                     time.sleep(0.5)
-                print("▶️ Próximo exercício!")
+                print("Próximo exercício!")
             else:
-                print("🏁 Série concluída!")
+                print("Série concluída!")
                 break
-        print("\n✅ Fechando classe de teste!")
+        print("\nFechando classe de teste!")
 
 if __name__ == "__main__":
     Serie.testar()

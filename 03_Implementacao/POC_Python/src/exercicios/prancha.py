@@ -90,7 +90,7 @@ class Prancha(ExercicioBase):
     @staticmethod
     def testar():
         """Testa prancha com webcam."""
-        print("🧪 Testando Prancha... Pressiona 'q' para sair")
+        print("Testando Prancha... Pressiona 'q' para sair")
         import cv2
         from analisador.pose_detector import PoseDetector
         

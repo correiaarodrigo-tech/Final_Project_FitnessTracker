@@ -50,10 +50,10 @@ def calcular_angulo_3d(a, b, c):
     
     return np.degrees(np.arccos(cos_angulo))
 
-# === MÉTODO DE TESTE LOCAL ===
+# Teste local
 def testar():
     """Testa as funções de ângulo com valores conhecidos."""
-    print("🧪 Testando calcular_angulo:")
+    print("Testando calcular_angulo:")
     
     # Ângulo reto (90 graus)
     a = (0, 0)

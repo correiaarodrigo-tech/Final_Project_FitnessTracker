@@ -20,12 +20,12 @@ def configurar_camera():
     # Verificar se conseguiu
     largura = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     altura = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    print(f"📷 Camera configurada: {largura}x{altura}")
+    print(f"Camera configurada: {largura}x{altura}")
     
     return cap
 
 def main():
-    print("🏋️  Fitness Tracker v1.0 ")
+    print("Fitness Tracker v1.0")
     print("\nTeclas disponiveis:")
     ExercicioRegistry.listar_todos()
     print(f"\nPressiona: {TeclaExercicio.listar_disponiveis()}")
@@ -115,15 +115,15 @@ def main():
                 novo_exercicio = ExercicioRegistry.get_exercicio(tecla_enum)
                 if novo_exercicio:
                     exercicio_atual = novo_exercicio
-                    print(f"🔄 Mudou para {exercicio_atual.nome_display}")
+                    print(f"Mudou para {exercicio_atual.nome_display}")
     
     cap.release()
     cv2.destroyAllWindows()
     
     # Mostrar resumo final
-    print(f"\n📊 Sessao concluida!")
-    print(f"🏆 Pontuacao final: {avaliador.pontuacao_total}")
-    print(f"💬 {avaliador.get_classificacao()}")
+    print(f"\nSessao concluida!")
+    print(f"Pontuacao final: {avaliador.pontuacao_total}")
+    print(f"{avaliador.get_classificacao()}")
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ class Lunge(ExercicioBase):
     Feedback indica qual perna avancou e recuou.
     """
     
-    def __init__(self, nome_display="Lunge", cor=(255,0,255), icone="🦵"):
+    def __init__(self, nome_display="Lunge", cor=(255,0,255), icone="LUNGE"):
         super().__init__(nome_display, cor, icone)
         
         # Configuracoes especificas
@@ -128,7 +128,7 @@ class Lunge(ExercicioBase):
     
     def desenhar_info(self, imagem, landmarks):
         """Desenha informacoes especificas do lunge."""
-        # Usar texto simples em vez de emoji para evitar problemas
+        # Nome no canto superior direito
         cv2.putText(imagem, f"LUNGE", (imagem.shape[1] - 250, 30),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.cor, 2)
         
@@ -162,7 +162,7 @@ class Lunge(ExercicioBase):
     @staticmethod
     def testar():
         """Testa lunge com webcam."""
-        print("🧪 Testando Lunge... Pressiona 'q' para sair")
+        print("Testando Lunge... Pressiona 'q' para sair")
         import cv2
         from analisador.pose_detector import PoseDetector
         

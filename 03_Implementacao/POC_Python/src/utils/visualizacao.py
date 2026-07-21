@@ -65,10 +65,10 @@ def desenhar_barra_progresso(imagem, progresso, posicao=(20, 200), largura=200, 
     cv2.putText(imagem, f"{progresso:.0f}%", (x + largura + 10, y + 15),
                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
-# === METODO DE TESTE ===
+# Teste local
 def testar():
     """Testa funcoes de visualizacao."""
-    print("🧪 Testando visualizacao")
+    print("Testando visualizacao")
     
     img = criar_janela_info(500, 400)
     

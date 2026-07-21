@@ -79,14 +79,14 @@ class PoseDetector:
             return (ponto.x, ponto.y)
         return None
     
-    # === MÉTODO DE TESTE LOCAL ===
+    # Teste local
     @staticmethod
     def testar():
         """
         Testa o PoseDetector com a webcam.
         Uso: python -m analisador.pose_detector
         """
-        print("🧪 Testando PoseDetector... Pressiona 'q' para sair")
+        print("Testando PoseDetector... Pressiona 'q' para sair")
         cap = cv2.VideoCapture(0)
         detector = PoseDetector()
         

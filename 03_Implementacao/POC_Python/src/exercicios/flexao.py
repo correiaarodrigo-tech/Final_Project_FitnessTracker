@@ -56,7 +56,7 @@ class Flexao(ExercicioBase):
         return self.repeticoes, self.estado, self.feedback
     
     def desenhar_info(self, imagem, landmarks):
-        """SEM EMOJIS - apenas texto."""
+        """Desenha informacoes especificas da flexao."""
         # Nome no canto superior direito
         h, w, _ = imagem.shape
         cv2.putText(imagem, f"{self.icone} {self.nome_display}", 
@@ -77,7 +77,7 @@ class Flexao(ExercicioBase):
     @staticmethod
     def testar():
         """Testa flexao com webcam."""
-        print("🧪 Testando Flexao... Pressiona 'q' para sair")
+        print("Testando Flexao... Pressiona 'q' para sair")
         import cv2
         from analisador.pose_detector import PoseDetector
         

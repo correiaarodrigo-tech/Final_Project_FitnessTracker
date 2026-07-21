@@ -64,19 +64,19 @@ class Avaliador:
     def get_classificacao(self):
         """Retorna classificação baseada na pontuação."""
         if self.pontuacao_total >= 100:
-            return "💪 Excelente!"
+            return "Excelente!"
         elif self.pontuacao_total >= 50:
-            return "👍 Bom trabalho!"
+            return "Bom trabalho!"
         elif self.pontuacao_total >= 20:
-            return "👌 Podes melhorar"
+            return "Podes melhorar"
         else:
-            return "🎯 Continua a tentar"
-    
-    # === MÉTODO DE TESTE LOCAL ===
+            return "Continua a tentar"
+
+    # Teste local
     @staticmethod
     def testar():
         """Testa o avaliador com cenários simulados."""
-        print("🧪 Testando Avaliador\n")
+        print("Testando Avaliador\n")
         
         avaliador = Avaliador()
         
@@ -95,10 +95,10 @@ class Avaliador:
         pontos, feedback = avaliador.avaliar_repeticoes(8, 10)
         print(f"   {feedback} (+{pontos} pts)")
         
-        print(f"\n📊 Pontuação total: {avaliador.pontuacao_total}")
-        print(f"🏆 Classificação: {avaliador.get_classificacao()}")
-        
-        print("\n📜 Histórico:")
+        print(f"\nPontuação total: {avaliador.pontuacao_total}")
+        print(f"Classificação: {avaliador.get_classificacao()}")
+
+        print("\nHistórico:")
         for tipo, pts in avaliador.historico:
             print(f"   - {tipo}: {pts} pts")
 
