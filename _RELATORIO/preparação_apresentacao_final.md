@@ -1,6 +1,6 @@
 # Preparação Apresentação Final (Top-Down Completo)
 
-Este é o documento de estudo exaustivo para a defesa do projeto **FitnessTracking**. Cobre desde as decisões de design embrionárias, passando pela Prova de Conceito em Python, até ao detalhe das implementações em Kotlin (packages e métodos) e arquitetura Firestore.
+Este é o documento de estudo exaustivo para a defesa do projeto **FitnessTracking**. Cobre desde as decisões de design embrionárias, passando pela Prova de Conceito em Python, até ao detalhe das implementações em Kotlin (packages e métodos), arquitetura Firestore, testes de usabilidade e restrições de Hardware.
 
 ---
 
@@ -19,29 +19,26 @@ Durante as várias *sprints* deste projeto, tomámos decisões de simplificaçã
 
 ## 2. Estrutura de Código Kotlin (Mergulho Profundo)
 
-A base de código em `AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp` foi dividida metodicamente. Se o júri perguntar sobre a separação de responsabilidades, eis como funciona:
+A base de código em `AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp` foi dividida metodicamente. 
 
 ### 2.1. O *Package* `logic` (O "Cérebro" Biomecânico)
 Este pacote não tem qualquer conhecimento de que existe uma Interface de Utilizador. É aqui que vive o motor:
 *   **`AngleCalculator.kt`:** É a base cinesiológica. Recebe 3 *landmarks* do MediaPipe (ex: Anca, Joelho, Tornozelo), cria dois vetores e aplica-lhes a função trigonométrica Arco-cosseno ($\arccos$) combinada com o Produto Escalar. É independente da distância à câmara.
-*   **`RepPhaseTracker.kt`:** Implementa a Máquina de Estados Finitos com 3 estados fixos (`AT_TOP`, `DESCENDING`, `ASCENDING`). Obriga a uma passagem sequencial rigorosa pelos limiares para validar uma repetição.
-*   **`FormEvaluator.kt`:** Trata do modelo de pontuação biomecânica (Scoring). O cálculo não é binário (0 ou 100). Calcula uma penalização fracionária/proporcional com base no desvio entre o ângulo executado e o Limiar Ideal, maximizando a justiça para o utilizador.
+*   **`RepPhaseTracker.kt`:** Implementa a Máquina de Estados Finitos com 3 estados fixos (`AT_TOP`, `DESCENDING`, `ASCENDING`). Obriga a uma passagem sequencial rigorosa pelos três limiares (Extensão, Contagem, Ideal) para evitar *jitter* e contagens falsas.
+*   **`FormEvaluator.kt`:** Trata do modelo de pontuação biomecânica (Scoring). Calcula uma penalização fracionária/proporcional com base no desvio entre o ângulo executado e o Limiar Ideal (amplitude de movimento - ROM), maximizando a justiça para o utilizador. Deduz também pontos fixos pela cadência (muito rápido ou muito lento).
 *   **`WorkoutManager.kt`:** O Orquestrador. Submete cada frame recebida ao cálculo de ângulos, gere a máquina de estados e decide quando uma repetição está concluída e avaliada.
 
-### 2.2. O *Package* `logic.impl` (Os Exercícios)
-Onde o polimorfismo acontece. Cada exercício é uma classe separada:
-*   **`SquatExercise.kt`, `PushUpExercise.kt`**: Herdam de uma interface comum. Definem os seus próprios 3 limiares (Extensão, Contagem, Ideal) baseados na literatura de Norkin e White.
-*   **`LungeExercise.kt` (A resolução da Oclusão):** O grande desafio deste projeto. Como a perna de trás ficava tapada pela da frente, o `LungeExercise` introduziu código que avalia ativamente o eixo Z dos *landmarks* a cada milissegundo, rastreando apenas o joelho que estiver espacialmente mais próximo da câmara. Isto evitou termos de usar redes neurais secundárias pesadas.
+### 2.2. O *Package* `logic.impl` (Os Exercícios e Polimorfismo)
+*   **`LungeExercise.kt` (A resolução da Oclusão):** O grande desafio deste projeto. Como a perna de trás ficava tapada pela da frente, o `LungeExercise` introduziu código que avalia ativamente o eixo Z dos *landmarks* a cada frame, rastreando apenas o joelho que estiver espacialmente mais próximo da câmara. Isto evitou usar redes neurais secundárias pesadas.
 
-### 2.3. O *Package* `ui` (Jetpack Compose)
-*   **`MainActivity.kt` & `DashboardActivity.kt`:** Sem ficheiros XML antigos. Usámos Compose para gerar ecrãs modulares e reativos que se alteram automaticamente consoante os estados (`StateFlow`) emitidos pelo *ViewModel*.
+### 2.3. O *Package* `ui` (Jetpack Compose Nativo)
+*   **`MainActivity.kt` & `DashboardActivity.kt`:** Sem ficheiros XML antigos. Usámos Compose para gerar ecrãs modulares e reativos que se alteram automaticamente consoante os estados (`StateFlow`) emitidos pelo *ViewModel*. Note-se que desenhámos os gráficos do Dashboard através do **Jetpack Compose Canvas nativo**, sem recorrer a bibliotecas de terceiros.
 
 ---
 
 ## 3. Visualização de Arquitetura (Diagramas)
 
 ### 3.1. UML de Classes (O Padrão de *Strategy*)
-Repara como o `WorkoutManager` não se preocupa se estás a fazer um agachamento ou flexão. Ele apenas chama a interface genérica `Exercise`:
 
 ```mermaid
 classDiagram
@@ -71,7 +68,6 @@ classDiagram
 ```
 
 ### 3.2. Fluxo da Arquitetura (MVVM + Pipeline MediaPipe)
-O júri pode perguntar como os dados chegam da lente da câmara até aos gráficos no ecrã:
 
 ```mermaid
 flowchart TD
@@ -84,7 +80,6 @@ flowchart TD
 ```
 
 ### 3.3. Base de Dados Firestore (*Write-Time Aggregation*)
-O Firestore no Firebase foi pensado para consultas ($O(1)$) altamente escaláveis. Em vez de calcular totais sempre que alguém abre a *Leaderboard*, gravamos os resultados consolidados diretamente no utilizador através de Transações Atómicas.
 
 ```mermaid
 erDiagram
@@ -101,20 +96,39 @@ erDiagram
         int score
     }
 ```
-*Justificação:* Atualizar o `USER_PROFILE.weeklyKcal` usando uma transação atómica (Transaction) garante que se a internet falhar ou houver colisões de rede, a gravação de dados não fica corrompida nem as calorias se perdem. Isto foi uma evolução direta face ao armazenamento local instável do início do projeto.
+*Justificação:* Atualizar o `USER_PROFILE.weeklyKcal` e os Pontos de Experiência usando uma transação atómica garante que ler os dados para a *Leaderboard* custa sempre 1 única operação de leitura por amigo, garantindo escalabilidade $O(1)$ e baixos custos na Cloud.
 
 ---
 
-## 4. Bateria Final de Perguntas e Respostas do Júri
+## 4. Testes, Validação e Hardware (Os Bastidores)
+
+### 4.1. Avaliação SUS e Ações Corretivas de UX
+Fizemos testes com utilizadores reais (pasta `04_Teste`) focados na literacia tecnológica (Baixa, Média, Avançada). O nosso score *System Usability Scale* (SUS) de 66.42 forçou-nos a implementar soluções críticas:
+- **Localização:** Traduzimos toda a app para Português (PT-PT) devido a barreiras de linguagem do grupo de literacia baixa.
+- **Redimensionamento Vetorial (HUD):** Aumentámos as métricas visuais porque a App é concebida para ser usada a uma distância focal de 2 a 6 metros do dispositivo.
+
+### 4.2. A Restrição de Hardware: O Pesadelo do Emulador (x86_64 vs ARM64-v8a)
+Uma das maiores dificuldades de engenharia foi a compilação do projeto. A biblioteca MediaPipe Pose no Android depende de ficheiros binários em C++ compilados para a arquitetura **ARM64-v8a** (processadores de smartphones reais). Isto causou a incompatibilidade total com os Emuladores do Android Studio (que rodam em x86_64 nos nossos computadores). 
+**Argumento:** "A nossa aplicação foi pensada desde o dia 1 para *Edge Computing* em silício mobile real. Como consequência inerente à utilização de redes neurais otimizadas (TFLite/C++ ARM), os testes e compilações são obrigatoriamente feitos em dispositivos físicos via USB."
+
+### 4.3. Metodologia de IA (Academic Integrity)
+A abordagem à IA Generativa foi transparente e rastreável. Usámos o documento `prompt_set.txt` e marcadores como `#my_code` no código-fonte para separar claramente o que foi arquitetado e pensado por nós, e o que foi gerado iterativamente pelo LLM. A IA serviu como "Pair Programmer" e não como orquestradora.
+
+---
+
+## 5. Bateria Final de Perguntas e Respostas do Júri (O "Grill-Me")
 
 **P1: Porque é que vocês acham que o vosso Lunge funciona bem quando até as frameworks do Google se baralham com oclusão?**
 > "O MediaPipe do Google usa inferência inferida para tentar adivinhar a perna traseira bloqueada, gerando enorme ruído (jitter). Nós percebemos que para avaliar a biomecânica do Lunge não precisamos de duas pernas, apenas de analisar a coxa que está em maior tensão. Por isso, programámos o `LungeExercise.kt` para rastrear dinamicamente através do valor Z (profundidade) qual a perna mais próxima da câmara e isolar o cálculo angular exclusivamente nessa perna."
 
 **P2: Se o MediaPipe gera dados a 30 Frames Por Segundo, como evitam o sobreaquecimento e o uso da bateria em dispositivos fracos?**
-> "Usámos o mecanismo de *Frame Dropping* aliado ao *StateFlow* em Kotlin. A nossa UI não escuta *todas* as frames cegamente. O fluxo reativo tem mecanismos de suspensão (*Coroutines*) onde apenas a frame processada e validada aciona um re-desenho (Recomposition) da interface no Compose, reduzindo absurdamente a carga do CPU que existiria se usássemos a velha classe `View` do Android."
+> "Usámos o mecanismo de *Frame Dropping* no lado do CameraX aliado ao *StateFlow* em Kotlin. A UI reativa tem mecanismos de suspensão (*Coroutines*) onde apenas a frame processada e validada aciona um re-desenho (Recomposition) no Compose, reduzindo a carga do CPU."
 
-**P3: O que justificou passarem a usar as "Transações Firestore" a meio do vosso projeto?**
-> "Precisávamos de evitar problemas de concorrência. Como a *Write-Time Aggregation* atualiza os pontos totais (XP) e Calorias no Perfil sempre que um treino acaba, usar comandos simples de gravação poderia originar *race conditions* (por exemplo, se dois dispositivos submetessem treinos ao mesmo tempo). Com Transações, garantimos a consistência ACID na Cloud."
+**P3: O vosso SUS score foi de 66.42, o que é abaixo da média da indústria (68). Como é que chamam a isto um sucesso?**
+> "O valor de 66.42 não foi o fim do projeto, foi a nossa *baseline*. Ele foi arrastado para baixo pelos utilizadores de Literacia Baixa, e graças a isso fizemos refatorizações cruciais (localização PT-PT e redimensionamento do HUD para leitura a 4 metros). Este score prova a importância dos testes com utilizadores reais e não viciados."
 
-**P4: Porquê bloquear a App em ecrã vertical (Portrait Lock) se poderiam ter oferecido ambas as opções?**
-> "Foi uma decisão deliberada de Arquitetura de Visão Computacional, não de preguiça. Colocar um telemóvel no chão a 2 metros de distância em modo de paisagem (Landscape) 'corta' visualmente as pernas ou a cabeça de um atleta alto. O modo retrato abrange todo o volume vertical humano, crucial para extrair todos os 33 landmarks do BlazePose."
+**P4: Porquê a escolha de NoSQL e do Padrão "Write-Time Aggregation"?**
+> "Se tivéssemos de somar a coleção `workouts` inteira sempre que mostramos a Leaderboard, teríamos de iterar $N$ documentos, o que em SQL seria um JOIN simples, mas no Firestore pagamos por leitura de documento, logo a fatura escalaria de forma exponencial. Decidimos sacrificar a Terceira Forma Normal e desnormalizar os dados, guardando totais de Kcal e XP no Perfil do Utilizador (uma única transação atómica O-1).
+
+**P5: Porque dizem que não funciona no simulador/emulador do computador?**
+> "Porque a inferência de IA real não acontece em Java. O coração do MediaPipe são bibliotecas em C++ compiladas para arquiteturas de silício mobile (ARM64-v8a). Os nossos computadores são x86_64, provocando falhas de ABI (*Application Binary Interface*). É uma prova provada de que criámos uma verdadeira app *Edge* nativa."
