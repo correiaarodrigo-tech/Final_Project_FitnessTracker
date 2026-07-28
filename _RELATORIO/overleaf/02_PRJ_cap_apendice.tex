@@ -14,35 +14,16 @@
 
 
 %%________________________________________________________________________
-\chapter{Título do Detalhe Adicional}
-\label{ch:umDetalheAdicional}
-%%________________________________________________________________________
-
-O \aspas{apêndice} utiliza-se para descrever aspectos que tendo sido desenvolvidos pelo autor constituem um complemento ao que já foi apresentado no corpo principal do documento.
-
-Neste documento utilize o apêndice para explicar o processo usado na \textbf{gestão das versões} que foram sendo construídas ao longo do desenvolvimento do trabalho.
-
-É especialmente importante explicar o objetivo de cada ramo (\aspas{branch}) definido no projeto (ou apenas dos ramos mais importantes) e indicar quais os ramos que participaram numa junção (\aspas{merge}).
-
-É também importante explicar qual a arquitetura usada para interligar os vários repositórios (\eg, Git, GitHub, DropBox, GoogleDrive) que contêm as várias versões (e respetivos ramos) do projeto.
-
-
-Notar a diferença essencial entre \aspas{apêndice} e \aspas{anexo}. O \aspas{apêndice} é um texto (ou documento) que descreve trabalho desenvolvido pelo autor (\eg, do relatório, monografia, tese). O \aspas{anexo} é um texto (ou documento) sobre trabalho que não foi desenvolvido pelo autor.
-
-Para simplificar vamos apenas considerar a noção de \aspas{apêndice}. No entanto, pode sempre adicionar os anexos que entender como adequados.
-
-
-
-
-
-
-%%________________________________________________________________________
-\chapter{Título de Outro Detalhe}
+\chapter{Diagrama de Navegação da Interface}
 \label{ch:outroDetalheAdicional}
 %%________________________________________________________________________
 
-Escrever aqui o detalhe adicional que melhor explique outro aspecto (diferente do que está no apêndice \ref{ch:umDetalheAdicional}) descrito no corpo principal do documento \ldots
-
+\begin{figure}[h]
+   \centering
+   \includegraphics[width=\linewidth]{figuras/Diagrama_navegação.png}
+   \caption{Fluxo de navegação entre os principais ecrãs da aplicação, referido na Secção \ref{sec:modulosCodigo}. Por clareza, omite-se o \texttt{LoaderActivity} (ecrã de transição genérico com \textit{spinner}), usado tanto pelo \texttt{LandingActivity} quando já existe sessão iniciada como pelo \texttt{DashboardActivity} no acesso direto a treinos (\texttt{MainActivity}, \texttt{DemoPushUpActivity}, \texttt{ExerciseTestActivity}). O \texttt{DemoPushUpActivity} é uma demo de duração fixa e atualmente não tem ecrã de resultado.}
+   \label{fig:umlNavegacao}
+\end{figure}
 
 
 

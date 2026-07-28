@@ -140,6 +140,14 @@
 \color{black}
 %%________________________________________________________________________
 
+\usepackage{needspace}
+
+\let\oldsection\section
+\renewcommand{\section}{\needspace{5\baselineskip}\oldsection}
+
+\let\oldsubsection\subsection
+\renewcommand{\subsection}{\needspace{5\baselineskip}\oldsubsection}
+
 
 
 %%________________________________________________________________________

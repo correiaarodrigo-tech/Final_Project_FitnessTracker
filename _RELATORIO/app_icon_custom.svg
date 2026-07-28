@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" width="1080" height="1080">
+    <!-- Solid dark background matching app theme -->
+    <rect width="108" height="108" fill="#0C0F14" />
+    
+    <!-- Subtle technical grid lines (vertical) -->
+    <path d="M9,0L9,108 M19,0L19,108 M29,0L29,108 M39,0L39,108 M49,0L49,108 M59,0L59,108 M69,0L69,108 M79,0L79,108 M89,0L89,108 M99,0L99,108" stroke="#1F2430" stroke-width="0.5" fill="none" />
+    
+    <!-- Subtle technical grid lines (horizontal) -->
+    <path d="M0,9L108,9 M0,19L108,19 M0,29L108,29 M0,39L108,39 M0,49L108,49 M0,59L108,59 M0,69L108,69 M0,79L108,79 M0,89L108,89 M0,99L108,99" stroke="#1F2430" stroke-width="0.5" fill="none" />
+    
+    <!-- Centered dumbbell rotated 45 degrees and scaled to 65% size -->
+    <g transform="translate(54,54) rotate(45) scale(0.65) translate(-54,-54)">
+        <!-- Handle bar -->
+        <path fill="#FFFFFF" d="M24,50h60v8h-60z" />
+            
+        <!-- Left weight plates -->
+        <path fill="#FFFFFF" d="M20,34h8v40h-8z M8,38h8v32h-8z" />
+            
+        <!-- Right weight plates -->
+        <path fill="#FFFFFF" d="M80,34h8v40h-8z M92,38h8v32h-8z" />
+            
+        <!-- Collars / stoppers -->
+        <path fill="#D3D3D3" d="M28,47h4v14h-4z M76,47h4v14h-4z" />
+    </g>
+</svg>

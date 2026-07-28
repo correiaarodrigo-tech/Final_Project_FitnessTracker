@@ -16,9 +16,9 @@ O principal objetivo deste projeto consiste no desenvolvimento de uma aplicaçã
 Os principais contributos deste trabalho são:
 \begin{itemize}
     \item Um motor de avaliação postural em tempo real baseado em regras cinemáticas e análise vetorial de ângulos articulares;
-    \item Uma máquina de estados sequencial robusta para a contagem de repetições e identificação de fases concêntrica/excêntrica;
+    \item Uma máquina de estados sequencial para a contagem de repetições e identificação de fases concêntrica/excêntrica;
     \item Um assistente de treino por voz nativo (Text-To-Speech) que providencia avisos de correção postural imediatos (com proteção de latência e sobreposição de fala);
-    \item Um painel analítico interativo implementado em Jetpack Compose Canvas para representação gráfica de regularidade sem dependências externas;
+    \item Um painel analítico interativo em Jetpack Compose Canvas para representação gráfica de regularidade sem dependências externas;
     \item Sincronização persistente na nuvem e lógica social de rede de amigos com verificação de estado online.
 \end{itemize}
 
@@ -34,11 +34,11 @@ O rastreio de atividade humana por visão computacional tem sofrido grandes avan
 
 \begin{itemize}
     \item \textbf{OpenPose \cite{Cao_OpenPose_2019}:} Baseado em redes convolucionais que detetam poses em múltiplas pessoas simultaneamente. Apesar do rigor, o seu elevado peso computacional exige processamento gráfico dedicado (GPUs), inviabilizando a execução local em dispositivos móveis comuns;
-    \item \textbf{YOLO-pose \cite{Maji_YOLOPose_2022}:} Focado na deteção rápida de caixas delimitadoras e poses combinadas. Embora seja rápido, a sua precisão em orientações laterais de corpo inteiro pode oscilar e exige inicializações complexas;
+    \item \textbf{YOLO-pose \cite{Maji_YOLOPose_2022}:} Focado na deteção rápida de caixas delimitadoras e poses combinadas. A sua precisão em orientações laterais de corpo inteiro pode, no entanto, oscilar, e exige inicializações complexas;
     \item \textbf{MediaPipe BlazePose \cite{Bazarevsky_BlazePose_2020}:} Otimizado especificamente para dispositivos móveis (Edge Computing). Utiliza uma arquitetura leve de duas fases (deteção de corpo na primeira frame e rastreio subsequente de 33 landmarks corporais em 3D), permitindo mais de 30 frames por segundo num Google Pixel 2.
 \end{itemize}
 
-Das três abordagens apresentadas, este projeto adota o MediaPipe BlazePose como motor de estimativa de pose, por ser a única otimizada para inferência local em dispositivos móveis sem necessidade de GPU dedicada. Ao contrário de sistemas que enviam as frames de vídeo para processamento num servidor central (gerando problemas de largura de banda e de privacidade do utilizador), este projeto adota processamento local no telemóvel (Edge Computing). Isto garante privacidade total e feedback instantâneo, sem depender de ligação à internet.
+Das três abordagens apresentadas, este projeto adota o MediaPipe BlazePose como motor de estimativa de pose, por ser a única otimizada para inferência local em dispositivos móveis sem necessidade de GPU dedicada. Ao contrário de sistemas que enviam as frames de vídeo para processamento num servidor central (gerando problemas de largura de banda e de privacidade do utilizador), este projeto adota processamento local no telemóvel (Edge Computing): as imagens da câmara nunca saem do dispositivo, e o processamento não depende de ligação à internet.
 
 Ao nível da aplicação, o MediaPipe já foi utilizado para outros fins de análise postural: Garg, Saxena e Gupta \cite{Garg_YogaMediaPipe_2023} usam o MediaPipe para extrair os landmarks corporais e, a partir destes, classificar posturas de ioga estáticas em categorias através de uma rede neuronal convolucional. Este projeto aplica o MediaPipe a um problema distinto: em vez de classificar uma pose estática isolada, avalia exercícios dinâmicos e repetitivos através de uma máquina de estados que acompanha a evolução do ângulo articular ao longo do tempo, contando repetições e penalizando desvios de amplitude e cadência.
 
@@ -64,8 +64,7 @@ O sistema foi modelado para dar suporte a atletas autónomos, identificando-se o
         \item Captar poses corporais da câmara frontal em tempo real;
         \item Detetar início da atividade quando o utilizador se encontra parado na pose inicial (calibração);
         \item Contar repetições e fases do exercício (UP/DOWN/REST), ou o tempo sob tensão nos exercícios isométricos;
-        \item Gerar feedback áudio e visual corretivo e motivacional imediato;
-        \item Sincronizar dados de treino do atleta com uma base de dados remota;
+        \item Gerar feedback áudio e visual imediato, com fins corretivos e motivacionais;       \item Sincronizar dados de treino do atleta com uma base de dados remota;
         \item Apresentar um histórico interativo e gráficos semanais de progresso;
         \item Gerir rede de amigos com envio e aceitação de pedidos de amizade.
     \end{enumerate}
@@ -111,11 +110,11 @@ Definem-se os seguintes valores por exercício:
             \item Limiar Ideal (Flexão): $\theta \le 70^\circ$.
         \end{itemize}
 
-    \item \textbf{Afundo (Lunge):} Monitoriza apenas a flexão do joelho traseiro (o que desce em direção ao chão); o joelho da perna da frente não é medido pelo sistema.
+    \item \textbf{Afundo (Lunge):} Monitoriza a flexão do joelho da perna da frente (e não da perna traseira), para evitar problemas de oclusão visual entre as duas pernas no plano lateral da câmara.
         \begin{itemize}
             \item Limiar UP (Extensão): $\theta \ge 160^\circ$;
-            \item Limiar de Contagem: $\theta \le 107^\circ$;
-            \item Limiar Ideal (Flexão): $\theta \le 87^\circ$.
+            \item Limiar de Contagem: $\theta \le 115^\circ$;
+            \item Limiar Ideal (Flexão): $\theta \le 90^\circ$.
         \end{itemize}
 
     \item \textbf{Prancha Isométrica (Plank):} Avalia a estabilização estática do core. O alinhamento dos landmarks do Ombro (12), Anca (24) e Tornozelo (28) deve manter-se dentro de uma janela de deteção entre $155^\circ$ e $185^\circ$, com valor ideal em $\theta \approx 170^\circ$, ao longo do tempo total sob tensão.
@@ -134,18 +133,18 @@ No Agachamento, Rowe e colaboradores, citados em \cite{Norkin_White_2016} (p.332
 
 Na Flexão de Braços, o limiar ideal ($70^\circ$, correspondendo a $110^\circ$ de flexão do cotovelo) fica dentro da amplitude funcional documentada pela mesma obra (flexão máxima funcional de aproximadamente $140^\circ$), pelo que se mantém deliberadamente mais rigoroso sem ser anatomicamente irrealista. O limiar de contagem ($90^\circ$, $20^\circ$ acima do ideal) não tem fonte independente.
 
-No Lunge, para o qual esta obra não apresenta valor de referência, o limiar original ($80^\circ$) foi ajustado para $87^\circ$ depois de observação visual mostrar que rejeitava repetições bem executadas; o limiar de contagem ($107^\circ$) também não tem fonte independente. Para a Prancha, também sem valor de referência disponível, manteve-se o valor já usado pela janela de deteção original ($170^\circ$), sem introduzir um novo alvo.
+No Lunge, para o qual esta obra não apresenta valor de referência, o limiar ideal passou por várias iterações: começou nos $80^\circ$, foi ajustado para $87^\circ$ depois de observação visual mostrar que rejeitava repetições bem executadas, e fixou-se nos $90^\circ$ depois de o joelho monitorizado ter sido trocado do traseiro para o da frente (Secção \ref{sec:abordagem}), o que exigiu recalibrar também o limiar de contagem de $107^\circ$ para $115^\circ$. Nenhum destes valores tem fonte independente na literatura. Para a Prancha, também sem valor de referência disponível, manteve-se o valor já usado pela janela de deteção original ($170^\circ$), sem introduzir um novo alvo.
 
 A Tabela \ref{tab:calibracaoLimiares} resume o resultado das duas iterações.
 
-\begin{table}[h]
+\begin{table}[H]
    \centering
    \begin{tabular}{lccl}
       \textbf{Exercício} & \textbf{1\textsuperscript{a} Iteração} & \textbf{2\textsuperscript{a} Iteração} & \textbf{Fonte de validação} \\
       \hline
       Agachamento & $70^\circ$ & $70^\circ$ (confirmado) & Rowe et al., in \cite{Norkin_White_2016} \\
       Flexão de Braços & $70^\circ$ & $70^\circ$ (confirmado) & Norkin \& White \cite{Norkin_White_2016} \\
-      Lunge & $80^\circ$ & $87^\circ$ (ajustado) & Observação visual \\
+      Lunge & $80^\circ$ & $90^\circ$ (ajustado) & Observação visual \\
       Prancha & $170^\circ$ & $170^\circ$ (confirmado) & Janela de deteção existente \\
       \hline
    \end{tabular}
@@ -176,7 +175,9 @@ A lógica de deteção assenta numa máquina de estados finita de três estados,
       \node[state] (top) {AT\_TOP};
       \node[state, right=of top] (desc) {DESCENDING};
       \node[state, right=of desc] (asc) {ASCENDING};
+      \node[circle, fill=black, minimum size=0.35cm, inner sep=0pt, left=1.4cm of top] (init) {};
 
+      \draw[->] (init) -- (top);
       \draw[->] (top) -- node[above, font=\scriptsize] {início da descida} (desc);
       \draw[->] (desc) -- node[above, font=\scriptsize] {limiar de contagem} (asc);
       \draw[->] (asc) to[bend left=40] node[below, font=\scriptsize] {limiar de extensão (rep.\ completa)} (top);
@@ -198,7 +199,7 @@ A cadência excêntrica pesa o dobro da concêntrica (30 contra 15 pontos) porqu
 
 O mecanismo descrito acima, a máquina de estados e as três categorias de dedução, aplica-se aos três exercícios contados por repetição (Agachamento, Flexão de Braços e Lunge). A Prancha Isométrica, por não ter fases concêntrica e excêntrica distintas, é avaliada de forma diferente: em vez de percorrer os três estados, o sistema verifica continuamente se o ângulo do tronco se mantém dentro da janela de deteção ($155^\circ$ a $185^\circ$, Secção \ref{sec:fundamentos}); enquanto isso se mantiver verdadeiro, o tempo de prancha acumula-se e o score resulta do desvio médio do ângulo em relação ao valor ideal ($170^\circ$) ao longo de todo o segmento contínuo, e não de penalizações separadas por fase.
 
-O Lunge tem ainda uma condição adicional que a máquina de estados por si só não capta: como o sistema monitoriza apenas o joelho traseiro e o utilizador alterna a perna da frente entre repetições, um ciclo completo de \texttt{DESCENDING} para \texttt{ASCENDING} só é contabilizado como repetição se a perna da frente tiver mudado desde a última repetição contada. Isto evita que duas descidas seguidas da mesma perna, sem alternância, sejam contadas como duas repetições distintas.
+O Lunge tem ainda uma particularidade que a máquina de estados por si só não capta: como o joelho monitorizado é o da perna da frente, e o utilizador troca de perna dianteira a cada repetição, o sistema identifica a cada frame qual a perna atualmente à frente e mede o ângulo dessa perna. Um ciclo completo de \texttt{DESCENDING} para \texttt{ASCENDING} é sempre contabilizado como repetição, mesmo que o utilizador não tenha alternado a perna desde a repetição anterior; nesse caso, o sistema emite um aviso a incentivar a alternância em vez de recusar a contagem, para não perder repetições válidas por falhas pontuais de deteção da perna dianteira.
 
 Para tornar concreta a interação entre a máquina de estados e a fórmula de pontuação, considere-se o Agachamento (limiar ideal $70^\circ$, limiar de contagem $90^\circ$, cadência excêntrica ideal entre 2.0 e 4.0s, concêntrica ideal entre 0.5 e 2.0s), acompanhando duas repetições distintas do mesmo utilizador.
 
@@ -208,7 +209,7 @@ Na Repetição 2, o mesmo percurso repete-se, mas o utilizador só desce até $8
 
 A Tabela \ref{tab:exemploPratico} resume as duas repetições.
 
-\begin{table}[h]
+\begin{table}[H]
    \centering
    \begin{tabular}{lccc}
       \textbf{Repetição} & \textbf{Ângulo mínimo} & \textbf{Cadências (exc. / conc.)} & \textbf{Score final} \\

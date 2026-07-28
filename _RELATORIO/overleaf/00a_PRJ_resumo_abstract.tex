@@ -10,9 +10,9 @@
 
 Este projeto descreve o desenvolvimento de uma aplicação móvel nativa em Android para monitorização e correção da postura em tempo real durante exercícios físicos (como agachamentos, flexões de braços e afundos). A solução utiliza a biblioteca de visão por computador MediaPipe Pose Landmarker para detetar 33 pontos-chave do esqueleto corporal em tempo real, calculando de forma assíncrona os ângulos das articulações biomecânicas associadas. 
 
-Um motor baseado em máquina de estados sequencial rastreia as fases concêntrica e excêntrica do movimento, gerindo a contagem e avaliando o ritmo e a amplitude de movimento (ROM) com base em limiares cinemáticos formais. A aplicação fornece feedback sonoro imediato através do motor nativo Text-To-Speech (TTS), ajudando o atleta a corrigir desvios posturais críticos sem distrações visuais. 
+Um motor baseado em máquina de estados sequencial rastreia as fases concêntrica e excêntrica do movimento, gerindo a contagem e avaliando o ritmo e a amplitude de movimento (ROM) com base em limiares cinemáticos formais. A aplicação fornece feedback sonoro imediato através do motor nativo Text-To-Speech (TTS), ajudando o atleta a corrigir desvios posturais sem distrações visuais.
 
-A persistência dos treinos é sincronizada com uma base de dados na nuvem (Firebase Firestore), alimentando um painel de estatísticas interativo com gráficos customizados em Jetpack Compose Canvas que ilustram o progresso e a regularidade do utilizador. Testes experimentais confirmam a robustez do processamento assíncrono local no dispositivo (edge computing) e a viabilidade das correções posturais imediatas, promovendo uma prática mais autónoma.
+A persistência dos treinos é sincronizada com uma base de dados na nuvem (Firebase Firestore), alimentando um painel de estatísticas interativo com gráficos customizados em Jetpack Compose Canvas que ilustram o progresso e a regularidade do utilizador. Testes experimentais confirmam o desempenho do processamento assíncrono local no dispositivo (edge computing) e a viabilidade das correções posturais imediatas, promovendo uma prática mais autónoma.
 
 \vspace{1cm}
 \noindent\textbf{Palavras-chave:} Estimativa de Pose, MediaPipe, Android, Text-To-Speech, Biomecânica, Firebase Firestore, Jetpack Compose.
@@ -25,9 +25,9 @@ A persistência dos treinos é sincronizada com uma base de dados na nuvem (Fire
 
 This project presents a native Android mobile application designed for real-time body posture monitoring and correction during physical exercises (such as squats, push-ups, and lunges). The solution leverages the MediaPipe Pose Landmarker computer vision framework to detect 33 body keypoints in real-time on the device, asynchronously computing joint angles.
 
-A state-machine-based execution engine tracks the concentric and eccentric phases of movements, manages repetition counting, and evaluates form cadence and range of motion (ROM) against established kinesiological thresholds. The app provides immediate auditory feedback using the Android Text-To-Speech (TTS) engine, enabling athletes to correct critical postural deviations without screen distractions.
+A state-machine-based execution engine tracks the concentric and eccentric phases of movements, manages repetition counting, and evaluates form cadence and range of motion (ROM) against established kinesiological thresholds. The app provides immediate auditory feedback using the Android Text-To-Speech (TTS) engine, enabling athletes to correct postural deviations without screen distractions.
 
-Workout logs are synchronized to Cloud Firestore, powering an interactive analytics dashboard featuring animated, custom Jetpack Compose Canvas progress charts. Experimental results validate the performance of low-latency on-device processing and demonstrate the feasibility of providing immediate auditory corrections, supporting more autonomous physical training.
+Workout logs are synchronized to Cloud Firestore, powering an interactive analytics dashboard featuring custom Jetpack Compose Canvas progress charts. Experimental results validate the performance of low-latency on-device processing and demonstrate the feasibility of providing immediate auditory corrections, supporting more autonomous physical training.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Pose Estimation, MediaPipe, Android, Text-To-Speech, Biomechanics, Firebase Firestore, Jetpack Compose.
