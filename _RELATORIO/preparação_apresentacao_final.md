@@ -71,12 +71,12 @@ classDiagram
 
 ```mermaid
 flowchart TD
-    A[CameraX] -->|Vídeo RAW| B(MediaPipe BlazePose)
-    B -->|Extrai 33 Landmarks 3D| C{WorkoutManager}
-    C -->|Calcula Ângulo| D[RepPhaseTracker]
-    D -->|Emite Novo Estado (StateFlow)| E[ViewModel]
-    E -->|Re-desenha a View| F[Jetpack Compose UI]
-    C -.->|Termina Treino| G[(Firestore Transacional)]
+    A[CameraX] -->|"Vídeo RAW"| B(MediaPipe BlazePose)
+    B -->|"Extrai 33 Landmarks 3D"| C{WorkoutManager}
+    C -->|"Calcula Ângulo"| D[RepPhaseTracker]
+    D -->|"Emite Novo Estado (StateFlow)"| E[ViewModel]
+    E -->|"Re-desenha a View"| F[Jetpack Compose UI]
+    C -.->|"Termina Treino"| G[(Firestore Transacional)]
 ```
 
 ### 3.3. Base de Dados Firestore (*Write-Time Aggregation*)
@@ -86,8 +86,8 @@ erDiagram
     USER_PROFILE ||--o{ WORKOUTS : "possui subcoleção"
     USER_PROFILE {
         string userId
-        int weeklyKcal (Agregado O-1)
-        int xpPoints (Agregado O-1)
+        int weeklyKcal "Agregado O-1"
+        int xpPoints "Agregado O-1"
         int level
     }
     WORKOUTS {
