@@ -9,11 +9,11 @@ Este é o documento de estudo exaustivo para a defesa do projeto **FitnessTracki
 Durante as várias *sprints* deste projeto, tomámos decisões de simplificação e refatorização vitais para garantir a entrega de um produto estável:
 
 1. **Abandono do Python e adoção de Kotlin Nativo:**
-   A diretoria `03_Implementacao/POC_Python` foi o nosso "balão de ensaio". Usámos Python com MediaPipe para iterar rapidamente a matemática dos ângulos. Contudo, tentar correr código Python num ambiente de produção Android (através de *Chaquopy* ou REST APIs) iria introduzir latência inadmissível. Reescrevemos tudo do zero em Kotlin para injetar a lógica diretamente no *pipeline* da `CameraX`, resultando num motor *Edge Computing* puro.
+   A diretoria `03_Implementacao/POC_Python` foi o nosso "balão de ensaio". Usámos Python com MediaPipe para iterar rapidamente a matemática dos ângulos. Contudo, tentar correr código Python num ambiente de produção Android iria introduzir latência inadmissível. Reescrevemos tudo do zero em Kotlin para injetar a lógica diretamente no *pipeline* da `CameraX`, resultando num motor *Edge Computing* puro.
 2. **Bloqueio da Orientação do Ecrã (Portrait Lock):**
    Decidimos trancar a App na orientação vertical (Portrait). *Porquê?* Rastrear corpos em modo de paisagem (Landscape) alteraria a matriz de coordenadas `X, Y` do MediaPipe, forçando a matemática a fazer transposições vetoriais constantes. Para além disso, no telemóvel pousado no chão, o modo vertical abrange muito melhor a altura total do corpo humano.
 3. **Debounce do TTS (Text-to-Speech):**
-   Durante os testes, reparámos que a IA disparava conselhos corretivos muito rapidamente. Implementámos um *debounce* temporal de 500ms no `TTSHelper` para garantir que o motor de voz acabava de falar antes de emitir um novo alerta, resolvendo o problema de sobreposição acústica.
+   Implementámos um *debounce* temporal de 500ms no `TTSHelper` para garantir que o motor de voz acabava de falar antes de emitir um novo alerta, resolvendo o problema de sobreposição acústica.
 
 ---
 
@@ -22,17 +22,16 @@ Durante as várias *sprints* deste projeto, tomámos decisões de simplificaçã
 A base de código em `AndroidApp_V_0.1/app/src/main/java/com/example/fitnesstrackerapp` foi dividida metodicamente. 
 
 ### 2.1. O *Package* `logic` (O "Cérebro" Biomecânico)
-Este pacote não tem qualquer conhecimento de que existe uma Interface de Utilizador. É aqui que vive o motor:
 *   **`AngleCalculator.kt`:** É a base cinesiológica. Recebe 3 *landmarks* do MediaPipe (ex: Anca, Joelho, Tornozelo), cria dois vetores e aplica-lhes a função trigonométrica Arco-cosseno ($\arccos$) combinada com o Produto Escalar. É independente da distância à câmara.
 *   **`RepPhaseTracker.kt`:** Implementa a Máquina de Estados Finitos com 3 estados fixos (`AT_TOP`, `DESCENDING`, `ASCENDING`). Obriga a uma passagem sequencial rigorosa pelos três limiares (Extensão, Contagem, Ideal) para evitar *jitter* e contagens falsas.
-*   **`FormEvaluator.kt`:** Trata do modelo de pontuação biomecânica (Scoring). Calcula uma penalização fracionária/proporcional com base no desvio entre o ângulo executado e o Limiar Ideal (amplitude de movimento - ROM), maximizando a justiça para o utilizador. Deduz também pontos fixos pela cadência (muito rápido ou muito lento).
-*   **`WorkoutManager.kt`:** O Orquestrador. Submete cada frame recebida ao cálculo de ângulos, gere a máquina de estados e decide quando uma repetição está concluída e avaliada.
+*   **`FormEvaluator.kt`:** Trata do modelo de pontuação biomecânica (Scoring). Calcula uma penalização fracionária/proporcional com base no desvio entre o ângulo executado e o Limiar Ideal.
+*   **`WorkoutManager.kt`:** O Orquestrador. Submete cada frame recebida ao cálculo de ângulos e gere a máquina de estados.
 
 ### 2.2. O *Package* `logic.impl` (Os Exercícios e Polimorfismo)
-*   **`LungeExercise.kt` (A resolução da Oclusão):** O grande desafio deste projeto. Como a perna de trás ficava tapada pela da frente, o `LungeExercise` introduziu código que avalia ativamente o eixo Z dos *landmarks* a cada frame, rastreando apenas o joelho que estiver espacialmente mais próximo da câmara. Isto evitou usar redes neurais secundárias pesadas.
+*   **`LungeExercise.kt` (A resolução da Oclusão):** Introduziu código que avalia ativamente o eixo Z dos *landmarks* a cada frame, rastreando apenas o joelho que estiver espacialmente mais próximo da câmara. Isto evitou usar redes neurais secundárias pesadas.
 
 ### 2.3. O *Package* `ui` (Jetpack Compose Nativo)
-*   **`MainActivity.kt` & `DashboardActivity.kt`:** Sem ficheiros XML antigos. Usámos Compose para gerar ecrãs modulares e reativos que se alteram automaticamente consoante os estados (`StateFlow`) emitidos pelo *ViewModel*. Note-se que desenhámos os gráficos do Dashboard através do **Jetpack Compose Canvas nativo**, sem recorrer a bibliotecas de terceiros.
+*   **`MainActivity.kt` & `DashboardActivity.kt`:** Sem ficheiros XML antigos. Usámos Compose para gerar ecrãs modulares e reativos geridos por `StateFlow`. Desenhámos os gráficos do Dashboard através do **Jetpack Compose Canvas nativo**.
 
 ---
 
@@ -96,57 +95,56 @@ erDiagram
         int score
     }
 ```
-*Justificação:* Atualizar o `USER_PROFILE.weeklyKcal` e os Pontos de Experiência usando uma transação atómica garante que ler os dados para a *Leaderboard* custa sempre 1 única operação de leitura por amigo, garantindo escalabilidade $O(1)$ e baixos custos na Cloud.
+*Justificação:* Atualizar o `USER_PROFILE.weeklyKcal` com Transações assegura a sincronização *Offline-First* e garante que a *Leaderboard* lê tudo em complexidade $O(1)$.
 
 ---
 
 ## 4. Testes, Validação e Hardware (Os Bastidores)
 
 ### 4.1. Avaliação SUS e Ações Corretivas de UX
-Fizemos testes com utilizadores reais (pasta `04_Teste`) focados na literacia tecnológica (Baixa, Média, Avançada). O nosso score *System Usability Scale* (SUS) de 66.42 forçou-nos a implementar soluções críticas:
-- **Localização:** Traduzimos toda a app para Português (PT-PT) devido a barreiras de linguagem do grupo de literacia baixa.
-- **Redimensionamento Vetorial (HUD):** Aumentámos as métricas visuais porque a App é concebida para ser usada a uma distância focal de 2 a 6 metros do dispositivo.
+Nos testes (pasta `04_Teste`), o nosso score SUS de 66.42 forçou-nos a implementar soluções críticas:
+- **Localização:** Traduzimos toda a app para Português (PT-PT) para o grupo de literacia baixa.
+- **Redimensionamento Vetorial (HUD):** Aumentámos drasticamente as métricas da interface visual.
 
-### 4.2. A Restrição de Hardware: O Pesadelo do Emulador (x86_64 vs ARM64-v8a)
-Uma das maiores dificuldades de engenharia foi a compilação do projeto. A biblioteca MediaPipe Pose no Android depende de ficheiros binários em C++ compilados para a arquitetura **ARM64-v8a** (processadores de smartphones reais). Isto causou a incompatibilidade total com os Emuladores do Android Studio (que rodam em x86_64 nos nossos computadores). 
-**Argumento:** "A nossa aplicação foi pensada desde o dia 1 para *Edge Computing* em silício mobile real. Como consequência inerente à utilização de redes neurais otimizadas (TFLite/C++ ARM), os testes e compilações são obrigatoriamente feitos em dispositivos físicos via USB."
-
-### 4.3. Metodologia de IA (Academic Integrity)
-A abordagem à IA Generativa foi transparente e rastreável. Usámos o documento `prompt_set.txt` e marcadores como `#my_code` no código-fonte para separar claramente o que foi arquitetado e pensado por nós, e o que foi gerado iterativamente pelo LLM. A IA serviu como "Pair Programmer" e não como orquestradora.
+### 4.2. A Restrição de Hardware (x86_64 vs ARM64-v8a)
+O MediaPipe Pose depende de binários compilados em C++ para a arquitetura **ARM64-v8a**. Isto causa incompatibilidade total com os Emuladores do Android Studio (x86_64), forçando e provando que o projeto é testado 100% num pipeline local Mobile real.
 
 ---
 
-## 5. Guião de Defesa Exaustivo: Perguntas e Respostas
+## 5. Guião de Defesa Exaustivo: Bateria de Perguntas (Classificadas)
 
-Para facilitar o estudo, as potenciais perguntas do Júri (desde o nível intermédio ao nível muito avançado) estão aqui organizadas por áreas temáticas fundamentais.
+Para facilitar a memorização visual e direcionamento estratégico, as perguntas estão categorizadas por domínio de engenharia.
 
-### 5.1. Temática A: Base de Dados, Infraestrutura e Dados
-**P1: O processamento no "Edge" significa que o poder está todo no telemóvel e não na Cloud. Se o telemóvel ficar sem internet antes de enviar os dados para a "Fonte de Verdade" (Firestore), o treino não se perde?**
-> **Resposta:** "Não, graças à arquitetura *Offline-First* que desenhámos usando o SDK do Firestore. Quando a máquina de estados conclui um treino, a transação atómica é sempre enviada primeiramente para a cache local segura (SQLite em background gerida pelo SDK). Se não houver internet, a alteração de XP e Kcal é guardada no telemóvel em modo offline, resolvendo-se a si mesma com a *Source of Truth* na Cloud assim que a conectividade for restaurada, sem qualquer perda de dados."
+### 🗄️ 5.1. Temática A: Infraestrutura e Base de Dados
+**P1: O processamento no "Edge" significa que o poder está todo no telemóvel. Se o telemóvel perder internet, o treino e XP não se perdem antes de chegar ao Firestore?**
+> **Resposta:** "Não, graças à arquitetura *Offline-First* do SDK nativo do Firebase. A gravação do *Score* é despachada para a cache SQLite segura local em background. Se não houver internet, a alteração de XP e Kcal descansa no telemóvel. Assim que a conectividade for restaurada no futuro, o SDK trata de escoar a fila assíncrona, resolvendo conflitos na Cloud, sem qualquer perda silenciosa."
 
-**P2: Porque a escolha de NoSQL e do Padrão "Write-Time Aggregation"? O projeto tem relações óbvias (Utilizadores têm Treinos e Amigos), porque não usaram SQL Clássico (Room)?**
-> **Resposta:** "Porque o nosso padrão principal de acesso a dados é a visualização da *Leaderboard* e Perfis — operações que precisam de ser quase instantâneas. Se em SQL faríamos um `JOIN` e somaríamos tudo em 'Read-Time' (iterando centenas de registos de treino sempre que se abrisse a app), aqui nós sacrificámos a desnormalização clássica e forçámos a agregação em *Write-Time*. Guardar os Totais de Pontos e Kcal num documento `UserProfile` isolado permite carregar a Leaderboard com uma complexidade $O(1)$. No modelo *Pay-as-you-go* da Google Cloud, isto previne custos exponenciais em produção."
+**P2: Porque a escolha de NoSQL e "Write-Time Aggregation"? O projeto tem relações (Utilizadores têm Treinos e Amigos), porque não usaram SQL Clássico (Room)?**
+> **Resposta:** "Porque o padrão vital deste negócio é ver a *Leaderboard* num relance de milissegundos. Se usássemos SQL, um `JOIN` massivo ia percorrer os 500 treinos de 30 amigos em 'Read-Time' cada vez que mudássemos de separador. Ao aplicarmos *Write-Time Aggregation* (agregando Totais de Pontos/Kcal no `UserProfile`), sacrificámos a Normalização do SQL para ganhar uma *Query* linear em $O(1)$. Na Cloud (onde se paga por documento lido), o SQL faliria a empresa; a nossa abstração NoSQL garante sobrevivência comercial."
 
-### 5.2. Temática B: Inteligência Artificial e Processamento de Imagem
-**P3: Como é que o MediaPipe lida com diferentes telemóveis? Se o telemóvel tiver uma câmara absurda de 108 Megapíxeis, a matemática não engasga o aparelho?**
-> **Resposta:** "Esse é o segredo de eficiência da framework. A `CameraX` e o *pipeline* do BlazePose nunca inferem sobre a imagem na resolução massiva do sensor nativo. Antes de entrar na Rede Neural, as *frames* sofrem sempre um *downscale* (redimensionamento agressivo) para um tensor matriz muito pequeno (ex: 256x256). Isto garante estabilidade térmica e que a inferência se mantenha nos ~30 FPS quer a câmara tenha 12MP quer tenha 108MP."
+### 🤖 5.2. Temática B: IA, Computação de Visão e Metodologia Científica
+**P3: Como é que o MediaPipe lida com diferentes telemóveis? Numa câmara de 108 Megapíxeis, a matemática não engasga a bateria e o CPU?**
+> **Resposta:** "Esse é o segredo de eficiência da framework. O *pipeline* nunca infere a imagem nativa. A `CameraX` redimensiona (*downscale* agressivo) a frame para um tensor matriz muito pequeno (normalmente 256x256) antes de o passar para a Rede Neural. É por isso que mantemos estáveis as ~30 FPS independentemente do tamanho original da foto, gerindo o sobreaquecimento através do processo `STRATEGY_KEEP_ONLY_LATEST` para descartar *frames* velhas em fila."
 
-**P4: O vosso Lunge funciona de forma brilhante, mas a oclusão destrói projetos de Inteligência Artificial parecidos todos os dias. O que é que vocês fizeram de diferente de tentar 'adivinhar' a perna tapada?**
-> **Resposta:** "Aceitámos que com Edge Computing leve não poderíamos rodar extrapolações volumétricas de 360 graus. Portanto, aplicámos a Navalha de Ockham: apenas a perna da frente dita a estabilidade mecânica profunda num Lunge. Programámos o `LungeExercise.kt` para rastrear dinamicamente o valor de profundidade Z (*Z-axis*) a cada *frame*, ignorando completamente o sinal da perna de trás. Isto suprimiu 100% dos falsos negativos provocados por oclusão."
+**P4: O vosso Lunge funciona perfeitamente, mas a oclusão destrói dezenas de IAs concorrentes. O que fizeram de diferente de 'adivinhar' a perna tapada?**
+> **Resposta:** "Aplicámos a 'Navalha de Ockham': não adianta extrapolar um esqueleto 3D que não está visível. A nossa física dita que num Lunge apenas a perna da frente avalia a postura e amplitude. Programámos a classe `LungeExercise.kt` para ler dinamicamente o *Eixo Z* a cada milissegundo, injetando o cálculo angular exclusivamente no joelho temporalmente mais perto da câmara, ignorando estaticamente a perna oculta e erradicando os *falsos-negativos*."
 
-**P5: O BlazePose devolve apenas 33 pontos, mas a topologia biomecânica do corpo humano é muito mais do que pontos de linhas. Porque é que 33 *landmarks* servem para uma avaliação credível de ginásio?**
-> **Resposta:** "A cinesiologia clínica baseia-se nos eixos maiores de rotação: coxofemoral (anca), tíbio-femoral (joelho) e gleno-umeral (ombro). Os 33 pontos do modelo *COCO-inspired* assentam exatamente sobre estas dobradiças primárias. Como apenas necessitamos dos eixos 2D/3D dos ossos longos principais para aplicar trigonometria vetorial (como a função $\arccos$), os micro-detalhes volumétricos corporais são irrelevantes, tornando 33 pontos perfeitos."
+**P5: O vosso relatório refere o uso de LLMs e IA Generativa. Qual foi a percentagem de 'cópia'? Se a Matemática foi gerada, como garantem a correção?**
+> **Resposta:** "A IA funcionou estritamente como *Pair-Programmer* para 'Boilerplate'. O *Model Design* (Arquitetura) foi absolutamente nosso. Nós instruímos o modelo a gerar o 'cross-product e arccos', mas fomos nós a fechar a arquitetura limitativa de 3 limiares na máquina de estados (Contagem, Ideal, Extensão). A prova empírica encontra-se no mapeamento da teoria Goniométrica (Norkin e White) adaptada por nós a esses 3 Limiares. O LLM escreve rápido, mas quem orquestra a viabilidade é a anotação metódica que fizemos de `#my_code`."
 
-### 5.3. Temática C: Engenharia de Software e Lógica Kotlin
-**P6: A vossa arquitetura refere que o `WorkoutManager` recebe a câmara (frames) e decide coisas. Isto não corrompe a arquitetura MVVM, misturando `Views` visuais do Android com Lógica de Negócio pura?**
-> **Resposta:** "Pelo contrário. O `WorkoutManager` não tem dependências de bibliotecas de ecrã do Android (não precisa do `Context` nem de `SurfaceViews`). A interface gráfica atua através do `ImageAnalyzer` da CameraX, que atua como uma 'ponte' para gerar objetos virtuais de dados (a classe de dados `Pose`). O `WorkoutManager` apenas analisa fluxos puros de números (coordenadas x,y,z) e emite eventos para o `StateFlow`. O MVVM mantém a separação sagrada de responsabilidades."
+### 🔬 5.3. Temática C: Casos Limite Ambientais e Morfológicos (Distância, Cor e Luz)
+**P6: A que distância funciona a App? Funciona se o telemóvel estiver a 0.5 metros da minha cara, ou se eu estiver a 20 metros no fundo do corredor de um ginásio?**
+> **Resposta:** "Não funciona em nenhum desses dois extremos mecânicos. A 0.5m, o *Bounding-Box* de extração do BlazePose não vislumbra o corpo todo (cortando joelhos vitais para Agachamentos). A 20 metros, existem píxeis insuficientes no rosto humano para gerar Confiança Vetorial. A nossa *Sweet Spot* é de **2 a 6 metros**. E é por isso que, de acordo com o nosso teste de usabilidade (SUS), nós duplicámos o HUD (Fontes e Gráficos); precisamente para o atleta conseguir ler o ecrã a 4 metros com eficácia e conforto total."
 
-**P7: Se correm Inteligência Artificial, renderizam gráficos UI e geram áudio TTS em paralelo, porque é que o telemóvel não congela em treinos longos? Que *Threads* (Coroutines) usaram e porquê?**
-> **Resposta:** "Fizemos uso rigoroso de `Kotlin Coroutines` em eixos paralelos e do mecanismo `STRATEGY_KEEP_ONLY_LATEST` da *CameraX* (se o CPU encravar, descarta a frame velha em vez de formar engarrafamento). Mais importante: apenas o *recomposition* do Compose (Jetpack Compose UI) e a emissão do `StateFlow` operam na *Main Thread*. Todo o cálculo trigonométrico árduo da Máquina de Estados e a análise do Mediapipe operam sobre `Dispatchers.Default` (assíncrono CPU-bound). E, por fim, delegamos cálculos IA para o processador de hardware neural (*GPU/NNAPI Delegate*)."
+**P7: E se um atleta obeso usar calças largas e pretas num quarto pouco iluminado? O modelo distorce o esqueleto? E detetam pessoas sem braços?**
+> **Resposta:** "Este é o clássico obstáculo de IAs puramente baseadas em processadores RGB (que dependem de deteção de margens). Falta de contraste luminoso ou roupas excessivamente largas perdem a margem visual. Para contornar este viés (*Bias*) endémico e o problema de partes corporais amputadas, lidamos defensivamente usando a propriedade `Visibility` ou de Confiança do MediaPipe. Se a confiança num ombro, pulso ou joelho cair vertiginosamente abaixo da *threshold*, a nossa Máquina de Estados "congela", bloqueando as contas para evitar que um tremor da perna produza 3 repetições falsas seguidas."
 
-### 5.4. Temática D: Usabilidade (UX) e Metodologia Científica
-**P8: O vosso SUS score foi de 66.42, o que é abaixo da média da indústria (68). Como é que podem chamar a este projeto um caso de sucesso?**
-> **Resposta:** "O SUS não existe para nos elogiar; existe para validar suposições cegas que ganhámos ao passar meses fechados a escrever código. Os 66.42 não representam a nossa avaliação final: representam a nossa *baseline*. Foi graças aos resultados fracos na Literacia Baixa que fizemos duas das maiores inovações do projeto a nível de UX: localizámos toda a plataforma para Português, e reimaginámos a HUD Vetorial aumentando todas as letras após provarmos que 2 a 6 metros é a distância focal de treino. Isto prova metodologia real."
+### 💻 5.4. Temática D: Código-Fonte Kotlin Puro e Padrões
+**P8: Eu olhei para o vosso código do `AngleCalculator.kt`. Vejo que aplicam a Matemática Vetorial e o arco-cosseno. Como é que evitam exceções de 'Divisão por Zero' que fariam *Crash* instantâneo à app no telemóvel dos clientes?**
+> **Resposta:** "Essa é uma das barreiras críticas da Cinesiologia Vetorial que tratámos de defender no código. Se três articulações colapsarem visualmente na mesma coordenada $(X, Y)$, os vetores do osso passam a ter magnitude 0. No Produto Escalar, isto criaria divisão por zero, devolvendo `NaN` (Not a Number). Resolvemos isto usando os mecanismos de segurança nativos de Kotlin: funções de verificação explícitas para garantir que a `magnitude > 0.0`. E para evitar que pequenos arredondamentos flutuantes em hardware (ex: `1.0000001`) estoirem o `arccos()`, forçámos os resultados para dentro do domínio rigoroso trigonométrico `[-1.0, 1.0]` com a função `coerceIn` antes do cálculo final."
 
-**P9: O vosso relatório refere o uso de IA Generativa. Que percentagem da Matemática do AngleCalculator foi 'pensada' por vocês vs 'gerada' por LLMs?**
-> **Resposta:** "A IA operou estritamente como *Pair-Programmer* para agilizar *boilerplate*. A lógica sistémica é totalmente vossa. Fomos nós que decidimos que o sistema não podia ser binário e teria de ter três limiares na Máquina de Estados (Extensão, Contagem, Ideal) baseados na literatura de Norkin e White; fomos nós que decidimos usar *Write-Time Aggregation* na BD; e fomos nós que mandámos ignorar a perna Z oculta no Lunge. O conhecimento cinesiológico é empírico, sendo o LLM apenas um veículo para syntax rápido."
+**P9: Usam a classe `WorkoutManager`, que injeta lógica num ecrã em Kotlin. Isso não deita fora toda a arquitetura de independência do MVVM (*Model View ViewModel*)?**
+> **Resposta:** "Não, e esse foi o nosso maior orgulho de arquitetura. O `WorkoutManager` é agnóstico. Ele não importa nenhuma referência do Android (como Context, SurfaceViews ou Activity). O único canal que ele tem com o exterior é receber objetos `Pose` puros através de uma Ponte Analisadora (ImageAnalyzer) e descarregar atualizações (via *StateFlow*) no *ViewModel*. O *Jetpack Compose* só tem o trabalho de renderizar as coisas de acordo com o fluxo do *StateFlow*. É Separação de Interesses (SoC) pura."
+
+**P10: E se o utilizador clicar na seta de 'Sair a meio do treino' enquanto o BlazePose e os Cálculos ainda estão freneticamente a avaliar os vetores ósseos da última *frame*? Ocorrem *Memory Leaks*?**
+> **Resposta:** "Não, porque todo o nosso processamento matemático obedece à estrutura limpa de `Kotlin Coroutines` despachadas do `viewModelScope` e do seu *Dispatcher* nativo (para não bloquear a UI). Assim que a atividade morre no ecrã e é invocada a destruição (OnDestroy), as dependências associadas ao escopo da *Coroutine* são sumariamente canceladas. O telemóvel liberta logo a RAM do BlazePose."
