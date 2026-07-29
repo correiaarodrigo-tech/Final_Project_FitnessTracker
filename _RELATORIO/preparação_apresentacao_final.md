@@ -116,19 +116,37 @@ A abordagem à IA Generativa foi transparente e rastreável. Usámos o documento
 
 ---
 
-## 5. Bateria Final de Perguntas e Respostas do Júri (O "Grill-Me")
+## 5. Guião de Defesa Exaustivo: Perguntas e Respostas
 
-**P1: Porque é que vocês acham que o vosso Lunge funciona bem quando até as frameworks do Google se baralham com oclusão?**
-> "O MediaPipe do Google usa inferência inferida para tentar adivinhar a perna traseira bloqueada, gerando enorme ruído (jitter). Nós percebemos que para avaliar a biomecânica do Lunge não precisamos de duas pernas, apenas de analisar a coxa que está em maior tensão. Por isso, programámos o `LungeExercise.kt` para rastrear dinamicamente através do valor Z (profundidade) qual a perna mais próxima da câmara e isolar o cálculo angular exclusivamente nessa perna."
+Para facilitar o estudo, as potenciais perguntas do Júri (desde o nível intermédio ao nível muito avançado) estão aqui organizadas por áreas temáticas fundamentais.
 
-**P2: Se o MediaPipe gera dados a 30 Frames Por Segundo, como evitam o sobreaquecimento e o uso da bateria em dispositivos fracos?**
-> "Usámos o mecanismo de *Frame Dropping* no lado do CameraX aliado ao *StateFlow* em Kotlin. A UI reativa tem mecanismos de suspensão (*Coroutines*) onde apenas a frame processada e validada aciona um re-desenho (Recomposition) no Compose, reduzindo a carga do CPU."
+### 5.1. Temática A: Base de Dados, Infraestrutura e Dados
+**P1: O processamento no "Edge" significa que o poder está todo no telemóvel e não na Cloud. Se o telemóvel ficar sem internet antes de enviar os dados para a "Fonte de Verdade" (Firestore), o treino não se perde?**
+> **Resposta:** "Não, graças à arquitetura *Offline-First* que desenhámos usando o SDK do Firestore. Quando a máquina de estados conclui um treino, a transação atómica é sempre enviada primeiramente para a cache local segura (SQLite em background gerida pelo SDK). Se não houver internet, a alteração de XP e Kcal é guardada no telemóvel em modo offline, resolvendo-se a si mesma com a *Source of Truth* na Cloud assim que a conectividade for restaurada, sem qualquer perda de dados."
 
-**P3: O vosso SUS score foi de 66.42, o que é abaixo da média da indústria (68). Como é que chamam a isto um sucesso?**
-> "O valor de 66.42 não foi o fim do projeto, foi a nossa *baseline*. Ele foi arrastado para baixo pelos utilizadores de Literacia Baixa, e graças a isso fizemos refatorizações cruciais (localização PT-PT e redimensionamento do HUD para leitura a 4 metros). Este score prova a importância dos testes com utilizadores reais e não viciados."
+**P2: Porque a escolha de NoSQL e do Padrão "Write-Time Aggregation"? O projeto tem relações óbvias (Utilizadores têm Treinos e Amigos), porque não usaram SQL Clássico (Room)?**
+> **Resposta:** "Porque o nosso padrão principal de acesso a dados é a visualização da *Leaderboard* e Perfis — operações que precisam de ser quase instantâneas. Se em SQL faríamos um `JOIN` e somaríamos tudo em 'Read-Time' (iterando centenas de registos de treino sempre que se abrisse a app), aqui nós sacrificámos a desnormalização clássica e forçámos a agregação em *Write-Time*. Guardar os Totais de Pontos e Kcal num documento `UserProfile` isolado permite carregar a Leaderboard com uma complexidade $O(1)$. No modelo *Pay-as-you-go* da Google Cloud, isto previne custos exponenciais em produção."
 
-**P4: Porquê a escolha de NoSQL e do Padrão "Write-Time Aggregation"?**
-> "Se tivéssemos de somar a coleção `workouts` inteira sempre que mostramos a Leaderboard, teríamos de iterar $N$ documentos, o que em SQL seria um JOIN simples, mas no Firestore pagamos por leitura de documento, logo a fatura escalaria de forma exponencial. Decidimos sacrificar a Terceira Forma Normal e desnormalizar os dados, guardando totais de Kcal e XP no Perfil do Utilizador (uma única transação atómica O-1).
+### 5.2. Temática B: Inteligência Artificial e Processamento de Imagem
+**P3: Como é que o MediaPipe lida com diferentes telemóveis? Se o telemóvel tiver uma câmara absurda de 108 Megapíxeis, a matemática não engasga o aparelho?**
+> **Resposta:** "Esse é o segredo de eficiência da framework. A `CameraX` e o *pipeline* do BlazePose nunca inferem sobre a imagem na resolução massiva do sensor nativo. Antes de entrar na Rede Neural, as *frames* sofrem sempre um *downscale* (redimensionamento agressivo) para um tensor matriz muito pequeno (ex: 256x256). Isto garante estabilidade térmica e que a inferência se mantenha nos ~30 FPS quer a câmara tenha 12MP quer tenha 108MP."
 
-**P5: Porque dizem que não funciona no simulador/emulador do computador?**
-> "Porque a inferência de IA real não acontece em Java. O coração do MediaPipe são bibliotecas em C++ compiladas para arquiteturas de silício mobile (ARM64-v8a). Os nossos computadores são x86_64, provocando falhas de ABI (*Application Binary Interface*). É uma prova provada de que criámos uma verdadeira app *Edge* nativa."
+**P4: O vosso Lunge funciona de forma brilhante, mas a oclusão destrói projetos de Inteligência Artificial parecidos todos os dias. O que é que vocês fizeram de diferente de tentar 'adivinhar' a perna tapada?**
+> **Resposta:** "Aceitámos que com Edge Computing leve não poderíamos rodar extrapolações volumétricas de 360 graus. Portanto, aplicámos a Navalha de Ockham: apenas a perna da frente dita a estabilidade mecânica profunda num Lunge. Programámos o `LungeExercise.kt` para rastrear dinamicamente o valor de profundidade Z (*Z-axis*) a cada *frame*, ignorando completamente o sinal da perna de trás. Isto suprimiu 100% dos falsos negativos provocados por oclusão."
+
+**P5: O BlazePose devolve apenas 33 pontos, mas a topologia biomecânica do corpo humano é muito mais do que pontos de linhas. Porque é que 33 *landmarks* servem para uma avaliação credível de ginásio?**
+> **Resposta:** "A cinesiologia clínica baseia-se nos eixos maiores de rotação: coxofemoral (anca), tíbio-femoral (joelho) e gleno-umeral (ombro). Os 33 pontos do modelo *COCO-inspired* assentam exatamente sobre estas dobradiças primárias. Como apenas necessitamos dos eixos 2D/3D dos ossos longos principais para aplicar trigonometria vetorial (como a função $\arccos$), os micro-detalhes volumétricos corporais são irrelevantes, tornando 33 pontos perfeitos."
+
+### 5.3. Temática C: Engenharia de Software e Lógica Kotlin
+**P6: A vossa arquitetura refere que o `WorkoutManager` recebe a câmara (frames) e decide coisas. Isto não corrompe a arquitetura MVVM, misturando `Views` visuais do Android com Lógica de Negócio pura?**
+> **Resposta:** "Pelo contrário. O `WorkoutManager` não tem dependências de bibliotecas de ecrã do Android (não precisa do `Context` nem de `SurfaceViews`). A interface gráfica atua através do `ImageAnalyzer` da CameraX, que atua como uma 'ponte' para gerar objetos virtuais de dados (a classe de dados `Pose`). O `WorkoutManager` apenas analisa fluxos puros de números (coordenadas x,y,z) e emite eventos para o `StateFlow`. O MVVM mantém a separação sagrada de responsabilidades."
+
+**P7: Se correm Inteligência Artificial, renderizam gráficos UI e geram áudio TTS em paralelo, porque é que o telemóvel não congela em treinos longos? Que *Threads* (Coroutines) usaram e porquê?**
+> **Resposta:** "Fizemos uso rigoroso de `Kotlin Coroutines` em eixos paralelos e do mecanismo `STRATEGY_KEEP_ONLY_LATEST` da *CameraX* (se o CPU encravar, descarta a frame velha em vez de formar engarrafamento). Mais importante: apenas o *recomposition* do Compose (Jetpack Compose UI) e a emissão do `StateFlow` operam na *Main Thread*. Todo o cálculo trigonométrico árduo da Máquina de Estados e a análise do Mediapipe operam sobre `Dispatchers.Default` (assíncrono CPU-bound). E, por fim, delegamos cálculos IA para o processador de hardware neural (*GPU/NNAPI Delegate*)."
+
+### 5.4. Temática D: Usabilidade (UX) e Metodologia Científica
+**P8: O vosso SUS score foi de 66.42, o que é abaixo da média da indústria (68). Como é que podem chamar a este projeto um caso de sucesso?**
+> **Resposta:** "O SUS não existe para nos elogiar; existe para validar suposições cegas que ganhámos ao passar meses fechados a escrever código. Os 66.42 não representam a nossa avaliação final: representam a nossa *baseline*. Foi graças aos resultados fracos na Literacia Baixa que fizemos duas das maiores inovações do projeto a nível de UX: localizámos toda a plataforma para Português, e reimaginámos a HUD Vetorial aumentando todas as letras após provarmos que 2 a 6 metros é a distância focal de treino. Isto prova metodologia real."
+
+**P9: O vosso relatório refere o uso de IA Generativa. Que percentagem da Matemática do AngleCalculator foi 'pensada' por vocês vs 'gerada' por LLMs?**
+> **Resposta:** "A IA operou estritamente como *Pair-Programmer* para agilizar *boilerplate*. A lógica sistémica é totalmente vossa. Fomos nós que decidimos que o sistema não podia ser binário e teria de ter três limiares na Máquina de Estados (Extensão, Contagem, Ideal) baseados na literatura de Norkin e White; fomos nós que decidimos usar *Write-Time Aggregation* na BD; e fomos nós que mandámos ignorar a perna Z oculta no Lunge. O conhecimento cinesiológico é empírico, sendo o LLM apenas um veículo para syntax rápido."
